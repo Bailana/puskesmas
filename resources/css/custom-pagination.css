@@ -1,0 +1,18 @@
+/* Custom pagination styles to make Bootstrap 5 pagination horizontal and less rounded */
+.pagination {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    gap: 0.5rem;
+}
+
+.pagination .page-item {
+    border-radius: 0.25rem !important;
+}
+
+.pagination .page-link {
+    border-radius: 0.25rem !important;
+    padding: 0.375rem 0.75rem !important;
+    min-width: 2.5rem;
+    text-align: center;
+}

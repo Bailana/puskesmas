@@ -1,0 +1,23 @@
+/* Custom CSS for pagination in resepsionis dashboard */
+#antrian-pagination {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#antrian-pagination li {
+  white-space: nowrap;
+  margin-right: 8px; /* Add spacing between pagination buttons */
+}
+
+#antrian-pagination li:last-child {
+  margin-right: 0; /* Remove margin on last button */
+}
+
+.pagination-info-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50%;
+}

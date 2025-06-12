@@ -1,0 +1,331 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use App\Models\User;
+use App\Models\Obat;
+use App\Models\HasilPeriksa;
+
+class ApotekerDashboardController extends Controller
+{
+    public function index()
+    {
+        $user = Auth::user();
+        // Assuming antrian has a field to relate to user, e.g., user_id or apoteker_id
+        // Adjust the filter condition based on your database schema
+        $antrians = \App\Models\Antrian::with(['pasien', 'poli'])
+            ->where('status', 'Farmasi')
+            ->paginate(5);
+
+        return view('apoteker.dashboard', compact('antrians'));
+    }
+
+    public function profile()
+    {
+        return view('apoteker.profile');
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = User::find(Auth::id());
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'profile_photo' => ['nullable', 'image', 'max:2048'],
+            'current_password' => ['required_with:new_password', 'nullable', 'string'],
+            'new_password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        if ($request->hasFile('profile_photo')) {
+            $path = $request->file('profile_photo')->store('profile_photos', 'public');
+            $user->profile_photo_path = $path;
+        }
+
+        if ($request->filled('current_password') && $request->filled('new_password')) {
+            if (!\Hash::check($request->current_password, $user->password)) {
+                if ($request->expectsJson()) {
+                    return response()->json(['errors' => ['current_password' => ['Password lama tidak sesuai']]], 422);
+                }
+                return back()->withErrors(['current_password' => 'Password lama tidak sesuai'])->withInput();
+            }
+            $user->password = Hash::make($request->new_password);
+        }
+
+        $user->save();
+
+        if ($request->expectsJson()) {
+            $message = 'Profil berhasil diperbarui.';
+            $passwordChanged = false;
+            if ($request->filled('current_password') && $request->filled('new_password')) {
+                $passwordChanged = true;
+            }
+            if ($passwordChanged) {
+                $message = 'Password berhasil diubah.';
+            }
+            return response()->json([
+                'message' => $message,
+                'name' => $user->name,
+                'profile_photo_path' => $user->profile_photo_path,
+            ]);
+        }
+
+        return redirect()->route('profileapoteker')->with('status', 'Profil berhasil diperbarui.');
+    }
+
+    public function pasien(Request $request)
+    {
+        $search = $request->input('search');
+
+        $jenis_kelamin = $request->input('jenis_kelamin');
+        $gol_darah = $request->input('gol_darah');
+        $jaminan_kesehatan = $request->input('jaminan_kesehatan');
+        $tempat_lahir = $request->input('tempat_lahir');
+        $kecamatan = $request->input('kecamatan');
+        $kelurahan = $request->input('kelurahan');
+        $status_pernikahan = $request->input('status_pernikahan');
+        $tanggal_lahir = $request->input('tanggal_lahir');
+
+        $query = \App\Models\Pasien::query();
+
+        if (!empty($jenis_kelamin)) {
+            $query->where('jenis_kelamin', $jenis_kelamin);
+        }
+        if (!empty($gol_darah)) {
+            $query->where('gol_darah', $gol_darah);
+        }
+        if (!empty($jaminan_kesehatan)) {
+            $query->where('jaminan_kesehatan', $jaminan_kesehatan);
+        }
+        if (!empty($tempat_lahir)) {
+            $query->where('tempat_lahir', 'like', '%' . $tempat_lahir . '%');
+        }
+        if (!empty($kecamatan)) {
+            $query->where('kecamatan', 'like', '%' . $kecamatan . '%');
+        }
+        if (!empty($kelurahan)) {
+            $query->where('kelurahan', 'like', '%' . $kelurahan . '%');
+        }
+        if (!empty($status_pernikahan)) {
+            $query->where('status_pernikahan', $status_pernikahan);
+        }
+        if (!empty($tanggal_lahir)) {
+            $query->where('tanggal_lahir', $tanggal_lahir);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_pasien', 'like', '%' . $search . '%')
+                  ->orWhere('no_rekam_medis', 'like', '%' . $search . '%')
+                  ->orWhere('nomor_kepesertaan', 'like', '%' . $search . '%');
+            });
+        }
+
+        $pasiens = $query->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json($pasiens);
+        }
+
+        return view('apoteker.pasien', compact('pasiens'));
+    }
+
+    public function obat(Request $request)
+    {
+        $search = $request->input('search');
+
+        $nama_obat = $request->input('nama_obat');
+        $jenis_obat = $request->input('jenis_obat');
+        $dosis = $request->input('dosis');
+        $bentuk_obat = $request->input('bentuk_obat');
+        $stok = $request->input('stok');
+        $harga_satuan = $request->input('harga_satuan');
+        $tanggal_kadaluarsa = $request->input('tanggal_kadaluarsa');
+        $nama_pabrikan = $request->input('nama_pabrikan');
+
+        $query = Obat::query();
+
+        // Apply individual filters if present and not empty
+        if (!empty($nama_obat)) {
+            $query->where('nama_obat', 'like', '%' . $nama_obat . '%');
+        }
+        if (!empty($jenis_obat)) {
+            $query->where('jenis_obat', 'like', '%' . $jenis_obat . '%');
+        }
+        if (!empty($dosis)) {
+            $query->where('dosis', 'like', '%' . $dosis . '%');
+        }
+        if (!empty($bentuk_obat)) {
+            $query->where('bentuk_obat', 'like', '%' . $bentuk_obat . '%');
+        }
+        if (!empty($stok)) {
+            $query->where('stok', $stok);
+        }
+        if (!empty($harga_satuan)) {
+            $query->where('harga_satuan', $harga_satuan);
+        }
+        if (!empty($tanggal_kadaluarsa)) {
+            $query->where('tanggal_kadaluarsa', $tanggal_kadaluarsa);
+        }
+        if (!empty($nama_pabrikan)) {
+            $query->where('nama_pabrikan', 'like', '%' . $nama_pabrikan . '%');
+        }
+
+        // Apply general search if present
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_obat', 'like', '%' . $search . '%')
+                  ->orWhere('jenis_obat', 'like', '%' . $search . '%')
+                  ->orWhere('bentuk_obat', 'like', '%' . $search . '%')
+                  ->orWhere('stok', 'like', '%' . $search . '%')
+                  ->orWhere('harga_satuan', 'like', '%' . $search . '%')
+                  ->orWhere('tanggal_kadaluarsa', 'like', '%' . $search . '%');
+            });
+        }
+
+        $obats = $query->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $obats->items(),
+                'pagination' => [
+                    'total' => $obats->total(),
+                    'per_page' => $obats->perPage(),
+                    'current_page' => $obats->currentPage(),
+                    'last_page' => $obats->lastPage(),
+                    'from' => $obats->firstItem(),
+                    'to' => $obats->lastItem(),
+                ],
+            ]);
+        }
+
+        return view('apoteker.obat', compact('obats'));
+    }
+
+    public function storeObat(Request $request)
+    {
+        $validated = $request->validate([
+            'nama_obat' => 'required|string|max:255',
+            'jenis_obat' => 'required|string|max:255',
+            'dosis' => 'required|string|max:255',
+            'bentuk_obat' => 'required|string|max:255',
+            'stok' => 'required|integer|min:0',
+            'harga_satuan' => 'required|numeric|min:0',
+            'tanggal_kadaluarsa' => 'required|date',
+            'nama_pabrikan' => 'required|string|max:255',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        Obat::create($validated);
+
+        return redirect()->route('apoteker.obat')->with('success', 'Data obat berhasil ditambahkan.');
+    }
+
+    public function getObatDetail($id)
+    {
+        $obat = Obat::find($id);
+
+        if (!$obat) {
+            return response()->json(['error' => 'Obat tidak ditemukan'], 404);
+        }
+
+        return response()->json($obat);
+    }
+
+    public function updateObat(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'nama_obat' => 'required|string|max:255',
+            'jenis_obat' => 'required|string|max:255',
+            'dosis' => 'required|string|max:255',
+            'bentuk_obat' => 'required|string|max:255',
+            'stok' => 'required|integer|min:0',
+            'harga_satuan' => 'required|numeric|min:0',
+            'tanggal_kadaluarsa' => 'required|date',
+            'nama_pabrikan' => 'required|string|max:255',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $obat = Obat::find($id);
+
+        if (!$obat) {
+            return response()->json(['error' => 'Obat tidak ditemukan'], 404);
+        }
+
+        $obat->nama_obat = $validated['nama_obat'];
+        $obat->jenis_obat = $validated['jenis_obat'];
+        $obat->dosis = $validated['dosis'];
+        $obat->bentuk_obat = $validated['bentuk_obat'];
+        $obat->stok = $validated['stok'];
+        $obat->harga_satuan = $validated['harga_satuan'];
+        $obat->tanggal_kadaluarsa = $validated['tanggal_kadaluarsa'];
+        $obat->nama_pabrikan = $validated['nama_pabrikan'];
+        $obat->keterangan = $validated['keterangan'];
+
+        try {
+            $obat->save();
+            return response()->json(['message' => 'Data obat berhasil diperbarui']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal memperbarui data obat'], 500);
+        }
+    }
+
+    public function antrian(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = \App\Models\Antrian::with(['pasien', 'poli'])
+            ->where('status', 'Farmasi');
+
+        if ($search) {
+            $query->whereHas('pasien', function ($q) use ($search) {
+                $q->where('nama_pasien', 'like', '%' . $search . '%')
+                  ->orWhere('no_rekam_medis', 'like', '%' . $search . '%');
+            });
+        }
+
+        $antrians = $query->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json($antrians);
+        }
+
+        return view('apoteker.antrian', compact('antrians'));
+    }
+
+    public function destroyObat($id)
+    {
+        $obat = Obat::find($id);
+
+        if (!$obat) {
+            return response()->json(['error' => 'Obat tidak ditemukan'], 404);
+        }
+
+        try {
+            $obat->delete();
+            return response()->json(['message' => 'Data obat berhasil dihapus']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal menghapus data obat'], 500);
+        }
+    }
+
+    public function getHasilPeriksa($pasienId)
+    {
+        $hasilPeriksa = \App\Models\HasilPeriksa::where('pasien_id', $pasienId)
+            ->orderBy('tanggal_periksa', 'desc')
+            ->first();
+
+        if (!$hasilPeriksa) {
+            return response()->json(['error' => 'Hasil periksa tidak ditemukan'], 404);
+        }
+
+        return response()->json($hasilPeriksa);
+    }
+}
