@@ -110,6 +110,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/profile', [KasirDashboardController::class, 'profile'])->name('kasir.profile');
         Route::patch('/kasir/profile', [KasirDashboardController::class, 'updateProfile'])->name('kasir.profile.update');
         Route::get('/kasir/dana', [KasirDashboardController::class, 'dana'])->name('kasir.dana');
+        Route::get('/kasir/dana/export-pdf', [KasirDashboardController::class, 'exportPdf'])->name('kasir.dana.exportPdf');
+        Route::get('/kasir/dana/export-excel', [KasirDashboardController::class, 'exportExcel'])->name('kasir.dana.exportExcel');
     });
 });
 

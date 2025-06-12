@@ -131,8 +131,7 @@
                                     <td style="white-space: nowrap;">
                                         <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa"
                                             data-pasien-id="{{ $antrian->pasien->id }}">Hasil Periksa</button>
-                                        <button type="button" class="btn btn-warning btn-sm rounded btnRacikObat"
-                                            data-pasien-id="{{ $antrian->pasien->id }}">Tagihan</button>
+                                        <button type="button" class="btn btn-warning btn-sm rounded btnPeriksa" data-bs-toggle="modal" data-bs-target="#modalTagihan" data-pasien-id="{{ $antrian->pasien->id }}">Tagihan</button>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -155,8 +154,7 @@
                                     </li>
                                     @else
                                     <li class="page-item">
-                                        <a class="page-link" href="{{ $antrians->previousPageUrl() }}" rel="prev"
-                                            aria-label="Previous">&laquo;</a>
+                                        <a class="page-link" href="{{ $antrians->previousPageUrl() }}" rel="prev" aria-label="Previous">&laquo;</a>
                                     </li>
                                     @endif
 
@@ -174,6 +172,7 @@
                                                 $start = 1;
                                                 $end = 3;
                                             } elseif ($currentPage == $totalPages) {
+                                                $start = $totalPages - 2;
                                                 $start = $totalPages - 2;
                                                 $end = $totalPages;
                                             } else {
@@ -275,12 +274,74 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Tagihan -->
+<div class="modal fade" id="modalTagihan" tabindex="-1" aria-labelledby="modalTagihanLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
+        <div class="modal-content" style="overflow-x: hidden;">
+            <div class="modal-header d-flex justify-content-between">
+                <h3 class="modal-title" id="modalTagihanLabel"><strong>Tagihan Pasien</strong></h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                <div id="tagihanContent">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="tagihanNamaPasien" class="form-label">Nama Pasien</label>
+                            <input type="text" class="form-control form-control-sm" id="tagihanNamaPasien" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="tagihanNomorRM" class="form-label">Nomor RM</label>
+                            <input type="text" class="form-control form-control-sm" id="tagihanNomorRM" readonly>
+                            <input type="hidden" id="tagihanPasienId" />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="tagihanPoliTujuan" class="form-label">Poli Tujuan</label>
+                            <input type="text" class="form-control form-control-sm" id="tagihanPoliTujuan" readonly>
+                        </div>
+                    </div>
+                    <hr>
+                    <h5>Daftar Resep Obat</h5>
+                    <table class="table table-bordered" id="tagihanObatTable">
+                        <thead>
+                            <tr>
+                                <th>Nama Obat</th>
+                                <th>Bentuk Obat</th>
+                                <th>Jumlah</th>
+                                <th>Harga Satuan</th>
+                                <th>Total Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Obat rows will be populated here -->
+                        </tbody>
+                    </table>
+                    <hr>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="tagihanTotalBiaya" class="form-label">Total Biaya Keseluruhan</label>
+                            <input type="text" class="form-control form-control-sm" id="tagihanTotalBiaya" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tagihanStatus" class="form-label">Status Pembayaran</label>
+                            <input type="text" class="form-control form-control-sm" id="tagihanStatus" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="modal-footer d-flex justify-content-end mt-3">
+                    <button type="button" class="btn btn-primary" id="btnBayar">Bayar</button>
+                </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const modalHasilPeriksa = new bootstrap.Modal(document.getElementById('modalHasilPeriksa'));
+            const modalTagihan = new bootstrap.Modal(document.getElementById('modalTagihan'));
 
             // Fix to allow background scrolling when modal is open without affecting navbar/footer
             const originalBodyOverflow = document.body.style.overflow;
@@ -340,6 +401,294 @@
                             }
                         });
                 });
+            });
+
+            document.querySelectorAll('.btnPeriksa').forEach(button => {
+                button.addEventListener('click', function () {
+                    const pasienId = this.getAttribute('data-pasien-id');
+
+                    // Clear previous values
+                    document.getElementById('tagihanNamaPasien').value = '';
+                    document.getElementById('tagihanNomorRM').value = '';
+                    document.getElementById('tagihanPoliTujuan').value = '';
+                    document.querySelector('#tagihanObatTable tbody').innerHTML = '';
+                    document.getElementById('tagihanTotalBiaya').value = '';
+                    document.getElementById('tagihanStatus').value = '';
+
+                    fetch(`/kasir/tagihan/${pasienId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Data tagihan tidak ditemukan');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            document.getElementById('tagihanNamaPasien').value = data.nama_pasien || '';
+                            document.getElementById('tagihanNomorRM').value = data.no_rekam_medis || '';
+                            document.getElementById('tagihanPasienId').value = data.pasien_id || '';
+                            document.getElementById('tagihanPoliTujuan').value = data.poli_tujuan || '';
+
+                            const tbody = document.querySelector('#tagihanObatTable tbody');
+                            tbody.innerHTML = '';
+
+                            function formatPrice(price) {
+                                if (typeof price === 'number' || typeof price === 'string') {
+                                    const num = typeof price === 'number' ? price : parseFloat(price);
+                                    if (!isNaN(num)) {
+                                        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(num);
+                                    }
+                                }
+                                return price || '';
+                            }
+
+                            if (Array.isArray(data.resep_obat)) {
+                                data.resep_obat.forEach(item => {
+                                    const tr = document.createElement('tr');
+                                    const jumlah = parseFloat(item.jumlah) || 0;
+                                    const hargaSatuan = parseFloat(item.harga_satuan) || 0;
+                                    const totalHargaCalc = jumlah * hargaSatuan;
+                                    tr.innerHTML = `
+                                        <td>${item.nama_obat}</td>
+                                        <td>${item.bentuk_obat || ''}</td>
+                                        <td>${jumlah}</td>
+                                        <td>${formatPrice(hargaSatuan)}</td>
+                                        <td>${formatPrice(totalHargaCalc)}</td>
+                                    `;
+                                    tbody.appendChild(tr);
+                                });
+                            }
+
+                            let totalBiayaKeseluruhan = 0;
+                            if (Array.isArray(data.resep_obat)) {
+                                data.resep_obat.forEach(item => {
+                                    const jumlah = parseFloat(item.jumlah) || 0;
+                                    const hargaSatuan = parseFloat(item.harga_satuan) || 0;
+                                    totalBiayaKeseluruhan += jumlah * hargaSatuan;
+                                });
+                            }
+                            document.getElementById('tagihanTotalBiaya').value = formatPrice(totalBiayaKeseluruhan);
+                            document.getElementById('tagihanStatus').value = data.status_pembayaran || '';
+
+                            modalTagihan.show();
+                        })
+                        .catch(error => {
+                            toastr.error('Tagihan pasien tidak tersedia.');
+                            if (modalTagihan._isShown) {
+                                modalTagihan.hide();
+                            }
+                        });
+                });
+            });
+
+            document.getElementById('btnBayar').addEventListener('click', function () {
+                const pasienId = document.getElementById('tagihanPasienId').value;
+                const totalBiaya = document.getElementById('tagihanTotalBiaya').value;
+                const poliTujuan = document.getElementById('tagihanPoliTujuan').value;
+                const resepObatRows = document.querySelectorAll('#tagihanObatTable tbody tr');
+
+                if (!pasienId) {
+                    toastr.error('Data pasien tidak valid.');
+                    return;
+                }
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (!csrfToken) {
+                    toastr.error('CSRF token tidak ditemukan. Pastikan meta tag CSRF ada di halaman.');
+                    return;
+                }
+
+                // Collect resep_obat data from table rows
+                const resepObat = [];
+                resepObatRows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    resepObat.push({
+                        nama_obat: cells[0].textContent,
+                        bentuk_obat: cells[1].textContent,
+                        jumlah: cells[2].textContent,
+                        harga_satuan: cells[3].textContent,
+                        total_harga: cells[4].textContent,
+                    });
+                });
+
+                fetch('/kasir/tagihan/bayar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                    },
+                    body: JSON.stringify({
+                        pasien_id: pasienId,
+                        total_biaya: totalBiaya,
+                        poli_tujuan: poliTujuan,
+                        resep_obat: JSON.stringify(resepObat),
+                    }),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Gagal melakukan pembayaran.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        toastr.success(data.message || 'Pembayaran berhasil');
+                        // Update status pembayaran in modal
+                        document.getElementById('tagihanStatus').value = 'Lunas';
+                        // Close the modal after successful payment
+                        const modalTagihanEl = document.getElementById('modalTagihan');
+                        const modalTagihan = bootstrap.Modal.getInstance(modalTagihanEl);
+                        if (modalTagihan) {
+                            modalTagihan.hide();
+                        }
+                        // Refresh the antrian table to reflect updated status
+                        const searchInput = document.getElementById('searchInput');
+                        const query = searchInput ? searchInput.value.trim() : '';
+                        fetch(`{{ route('kasir.antrian') }}?search=${encodeURIComponent(query)}`, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const antrianTableBody = document.querySelector('table tbody');
+                            antrianTableBody.innerHTML = '';
+                            if (data.data && data.data.length > 0) {
+                                data.data.forEach((antrian, index) => {
+                                    const age = antrian.pasien.tanggal_lahir ? new Date().getFullYear() - new Date(antrian.pasien.tanggal_lahir).getFullYear() : '';
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                        <td style="white-space: nowrap;">${index + 1}</td>
+                                        <td style="white-space: nowrap;">${antrian.no_rekam_medis}</td>
+                                        <td style="white-space: nowrap;">${antrian.pasien.nama_pasien}</td>
+                                        <td style="white-space: nowrap;">${age} tahun</td>
+                                        <td style="white-space: nowrap;">${antrian.pasien.jaminan_kesehatan}</td>
+                                        <td style="white-space: nowrap;">${antrian.poli ? antrian.poli.nama_poli : 'Tidak ada'}</td>
+                                        <td style="white-space: nowrap;"><span class="badge bg-danger">${antrian.status}</span></td>
+                                        <td style="white-space: nowrap;">
+                                            <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-pasien-id="${antrian.pasien.id}">Hasil Periksa</button>
+                                            <button type="button" class="btn btn-warning btn-sm rounded btnPeriksa" data-bs-toggle="modal" data-bs-target="#modalTagihan" data-pasien-id="${antrian.pasien.id}">Tagihan</button>
+                                        </td>
+                                    `;
+                                    antrianTableBody.appendChild(row);
+                                });
+                                // Reattach event listeners for new buttons after table refresh
+                                document.querySelectorAll('.btnHasilPeriksa').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const pasienId = this.getAttribute('data-pasien-id');
+                                        // Clear previous values
+                                        document.getElementById('anamnesis').value = '';
+                                        document.getElementById('pemeriksaanFisik').value = '';
+                                        document.getElementById('rencanaTerapi').value = '';
+                                        document.getElementById('diagnosis').value = '';
+                                        document.getElementById('edukasi').value = '';
+                                        document.getElementById('kodeICD').value = '';
+                                        document.getElementById('kesanStatusGizi').value = '';
+                                        fetch(`/kasir/hasil-periksa/${pasienId}`)
+                                            .then(response => {
+                                                if (!response.ok) {
+                                                    throw new Error('Data hasil periksa tidak ditemukan');
+                                                }
+                                                return response.json();
+                                            })
+                                            .then(data => {
+                                                // Populate modal fields with data, all fields are read-only
+                                                document.getElementById('anamnesis').value = data.anamnesis || '';
+                                                document.getElementById('pemeriksaanFisik').value = data.pemeriksaan_fisik || '';
+                                                document.getElementById('rencanaTerapi').value = data.rencana_dan_terapi || '';
+                                                document.getElementById('diagnosis').value = data.diagnosis || '';
+                                                document.getElementById('edukasi').value = data.edukasi || '';
+                                                document.getElementById('kodeICD').value = data.kode_icd || '';
+                                                document.getElementById('kesanStatusGizi').value = data.kesan_status_gizi || '';
+                                                document.getElementById('penanggungJawab').value = data.penanggung_jawab || '';
+                                                modalHasilPeriksa.show();
+                                            })
+                                            .catch(error => {
+                                                toastr.error('Hasil periksa pasien tidak tersedia.');
+                                                if (modalHasilPeriksa._isShown) {
+                                                    modalHasilPeriksa.hide();
+                                                }
+                                            });
+                                    });
+                                });
+                                document.querySelectorAll('.btnPeriksa').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const pasienId = this.getAttribute('data-pasien-id');
+                                        // Clear previous values
+                                        document.getElementById('tagihanNamaPasien').value = '';
+                                        document.getElementById('tagihanNomorRM').value = '';
+                                        document.getElementById('tagihanPoliTujuan').value = '';
+                                        document.querySelector('#tagihanObatTable tbody').innerHTML = '';
+                                        document.getElementById('tagihanTotalBiaya').value = '';
+                                        document.getElementById('tagihanStatus').value = '';
+                                        fetch(`/kasir/tagihan/${pasienId}`)
+                                            .then(response => {
+                                                if (!response.ok) {
+                                                    throw new Error('Data tagihan tidak ditemukan');
+                                                }
+                                                return response.json();
+                                            })
+                                            .then(data => {
+                                                document.getElementById('tagihanNamaPasien').value = data.nama_pasien || '';
+                                                document.getElementById('tagihanNomorRM').value = data.no_rekam_medis || '';
+                                                document.getElementById('tagihanPasienId').value = data.pasien_id || '';
+                                                document.getElementById('tagihanPoliTujuan').value = data.poli_tujuan || '';
+                                                const tbody = document.querySelector('#tagihanObatTable tbody');
+                                                tbody.innerHTML = '';
+                                                function formatPrice(price) {
+                                                    if (typeof price === 'number' || typeof price === 'string') {
+                                                        const num = typeof price === 'number' ? price : parseFloat(price);
+                                                        if (!isNaN(num)) {
+                                                            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(num);
+                                                        }
+                                                    }
+                                                    return price || '';
+                                                }
+                                                if (Array.isArray(data.resep_obat)) {
+                                                    data.resep_obat.forEach(item => {
+                                                        const tr = document.createElement('tr');
+                                                        const jumlah = parseFloat(item.jumlah) || 0;
+                                                        const hargaSatuan = parseFloat(item.harga_satuan) || 0;
+                                                        const totalHargaCalc = jumlah * hargaSatuan;
+                                                        tr.innerHTML = `
+                                                            <td>${item.nama_obat}</td>
+                                                            <td>${item.bentuk_obat || ''}</td>
+                                                            <td>${jumlah}</td>
+                                                            <td>${formatPrice(hargaSatuan)}</td>
+                                                            <td>${formatPrice(totalHargaCalc)}</td>
+                                                        `;
+                                                        tbody.appendChild(tr);
+                                                    });
+                                                }
+                                                let totalBiayaKeseluruhan = 0;
+                                                if (Array.isArray(data.resep_obat)) {
+                                                    data.resep_obat.forEach(item => {
+                                                        const jumlah = parseFloat(item.jumlah) || 0;
+                                                        const hargaSatuan = parseFloat(item.harga_satuan) || 0;
+                                                        totalBiayaKeseluruhan += jumlah * hargaSatuan;
+                                                    });
+                                                }
+                                                document.getElementById('tagihanTotalBiaya').value = formatPrice(totalBiayaKeseluruhan);
+                                                document.getElementById('tagihanStatus').value = data.status_pembayaran || '';
+                                                modalTagihan.show();
+                                            })
+                                            .catch(error => {
+                                                toastr.error('Tagihan pasien tidak tersedia.');
+                                                if (modalTagihan._isShown) {
+                                                    modalTagihan.hide();
+                                                }
+                                            });
+                                    });
+                                });
+                            } else {
+                                antrianTableBody.innerHTML = '<tr><td colspan="8" class="text-center">Antrian pasien tidak ditemukan</td></tr>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error refreshing antrian table:', error);
+                        });
+                    })
+                    .catch(error => {
+                        toastr.error(error.message || 'Terjadi kesalahan saat melakukan pembayaran.');
+                    });
             });
         });
 

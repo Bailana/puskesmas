@@ -9,6 +9,8 @@ use App\Models\Antrian;
 use App\Models\Pasien;
 use App\Models\HasilPeriksa;
 use App\Models\Tagihan;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Exports\TagihanExport;
 
 class KasirDashboardController extends Controller
 {
@@ -85,13 +87,137 @@ class KasirDashboardController extends Controller
 
     public function dana(Request $request)
     {
-        $tagihans = Tagihan::with('pasien')->paginate(5);
+        $query = $request->input('search');
+        $tanggalAwal = $request->input('tanggal_awal');
+        $tanggalAkhir = $request->input('tanggal_akhir');
+        $jaminanKesehatan = $request->input('jaminan_kesehatan');
+        $statusPembayaran = $request->input('status_pembayaran');
+        $totalBiayaMin = $request->input('total_biaya_min');
+        $totalBiayaMax = $request->input('total_biaya_max');
+
+        $tagihans = Tagihan::with('pasien')
+            ->when($query, function ($q) use ($query) {
+                $q->whereHas('pasien', function ($q2) use ($query) {
+                    $q2->where('nama_pasien', 'like', '%' . $query . '%')
+                       ->orWhere('no_rekam_medis', 'like', '%' . $query . '%');
+                });
+            })
+            ->when($tanggalAwal, function ($q) use ($tanggalAwal) {
+                $q->whereDate('created_at', '>=', $tanggalAwal);
+            })
+            ->when($tanggalAkhir, function ($q) use ($tanggalAkhir) {
+                $q->whereDate('created_at', '<=', $tanggalAkhir);
+            })
+            ->when($jaminanKesehatan, function ($q) use ($jaminanKesehatan) {
+                $q->whereHas('pasien', function ($q2) use ($jaminanKesehatan) {
+                    $q2->where('jaminan_kesehatan', $jaminanKesehatan);
+                });
+            })
+            ->when($statusPembayaran, function ($q) use ($statusPembayaran) {
+                $q->where('status', $statusPembayaran);
+            })
+            ->when($totalBiayaMin, function ($q) use ($totalBiayaMin) {
+                $q->where('total_biaya', '>=', $totalBiayaMin);
+            })
+            ->when($totalBiayaMax, function ($q) use ($totalBiayaMax) {
+                $q->where('total_biaya', '<=', $totalBiayaMax);
+            });
 
         if ($request->ajax()) {
-            return response()->json($tagihans->items());
+            $tagihansPaginated = $tagihans->paginate(5);
+            return response()->json($tagihansPaginated->items());
         }
 
-        return view('kasir.dana', compact('tagihans'));
+        $tagihansPaginated = $tagihans->paginate(5);
+
+        return view('kasir.dana', ['tagihans' => $tagihansPaginated]);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $query = $request->input('search');
+        $tanggalAwal = $request->input('tanggal_awal');
+        $tanggalAkhir = $request->input('tanggal_akhir');
+        $jaminanKesehatan = $request->input('jaminan_kesehatan');
+        $statusPembayaran = $request->input('status_pembayaran');
+        $totalBiayaMin = $request->input('total_biaya_min');
+        $totalBiayaMax = $request->input('total_biaya_max');
+
+        $tagihans = Tagihan::with('pasien')
+            ->when($query, function ($q) use ($query) {
+                $q->whereHas('pasien', function ($q2) use ($query) {
+                    $q2->where('nama_pasien', 'like', '%' . $query . '%')
+                       ->orWhere('no_rekam_medis', 'like', '%' . $query . '%');
+                });
+            })
+            ->when($tanggalAwal, function ($q) use ($tanggalAwal) {
+                $q->whereDate('created_at', '>=', $tanggalAwal);
+            })
+            ->when($tanggalAkhir, function ($q) use ($tanggalAkhir) {
+                $q->whereDate('created_at', '<=', $tanggalAkhir);
+            })
+            ->when($jaminanKesehatan, function ($q) use ($jaminanKesehatan) {
+                $q->whereHas('pasien', function ($q2) use ($jaminanKesehatan) {
+                    $q2->where('jaminan_kesehatan', $jaminanKesehatan);
+                });
+            })
+            ->when($statusPembayaran, function ($q) use ($statusPembayaran) {
+                $q->where('status', $statusPembayaran);
+            })
+            ->when($totalBiayaMin, function ($q) use ($totalBiayaMin) {
+                $q->where('total_biaya', '>=', $totalBiayaMin);
+            })
+            ->when($totalBiayaMax, function ($q) use ($totalBiayaMax) {
+                $q->where('total_biaya', '<=', $totalBiayaMax);
+            })
+            ->get();
+
+        $pdf = \PDF::loadView('kasir.export_pdf', ['tagihans' => $tagihans]);
+
+        return $pdf->download('tagihan_pasien.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $query = $request->input('search');
+        $tanggalAwal = $request->input('tanggal_awal');
+        $tanggalAkhir = $request->input('tanggal_akhir');
+        $jaminanKesehatan = $request->input('jaminan_kesehatan');
+        $statusPembayaran = $request->input('status_pembayaran');
+        $totalBiayaMin = $request->input('total_biaya_min');
+        $totalBiayaMax = $request->input('total_biaya_max');
+
+        $tagihans = Tagihan::with('pasien')
+            ->when($query, function ($q) use ($query) {
+                $q->whereHas('pasien', function ($q2) use ($query) {
+                    $q2->where('nama_pasien', 'like', '%' . $query . '%')
+                       ->orWhere('no_rekam_medis', 'like', '%' . $query . '%');
+                });
+            })
+            ->when($tanggalAwal, function ($q) use ($tanggalAwal) {
+                $q->whereDate('created_at', '>=', $tanggalAwal);
+            })
+            ->when($tanggalAkhir, function ($q) use ($tanggalAkhir) {
+                $q->whereDate('created_at', '<=', $tanggalAkhir);
+            })
+            ->when($jaminanKesehatan, function ($q) use ($jaminanKesehatan) {
+                $q->whereHas('pasien', function ($q2) use ($jaminanKesehatan) {
+                    $q2->where('jaminan_kesehatan', $jaminanKesehatan);
+                });
+            })
+            ->when($statusPembayaran, function ($q) use ($statusPembayaran) {
+                $q->where('status', $statusPembayaran);
+            })
+            ->when($totalBiayaMin, function ($q) use ($totalBiayaMin) {
+                $q->where('total_biaya', '>=', $totalBiayaMin);
+            })
+            ->when($totalBiayaMax, function ($q) use ($totalBiayaMax) {
+                $q->where('total_biaya', '<=', $totalBiayaMax);
+            })
+            ->get();
+
+        $export = new TagihanExport($tagihans);
+        return $export->export();
     }
 
     public function antrian(Request $request)
@@ -254,7 +380,7 @@ class KasirDashboardController extends Controller
 
     public function bayarTagihan(Request $request)
     {
-        \Log::info('bayarTagihan called', ['request' => $request->all()]);
+        // Log::info('bayarTagihan called', ['request' => $request->all()]);
 
         $request->validate([
             'pasien_id' => 'required|exists:pasiens,id',
@@ -265,7 +391,7 @@ class KasirDashboardController extends Controller
         $tagihan = Tagihan::where('pasien_id', $pasienId)->latest()->first();
 
         if (!$tagihan) {
-            \Log::warning('Tagihan not found for pasien_id, creating new tagihan', ['pasien_id' => $pasienId]);
+            // \Log::warning('Tagihan not found for pasien_id, creating new tagihan', ['pasien_id' => $pasienId]);
             $tagihan = new Tagihan();
             $tagihan->pasien_id = $pasienId;
 
@@ -290,7 +416,7 @@ class KasirDashboardController extends Controller
         $saved = $tagihan->save();
 
         if (!$saved) {
-            \Log::error('Failed to save tagihan status for pasien_id', ['pasien_id' => $pasienId]);
+            // \Log::error('Failed to save tagihan status for pasien_id', ['pasien_id' => $pasienId]);
             return response()->json(['message' => 'Gagal menyimpan status pembayaran'], 500);
         }
 
@@ -304,7 +430,7 @@ class KasirDashboardController extends Controller
             $antrianToUpdate->save();
         }
 
-        \Log::info('Pembayaran berhasil for pasien_id', ['pasien_id' => $pasienId]);
+        // \Log::info('Pembayaran berhasil for pasien_id', ['pasien_id' => $pasienId]);
 
         return response()->json(['message' => 'Pembayaran berhasil']);
     }

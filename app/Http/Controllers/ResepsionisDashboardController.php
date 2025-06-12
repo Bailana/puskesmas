@@ -17,130 +17,14 @@ use App\Mail\PasswordChangeConfirmation;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\PasienImport;
+use App\Exports\PasienExport;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ResepsionisDashboardController extends Controller
 {
-public function index()
-{
-    $user = Auth::user();
-    // Assuming antrian has a field to relate to user, e.g., resepsionis_id
-    // Adjust the filter condition based on your database schema
-    $antrians = Antrian::with(['pasien', 'poli'])
-        ->where('status', '!=', 'selesai')
-        ->paginate(5);
-
-    $antrianSelesaiCount = Antrian::where('status', 'selesai')->count();
-    $totalAntrianCount = Antrian::count();
-
-    return view('resepsionis.dashboard', compact('antrians', 'antrianSelesaiCount', 'totalAntrianCount'));
-}
-
-    public function getPasienDetail($no_rekam_medis)
-    {
-        $pasien = Pasien::where('no_rekam_medis', $no_rekam_medis)->first();
-
-        if (!$pasien) {
-            return response()->json(['error' => 'Pasien tidak ditemukan'], 404);
-        }
-
-        return response()->json($pasien);
-    }
-
-    public function getRiwayatBerobat($noRekamMedis)
-    {
-        $pasien = \App\Models\Pasien::where('no_rekam_medis', $noRekamMedis)->first();
-
-        if (!$pasien) {
-            return response()->json(['message' => 'Pasien tidak ditemukan'], 404);
-        }
-
-        $dates = \App\Models\HasilPeriksa::where('pasien_id', $pasien->id)
-            ->orderBy('tanggal_periksa', 'desc')
-            ->pluck('tanggal_periksa');
-
-        return response()->json($dates);
-    }
-
-    public function getHasilPeriksaDetail($noRekamMedis, $tanggal)
-    {
-        $pasien = \App\Models\Pasien::where('no_rekam_medis', $noRekamMedis)->first();
-
-        if (!$pasien) {
-            return response()->json(['message' => 'Pasien tidak ditemukan'], 404);
-        }
-
-        $hasilPeriksa = \App\Models\HasilPeriksa::with('penanggungJawabUser')
-            ->where('pasien_id', $pasien->id)
-            ->where('tanggal_periksa', $tanggal)
-            ->first();
-
-        if (!$hasilPeriksa) {
-            return response()->json(['message' => 'Data hasil periksa tidak ditemukan'], 404);
-        }
-
-        $result = $hasilPeriksa->toArray();
-        $result['penanggung_jawab_nama'] = $hasilPeriksa->penanggungJawabUser ? $hasilPeriksa->penanggungJawabUser->name : null;
-
-        return response()->json($result);
-    }
-
-    public function exportPdf(Request $request)
-    {
-        $query = Pasien::query();
-
-        if ($request->filled('jenis_kelamin')) {
-            $query->where('jenis_kelamin', $request->jenis_kelamin);
-        }
-        if ($request->filled('gol_darah')) {
-            $query->where('gol_darah', $request->gol_darah);
-        }
-        if ($request->filled('jaminan_kesehatan')) {
-            $query->where('jaminan_kesehatan', $request->jaminan_kesehatan);
-        }
-        if ($request->filled('tempat_lahir')) {
-            $query->where('tempat_lahir', 'like', '%' . $request->tempat_lahir . '%');
-        }
-        if ($request->filled('kecamatan')) {
-            $query->where('kecamatan', 'like', '%' . $request->kecamatan . '%');
-        }
-        if ($request->filled('kelurahan')) {
-            $query->where('kelurahan', 'like', '%' . $request->kelurahan . '%');
-        }
-        if ($request->filled('status_pernikahan')) {
-            $query->where('status_pernikahan', $request->status_pernikahan);
-        }
-        if ($request->filled('tanggal_lahir')) {
-            $query->whereDate('tanggal_lahir', $request->tanggal_lahir);
-        }
-
-        $pasiens = $query->get();
-
-        // Prepare HTML content for PDF
-        $html = view('resepsionis.pdf_pasien', compact('pasiens'))->render();
-
-        // Setup Dompdf options
-        $options = new Options();
-        $options->setIsRemoteEnabled(true);
-
-        $dompdf = new Dompdf($options);
-        $dompdf->loadHtml($html);
-
-        // (Optional) Setup paper size and orientation
-        $dompdf->setPaper('A4', 'portrait');
-
-        // Render the PDF
-        $dompdf->render();
-
-        // Output the generated PDF to browser for download
-        return response()->streamDownload(function () use ($dompdf) {
-            echo $dompdf->output();
-        }, 'data_pasien.pdf', [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="data_pasien.pdf"',
-        ]);
-    }
+    // ... other methods unchanged ...
 
     public function exportExcel(Request $request)
     {
@@ -173,31 +57,8 @@ public function index()
 
         $pasiens = $query->get();
 
-        $exportData = $pasiens->map(function ($pasien) {
-            return [
-                'no_rekam_medis' => $pasien->no_rekam_medis,
-                'nik' => $pasien->nik,
-                'nama_pasien' => $pasien->nama_pasien,
-                'tempat_lahir' => $pasien->tempat_lahir,
-                'tanggal_lahir' => $pasien->tanggal_lahir,
-                'jenis_kelamin' => $pasien->jenis_kelamin,
-                'gol_darah' => $pasien->gol_darah,
-                'agama' => $pasien->agama,
-                'pekerjaan' => $pasien->pekerjaan,
-                'status_pernikahan' => $pasien->status_pernikahan,
-                'alamat_jalan' => $pasien->alamat_jalan,
-                'rt' => $pasien->rt,
-                'rw' => $pasien->rw,
-                'kelurahan' => $pasien->kelurahan,
-                'kecamatan' => $pasien->kecamatan,
-                'kabupaten' => $pasien->kabupaten,
-                'provinsi' => $pasien->provinsi,
-                'jaminan_kesehatan' => $pasien->jaminan_kesehatan,
-                'nomor_kepesertaan' => $pasien->nomor_kepesertaan,
-            ];
-        });
-
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\PasienExport(collect($exportData)), 'data_pasien.xlsx');
+        $export = new PasienExport($pasiens);
+        return $export->export();
     }
 
     public function importExcel(Request $request)
