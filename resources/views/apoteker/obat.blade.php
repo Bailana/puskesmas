@@ -172,6 +172,7 @@
                     </div>
                 </div>
 
+                <div class="table-responsive">
                 <table class="table table-hover my-0" id="dataObatTabel">
                     <thead>
                         <tr>
@@ -185,14 +186,14 @@
                             <th style="white-space: nowrap;">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
+                        <tbody>
                         @foreach ($obats as $index => $obat)
                         <tr>
-                            <td>{{ $obats->firstItem() + $index }}</td>
-                            <td>{{ $obat->nama_obat }}</td>
-                            <td>{{ $obat->jenis_obat }}</td>
-                            <td>{{ $obat->bentuk_obat }}</td>
-                            <td>
+                            <td style="white-space: nowrap;">{{ $obats->firstItem() + $index }}</td>
+                            <td style="white-space: nowrap;">{{ $obat->nama_obat }}</td>
+                            <td style="white-space: nowrap;">{{ $obat->jenis_obat }}</td>
+                            <td style="white-space: nowrap;">{{ $obat->bentuk_obat }}</td>
+                            <td style="white-space: nowrap;">
                                 @if ($obat->stok == 0)
                                 <span class="badge bg-danger">{{ $obat->stok }}</span>
                                 @elseif ($obat->stok < 20) <span class="badge bg-warning">{{ $obat->stok }}</span>
@@ -200,9 +201,9 @@
                                     <span class="badge bg-success">{{ $obat->stok }}</span>
                                     @endif
                             </td>
-                            <td>Rp. {{ rtrim(rtrim(number_format($obat->harga_satuan, 2, ',', '.'), '0'), ',') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($obat->tanggal_kadaluarsa)->format('d-m-Y') }}</td>
-                            <td>
+                            <td style="white-space: nowrap;">Rp. {{ rtrim(rtrim(number_format($obat->harga_satuan, 2, ',', '.'), '0'), ',') }}</td>
+                            <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($obat->tanggal_kadaluarsa)->format('d-m-Y') }}</td>
+                            <td style="white-space: nowrap;">
                                 <button type="button" class="btn btn-primary btn-sm rounded btn-detail-obat"
                                     data-id="{{ $obat->id }}">
                                     Selengkapnya
@@ -214,8 +215,9 @@
                             </td>
                         </tr>
                         @endforeach
-                    </tbody>
+                        </tbody>
                 </table>
+                </div>
                 <div class="mt-3">
                     <div class="d-flex justify-content-between align-items-center w-50">
                         <div class="small text-muted mb-2 text-start ps-3">
@@ -565,15 +567,15 @@
                         }).format(obat.harga_satuan);
 
                         var row = '<tr>' +
-                            '<td>' + (response.pagination.from + index) + '</td>' +
-                            '<td>' + obat.nama_obat + '</td>' +
-                            '<td>' + obat.jenis_obat + '</td>' +
-                            '<td>' + obat.bentuk_obat + '</td>' +
-                            '<td>' + stokBadge + '</td>' +
-                            '<td>' + hargaFormatted + '</td>' +
-                            '<td>' + new Date(obat.tanggal_kadaluarsa).toLocaleDateString(
+                            '<td style="white-space: nowrap;">' + (response.pagination.from + index) + '</td>' +
+                            '<td style="white-space: nowrap;">' + obat.nama_obat + '</td>' +
+                            '<td style="white-space: nowrap;">' + obat.jenis_obat + '</td>' +
+                            '<td style="white-space: nowrap;">' + obat.bentuk_obat + '</td>' +
+                            '<td style="white-space: nowrap;">' + stokBadge + '</td>' +
+                            '<td style="white-space: nowrap;">' + hargaFormatted + '</td>' +
+                            '<td style="white-space: nowrap;">' + new Date(obat.tanggal_kadaluarsa).toLocaleDateString(
                                 'id-ID') + '</td>' +
-                            '<td>' +
+                            '<td style="white-space: nowrap;">' +
                             '<button type="button" class="btn btn-primary btn-sm rounded btn-detail-obat" data-id="' +
                             obat.id + '">' +
                             'Selengkapnya' +

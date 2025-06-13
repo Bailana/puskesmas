@@ -318,7 +318,8 @@ class ApotekerDashboardController extends Controller
 
     public function getHasilPeriksa($pasienId)
     {
-        $hasilPeriksa = \App\Models\HasilPeriksa::where('pasien_id', $pasienId)
+        $hasilPeriksa = \App\Models\HasilPeriksa::with('penanggungJawabUser')
+            ->where('pasien_id', $pasienId)
             ->orderBy('tanggal_periksa', 'desc')
             ->first();
 
@@ -326,6 +327,60 @@ class ApotekerDashboardController extends Controller
             return response()->json(['error' => 'Hasil periksa tidak ditemukan'], 404);
         }
 
-        return response()->json($hasilPeriksa);
+        $data = $hasilPeriksa->toArray();
+        $data['penanggung_jawab_name'] = $hasilPeriksa->penanggungJawabUser ? $hasilPeriksa->penanggungJawabUser->name : null;
+
+        return response()->json($data);
+    }
+
+    public function getTagihanApoteker($pasienId)
+    {
+        $pasien = \App\Models\Pasien::find($pasienId);
+        if (!$pasien) {
+            return response()->json(['message' => 'Pasien tidak ditemukan'], 404);
+        }
+
+        $tagihan = \App\Models\Tagihan::where('pasien_id', $pasienId)->latest()->first();
+
+        $resepObat = \DB::table('hasilperiksa_obat')
+            ->join('hasilperiksa', 'hasilperiksa_obat.hasilperiksa_id', '=', 'hasilperiksa.id')
+            ->join('obat', 'hasilperiksa_obat.obat_id', '=', 'obat.id')
+            ->where('hasilperiksa.pasien_id', $pasienId)
+            ->select('obat.nama_obat', 'obat.bentuk_obat', 'hasilperiksa_obat.jumlah', 'obat.harga_satuan')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'nama_obat' => $item->nama_obat,
+                    'bentuk_obat' => $item->bentuk_obat,
+                    'jumlah' => $item->jumlah,
+                    'harga_satuan' => $item->harga_satuan,
+                ];
+            })
+            ->toArray();
+
+        $poliTujuan = null;
+        if ($tagihan && $tagihan->poli_tujuan) {
+            $poliTujuan = $tagihan->poli_tujuan;
+        } else {
+            $antrian = \App\Models\Antrian::where('pasien_id', $pasienId)
+                ->orderBy('tanggal_berobat', 'desc')
+                ->first();
+            if ($antrian && $antrian->poli) {
+                $poliTujuan = $antrian->poli->nama_poli;
+            }
+        }
+
+        return response()->json([
+            'pasien_id' => $pasien->id,
+            'nama_pasien' => $pasien->nama_pasien,
+            'no_rekam_medis' => $pasien->no_rekam_medis,
+            'poli_tujuan' => $poliTujuan,
+            'resep_obat' => $resepObat,
+            'resep_obat_count' => count($resepObat),
+            'total_biaya' => $tagihan ? $tagihan->total_biaya : 0,
+            'status_pembayaran' => $tagihan ? $tagihan->status : 'Belum Lunas',
+            'created_at' => $tagihan ? $tagihan->created_at : null,
+            'jaminan_kesehatan' => $pasien->jaminan_kesehatan,
+        ]);
     }
 }

@@ -265,12 +265,16 @@ class KasirDashboardController extends Controller
 
     public function getTagihan($pasienId)
     {
+        \Log::info('getTagihan called', ['pasienId' => $pasienId]);
+
         $pasien = Pasien::find($pasienId);
         if (!$pasien) {
+            \Log::warning('Pasien not found in getTagihan', ['pasienId' => $pasienId]);
             return response()->json(['message' => 'Pasien tidak ditemukan'], 404);
         }
 
         $tagihan = Tagihan::where('pasien_id', $pasienId)->latest()->first();
+        \Log::info('Tagihan found', ['tagihan' => $tagihan]);
 
         $hasilPeriksa = HasilPeriksa::where('pasien_id', $pasienId)
             ->orderBy('tanggal_periksa', 'desc')
@@ -307,6 +311,18 @@ class KasirDashboardController extends Controller
                 $poliTujuan = $antrian->poli->nama_poli;
             }
         }
+
+        \Log::info('Returning getTagihan response', [
+            'pasien_id' => $pasien->id,
+            'nama_pasien' => $pasien->nama_pasien,
+            'no_rekam_medis' => $pasien->no_rekam_medis,
+            'poli_tujuan' => $poliTujuan,
+            'resep_obat_count' => count($resepObat),
+            'total_biaya' => $tagihan ? $tagihan->total_biaya : 0,
+            'status_pembayaran' => $tagihan ? $tagihan->status : 'Belum Lunas',
+            'created_at' => $tagihan ? $tagihan->created_at : null,
+            'jaminan_kesehatan' => $pasien->jaminan_kesehatan,
+        ]);
 
         return response()->json([
             'pasien_id' => $pasien->id,

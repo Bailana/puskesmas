@@ -5,17 +5,16 @@
     <h1 class="h3 mb-3"><strong>Antrian Pasien</strong></h1>
     <div class="row">
         <div class="col-12 col-lg-12 col-xxl-12 d-flex">
-                <div class="card flex-fill">
-                    <div class="card-header d-flex justify-content-between">
-                        <!-- Input Pencarian -->
-                        <form method="GET" action="{{ route('apoteker.antrian') }}" class="d-flex align-items-center" style="gap: 10px;">
-                            <div class="input-group" style="width: 250px;">
-                                <input type="text" name="search" class="form-control" id="searchInput" placeholder="Pencarian..."
-                                    aria-label="Search" value="{{ request('search') }}" autocomplete="off">
-                            </div>
-                        </form>
-                    </div>
-
+            <div class="card flex-fill">
+                <div class="card-header d-flex justify-content-between">
+                    <!-- Input Pencarian -->
+                    <form method="GET" action="{{ route('apoteker.antrian') }}" class="d-flex align-items-center" style="gap: 10px;">
+                        <div class="input-group" style="width: 250px;">
+                            <input type="text" name="search" class="form-control" id="searchInput" placeholder="Pencarian..."
+                                aria-label="Search" value="{{ request('search') }}" autocomplete="off">
+                        </div>
+                    </form>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover my-0" id="antrianTable">
                         <thead>
@@ -35,16 +34,16 @@
                         <tbody style="font-size: 0.875rem;">
                             @foreach ($antrians as $index => $antrian)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $antrian->no_rekam_medis }}</td>
-                                <td>{{ $antrian->pasien->nama_pasien }}</td>
-                                <td>{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
-                                <td>{{ $antrian->pasien->jaminan_kesehatan }}</td>
-                                <td>{{ $antrian->poli ? $antrian->poli->nama_poli : 'Tidak ada' }}</td>
-                                <td><span class="badge bg-danger">{{ $antrian->status }}</span></td>
+                                <td style="white-space: nowrap;">{{ $index + 1 }}</td>
+                                <td style="white-space: nowrap;">{{ $antrian->no_rekam_medis }}</td>
+                                <td style="white-space: nowrap;">{{ $antrian->pasien->nama_pasien }}</td>
+                                <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
+                                <td style="white-space: nowrap;">{{ $antrian->pasien->jaminan_kesehatan }}</td>
+                                <td style="white-space: nowrap;">{{ $antrian->poli ? $antrian->poli->nama_poli : 'Tidak ada' }}</td>
+                                <td style="white-space: nowrap;"><span class="badge bg-danger">{{ $antrian->status }}</span></td>
                                 <td style="white-space: nowrap;">
                                     <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-bs-toggle="modal"
-                                        data-bs-target="#modalPeriksaPasien" data-pasien-id="{{ $antrian->pasien->id }}">Hasil Periksa</button>
+                                        data-bs-target="#modalHasilPeriksa" data-pasien-id="{{ $antrian->pasien->id }}">Hasil Periksa</button>
                                     <button type="button" class="btn btn-primary btn-sm rounded btnRacikObat"
                                         data-pasien-id="{{ $antrian->pasien->id }}">Racik Obat</button>
                                 </td>
@@ -52,51 +51,51 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between align-items-center w-50">
-                            <div class="small text-muted mb-2 text-start ps-3">
-                                Showing {{ $antrians->firstItem() }} to {{ $antrians->lastItem() }} of
-                                {{ $antrians->total() }} results
-                            </div>
-                            <nav class="d-flex justify-content-center">
-                                <ul class="pagination d-flex flex-row flex-wrap gap-2"
-                                    style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
-                                    {{-- Previous Page Link --}}
-                                    @if ($antrians->onFirstPage())
-                                    <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
-                                        <span class="page-link" aria-hidden="true">&laquo;</span>
-                                    </li>
-                                    @else
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $antrians->previousPageUrl() }}" rel="prev"
-                                            aria-label="Previous">&laquo;</a>
-                                    </li>
-                                    @endif
-
-                                    {{-- Pagination Elements --}}
-                                    @foreach ($antrians->getUrlRange(1, $antrians->lastPage()) as $page => $url)
-                                    @if ($page == $antrians->currentPage())
-                                    <li class="page-item active" aria-current="page"><span
-                                            class="page-link">{{ $page }}</span></li>
-                                    @else
-                                    <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
-                                    @endif
-                                    @endforeach
-
-                                    {{-- Next Page Link --}}
-                                    @if ($antrians->hasMorePages())
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $antrians->nextPageUrl() }}" rel="next"
-                                            aria-label="Next">&raquo;</a>
-                                    </li>
-                                    @else
-                                    <li class="page-item disabled" aria-disabled="true" aria-label="Next">
-                                        <span class="page-link" aria-hidden="true">&raquo;</span>
-                                    </li>
-                                    @endif
-                                </ul>
-                            </nav>
+                </div>
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between align-items-center w-50">
+                        <div class="small text-muted mb-2 text-start ps-3">
+                            Showing {{ $antrians->firstItem() }} to {{ $antrians->lastItem() }} of
+                            {{ $antrians->total() }} results
                         </div>
+                        <nav class="d-flex justify-content-center">
+                            <ul class="pagination d-flex flex-row flex-wrap gap-2"
+                                style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
+                                {{-- Previous Page Link --}}
+                                @if ($antrians->onFirstPage())
+                                <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
+                                    <span class="page-link" aria-hidden="true">&laquo;</span>
+                                </li>
+                                @else
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ $antrians->previousPageUrl() }}" rel="prev"
+                                        aria-label="Previous">&laquo;</a>
+                                </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @foreach ($antrians->getUrlRange(1, $antrians->lastPage()) as $page => $url)
+                                @if ($page == $antrians->currentPage())
+                                <li class="page-item active" aria-current="page"><span
+                                        class="page-link">{{ $page }}</span></li>
+                                @else
+                                <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
+                                @endif
+                                @endforeach
+
+                                {{-- Next Page Link --}}
+                                @if ($antrians->hasMorePages())
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ $antrians->nextPageUrl() }}" rel="next"
+                                        aria-label="Next">&raquo;</a>
+                                </li>
+                                @else
+                                <li class="page-item disabled" aria-disabled="true" aria-label="Next">
+                                    <span class="page-link" aria-hidden="true">&raquo;</span>
+                                </li>
+                                @endif
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -104,153 +103,44 @@
     </div>
 </div>
 
-<!-- Modal Hasil Analisa -->
-<div class="modal fade" id="modalAnalisa" tabindex="-1" aria-labelledby="modalAnalisaLabel" aria-hidden="true">
+<div class="modal fade" id="modalRacikObat" tabindex="-1" aria-labelledby="modalRacikObatLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
         <div class="modal-content" style="overflow-x: hidden;">
             <div class="modal-header d-flex justify-content-between">
-                <h3 class="modal-title" id="modalAnalisaLabel"><strong>Hasil Analisa Pasien</strong></h3>
+                <h3 class="modal-title" id="modalRacikObatLabel"><strong>Resep Obat Pasien</strong></h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
-                <form id="formAnalisa">
-                    <!-- Tanda Vital -->
-                    <div class="row mb-3">
-                        <h5><strong>Tanda Vital</strong></h5>
-                        <div class="col-6">
-                            <label for="tekananDarah" class="form-label">Tekanan Darah (mmHg)</label>
-                            <input type="text" class="form-control form-control-sm" id="tekananDarah" disabled>
-                        </div>
-                        <div class="col-6">
-                            <label for="frekuensiNadi" class="form-label">Frekuensi Nadi (/menit)</label>
-                            <input type="text" class="form-control form-control-sm" id="frekuensiNadi" disabled>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="suhu" class="form-label">Suhu (°C)</label>
-                            <input type="text" class="form-control form-control-sm" id="suhu" disabled>
-                        </div>
-                        <div class="col-6">
-                            <label for="frekuensiNafas" class="form-label">Frekuensi Nafas (/menit)</label>
-                            <input type="text" class="form-control form-control-sm" id="frekuensiNafas" disabled>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="skorNyeri" class="form-label">Skor Nyeri</label>
-                            <input type="text" class="form-control form-control-sm" id="skorNyeri" disabled>
-                        </div>
-                        <div class="col-6">
-                            <label for="skorJatuh" class="form-label">Skor Jatuh</label>
-                            <input type="text" class="form-control form-control-sm" id="skorJatuh" disabled>
-                        </div>
-                    </div>
-                    <hr>
-                    <!-- Antropometri -->
-                    <div class="row mb-3">
-                        <h5><strong>Antropometri</strong></h5>
-                        <div class="col-6">
-                            <label for="beratBadan" class="form-label">Berat Badan</label>
-                            <input type="text" class="form-control form-control-sm" id="beratBadan" disabled>
-                        </div>
-                        <div class="col-6">
-                            <label for="tinggiBadan" class="form-label">Tinggi Badan</label>
-                            <input type="text" class="form-control form-control-sm" id="tinggiBadan" disabled>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="lingkarKepala" class="form-label">Lingkar Kepala</label>
-                            <input type="text" class="form-control form-control-sm" id="lingkarKepala" disabled>
-                        </div>
-                        <div class="col-6">
-                            <label for="imt" class="form-label">IMT</label>
-                            <input type="text" class="form-control form-control-sm" id="imt" disabled>
-                        </div>
-                    </div>
-                    <hr>
-                    <!-- Fungsional -->
-                    <div class="row mb-3">
-                        <h5><strong>Fungsional</strong></h5>
-                        <div class="col-6">
-                            <label for="alatBantu" class="form-label">Alat Bantu</label>
-                            <input type="text" class="form-control form-control-sm" id="alatBantu" disabled>
-                        </div>
-                        <div class="col-6">
-                            <label for="prosthesa" class="form-label">Prosthesa</label>
-                            <input type="text" class="form-control form-control-sm" id="prosthesa" disabled>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="cacatTubuh" class="form-label">Cacat Tubuh</label>
-                            <input type="text" class="form-control form-control-sm" id="cacatTubuh" disabled>
-                        </div>
-                        <div class="col-6">
-                            <label for="adlMandiri" class="form-label">ADL Mandiri</label>
-                            <input type="text" class="form-control form-control-sm" id="adlMandiri" disabled>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="riwayatJatuh" class="form-label">Riwayat Jatuh</label>
-                            <input type="text" class="form-control form-control-sm" id="riwayatJatuh" disabled>
-                        </div>
-                    </div>
+                <div id="resepObatContent">
+                    <table class="table table-bordered" id="resepObatTable">
+                        <thead>
+                            <tr>
+                                <th>Nama Obat</th>
+                                <th>Bentuk Obat</th>
+                                <th>Jumlah</th>
+                                <th>Harga Satuan</th>
+                                <th>Total Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Baris obat akan diisi di sini -->
+                        </tbody>
+                    </table>
                     <hr>
                     <div class="row mb-3">
-                        <div class="col-6">
-                            <h5>Status Psikologi</h5>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="checkboxDepresi">
-                                <label class="form-check-label" for="checkboxDepresi">Depresi</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="checkboxTakut">
-                                <label class="form-check-label" for="checkboxTakut">Takut</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="checkboxAgresif">
-                                <label class="form-check-label" for="checkboxAgresif">Agresif</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="checkboxMelukaiDiri">
-                                <label class="form-check-label" for="checkboxMelukaiDiri">Melukai diri sendiri/Orang
-                                    lain</label>
-                            </div>
+                        <div class="col-md-6">
+                            <label for="totalBiaya" class="form-label">Total Biaya Keseluruhan</label>
+                            <input type="text" class="form-control form-control-sm" id="totalBiaya" readonly>
                         </div>
-                        <div class="col-6">
-                            <h5>Hambatan Edukasi</h5>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="checkboxBahasa">
-                                <label class="form-check-label" for="checkboxBahasa">Bahasa</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="checkboxCacatFisik">
-                                <label class="form-check-label" for="checkboxCacatFisik">Cacat Fisik</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="checkboxCacatKognitif">
-                                <label class="form-check-label" for="checkboxCacatKognitif">Cacat Kognitif</label>
-                            </div>
+                        <div class="col-md-6">
+                            <label for="statusPembayaran" class="form-label">Status Pembayaran</label>
+                            <input type="text" class="form-control form-control-sm" id="statusPembayaran" readonly>
                         </div>
                     </div>
-                    <hr>
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="alergi" class="form-label">Alergi</label>
-                            <textarea type="text" class="form-control form-control-sm" id="alergi"></textarea>
-                        </div>
-                        <div class="col-6">
-                            <label for="catatan" class="form-label">Catatan</label>
-                            <textarea type="text" class="form-control form-control-sm" id="catatan"></textarea>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
             <div class="modal-footer d-flex justify-content-end mt-3">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -307,6 +197,11 @@
                         <label for="kesanStatusGizi" class="form-label">Kesan Status Gizi</label>
                         <input type="text" class="form-control form-control-sm" id="kesanStatusGizi" readonly>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="penanggungJawabVisible" class="form-label">Penanggung Jawab</label>
+                        <input type="text" class="form-control" id="penanggungJawabVisible" readonly>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer d-flex justify-content-end mt-3">
@@ -315,16 +210,73 @@
         </div>
     </div>
 </div>
-
 @endsection
 
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalRacikObat = new bootstrap.Modal(document.getElementById('modalRacikObat'));
+
+        document.querySelectorAll('.btnRacikObat').forEach(button => {
+            button.addEventListener('click', function() {
+                const pasienId = this.getAttribute('data-pasien-id');
+
+                // Kosongkan isi modal sebelumnya
+                const tbody = document.querySelector('#resepObatTable tbody');
+                tbody.innerHTML = '';
+                document.getElementById('totalBiaya').value = '';
+                document.getElementById('statusPembayaran').value = '';
+
+                fetch(`/apoteker/tagihan/${pasienId}`, {
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errData => {
+                                throw new Error(errData.message || 'Data tagihan tidak ditemukan');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (Array.isArray(data.resep_obat)) {
+                            let totalBiayaKeseluruhan = 0;
+                            data.resep_obat.forEach(item => {
+                                const tr = document.createElement('tr');
+                                const jumlah = parseFloat(item.jumlah) || 0;
+                                const hargaSatuan = parseFloat(item.harga_satuan) || 0;
+                                const totalHarga = jumlah * hargaSatuan;
+                                tr.innerHTML = `
+                                    <td>${item.nama_obat}</td>
+                                    <td>${item.bentuk_obat || ''}</td>
+                                    <td>${jumlah}</td>
+                                    <td>${hargaSatuan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
+                                    <td>${totalHarga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
+                                `;
+                                tbody.appendChild(tr);
+                                totalBiayaKeseluruhan += totalHarga;
+                            });
+                            document.getElementById('totalBiaya').value = totalBiayaKeseluruhan.toLocaleString('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR'
+                            });
+                        }
+                        document.getElementById('statusPembayaran').value = data.status_pembayaran || '';
+                        modalRacikObat.show();
+                    })
+                    .catch(error => {
+                        alert(error.message || 'Gagal mengambil data tagihan.');
+                    });
+            });
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         const modalHasilPeriksa = new bootstrap.Modal(document.getElementById('modalHasilPeriksa'));
 
         document.querySelectorAll('.btnHasilPeriksa').forEach(button => {
-            button.addEventListener('click', function () {
+            button.addEventListener('click', function() {
                 const pasienId = this.getAttribute('data-pasien-id');
 
                 fetch(`/apoteker/hasil-periksa/${pasienId}`)
@@ -343,15 +295,16 @@
                         document.getElementById('edukasi').value = data.edukasi || '';
                         document.getElementById('kodeICD').value = data.kode_icd || '';
                         document.getElementById('kesanStatusGizi').value = data.kesan_status_gizi || '';
+                        document.getElementById('penanggungJawabVisible').value = data.penanggung_jawab_name || '';
                         modalHasilPeriksa.show();
                     })
-                        .catch(error => {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Data Tidak Ditemukan',
-                                text: error.message,
-                            });
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Data Tidak Ditemukan',
+                            text: error.message,
                         });
+                    });
             });
         });
 
@@ -361,34 +314,112 @@
 
         function renderTableRows(antrians) {
             antrianTableBody.innerHTML = '';
-            if (antrians.length === 0) {
-                antrianTableBody.innerHTML =
-                    '<tr><td colspan="8" class="text-center">Data antrian tidak ditemukan</td></tr>';
-                return;
-            }
+
             antrians.forEach((antrian, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${antrian.no_rekam_medis}</td>
-                    <td>${antrian.pasien.nama_pasien}</td>
-                    <td>${antrian.pasien.tanggal_lahir ? new Date(antrian.pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>
-                    <td>${antrian.pasien.jaminan_kesehatan}</td>
-                    <td>${antrian.poli ? antrian.poli.nama_poli : 'Tidak ada'}</td>
-                    <td><span class="badge bg-danger">${antrian.status}</span></td>
+                    <td style="white-space: nowrap;">${index + 1}</td>
+                    <td style="white-space: nowrap;">${antrian.no_rekam_medis}</td>
+                    <td style="white-space: nowrap;">${antrian.pasien.nama_pasien}</td>
+                    <td style="white-space: nowrap;">${antrian.pasien.tanggal_lahir ? new Date(antrian.pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>
+                    <td style="white-space: nowrap;">${antrian.pasien.jaminan_kesehatan}</td>
+                    <td style="white-space: nowrap;">${antrian.poli ? antrian.poli.nama_poli : 'Tidak ada'}</td>
+                    <td style="white-space: nowrap;"><span class="badge bg-danger">${antrian.status}</span></td>
                     <td style="white-space: nowrap;">
-                        <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-bs-toggle="modal"
-                            data-bs-target="#modalPeriksaPasien" data-pasien-id="${antrian.pasien.id}">Hasil Periksa</button>
-                        <button type="button" class="btn btn-primary btn-sm rounded btnRacikObat"
-                            data-pasien-id="${antrian.pasien.id}">Racik Obat</button>
+                    <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-bs-toggle="modal"
+                    data-bs-target="#modalHasilPeriksa" data-pasien-id="${antrian.pasien.id}">Hasil Periksa</button>
+                    <button type="button" class="btn btn-primary btn-sm rounded btnRacikObat"
+                    data-pasien-id="${antrian.pasien.id}">Racik Obat</button>
                     </td>
                 `;
                 antrianTableBody.appendChild(row);
             });
+            // Pasang ulang event listener setelah render
+            document.querySelectorAll('.btnHasilPeriksa').forEach(button => {
+                button.addEventListener('click', function() {
+                    const pasienId = this.getAttribute('data-pasien-id');
+                    fetch(`/apoteker/hasil-periksa/${pasienId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Data hasil periksa tidak ditemukan');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            document.getElementById('anamnesis').value = data.anamnesis || '';
+                            document.getElementById('pemeriksaanFisik').value = data.pemeriksaan_fisik || '';
+                            document.getElementById('rencanaTerapi').value = data.rencana_dan_terapi || '';
+                            document.getElementById('diagnosis').value = data.diagnosis || '';
+                            document.getElementById('edukasi').value = data.edukasi || '';
+                            document.getElementById('kodeICD').value = data.kode_icd || '';
+                            document.getElementById('kesanStatusGizi').value = data.kesan_status_gizi || '';
+                            document.getElementById('penanggungJawabVisible').value = data.penanggung_jawab_name || '';
+                            modalHasilPeriksa.show();
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Data Tidak Ditemukan',
+                                text: error.message,
+                            });
+                        });
+                });
+            });
+            // Pasang ulang event listener untuk btnRacikObat
+            document.querySelectorAll('.btnRacikObat').forEach(button => {
+                button.addEventListener('click', function() {
+                    const pasienId = this.getAttribute('data-pasien-id');
+                    const modalRacikObat = new bootstrap.Modal(document.getElementById('modalRacikObat'));
+                    const tbody = document.querySelector('#resepObatTable tbody');
+                    tbody.innerHTML = '';
+                    document.getElementById('totalBiaya').value = '';
+                    document.getElementById('statusPembayaran').value = '';
+                    fetch(`/apoteker/tagihan/${pasienId}`, {
+                            credentials: 'same-origin'
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(errData => {
+                                    throw new Error(errData.message || 'Data tagihan tidak ditemukan');
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (Array.isArray(data.resep_obat)) {
+                                let totalBiayaKeseluruhan = 0;
+                                data.resep_obat.forEach(item => {
+                                    const tr = document.createElement('tr');
+                                    const jumlah = parseFloat(item.jumlah) || 0;
+                                    const hargaSatuan = parseFloat(item.harga_satuan) || 0;
+                                    const totalHarga = jumlah * hargaSatuan;
+                                    tr.innerHTML = `
+                                    <td>${item.nama_obat}</td>
+                                    <td>${item.bentuk_obat || ''}</td>
+                                    <td>${jumlah}</td>
+                                    <td>${hargaSatuan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
+                                    <td>${totalHarga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
+                                `;
+                                    tbody.appendChild(tr);
+                                    totalBiayaKeseluruhan += totalHarga;
+                                });
+                                document.getElementById('totalBiaya').value = totalBiayaKeseluruhan.toLocaleString('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                });
+                            }
+                            document.getElementById('statusPembayaran').value = data.status_pembayaran || '';
+                            modalRacikObat.show();
+                        })
+                        .catch(error => {
+                            alert(error.message || 'Gagal mengambil data tagihan.');
+                        });
+                });
+            });
         }
 
         let debounceTimeout;
-        searchInput.addEventListener('input', function () {
+        searchInput.addEventListener('input', function() {
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
                 const query = searchInput.value.trim();

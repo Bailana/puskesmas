@@ -20,6 +20,9 @@ Route::middleware(['auth', 'role:apoteker'])->group(function () {
 
     // Add route for apoteker getHasilPeriksa
     Route::get('/apoteker/hasil-periksa/{pasienId}', [ApotekerDashboardController::class, 'getHasilPeriksa'])->name('apoteker.hasil.periksa');
+
+    // Add route for apoteker getTagihanApoteker
+    Route::get('/apoteker/tagihan/{pasienId}', [ApotekerDashboardController::class, 'getTagihanApoteker'])->name('apoteker.tagihan');
 });
 
 Route::middleware(['auth', 'role:dokter'])->group(function () {

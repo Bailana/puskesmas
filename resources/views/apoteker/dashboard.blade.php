@@ -4,9 +4,8 @@
 <div class="container-fluid p-0">
 
     @if(session('status'))
-    <div>DEBUG: Session status = {{ session('status') }}</div>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             toastr.options = {
                 "positionClass": "toast-top-right",
                 "timeOut": "3000",
@@ -114,44 +113,46 @@
         <div class="row">
             <div class="col-12 col-lg-12 col-xxl-12 d-flex">
                 <div class="card flex-fill">
-                    <table class="table table-hover my-0">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>Nomor RM</th>
-                                <th>Nama Pasien</th>
-                                <th>Umur</th>
-                                <th>JamKes</th>
-                                <th>Poli Tujuan</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($antrians as $index => $antrian)
-                            @if ($antrian->status == 'Selesai')
-                            @continue
-                            @endif
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $antrian->no_rekam_medis }}</td>
-                                <td>{{ $antrian->pasien->nama_pasien }}</td>
-                                <td>{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
-                                <td>{{ $antrian->pasien->jaminan_kesehatan }}</td>
-                                <td>{{ $antrian->poli ? $antrian->poli->nama_poli : 'Tidak ada' }}</td>
-                                <td>
-                                    <span class="badge bg-danger">{{ $antrian->status }}</span>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-bs-toggle="modal"
-                                        data-bs-target="#modalHasilPeriksa" data-pasien-id="{{ $antrian->pasien->id }}">Hasil Periksa</button>
-                                    <button type="button" class="btn btn-primary btn-sm rounded btnRacikObat"
-                                        data-pasien-id="{{ $antrian->pasien->id }}">Racik Obat</button>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-hover my-0">
+                            <thead>
+                                <tr>
+                                    <th style="white-space: nowrap;">No.</th>
+                                    <th style="white-space: nowrap;">Nomor RM</th>
+                                    <th style="white-space: nowrap;">Nama Pasien</th>
+                                    <th style="white-space: nowrap;">Umur</th>
+                                    <th style="white-space: nowrap;">JamKes</th>
+                                    <th style="white-space: nowrap;">Poli Tujuan</th>
+                                    <th style="white-space: nowrap;">Status</th>
+                                    <th style="white-space: nowrap;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($antrians as $index => $antrian)
+                                @if ($antrian->status == 'Selesai')
+                                @continue
+                                @endif
+                                <tr>
+                                    <td style="white-space: nowrap;">{{ $index + 1 }}</td>
+                                    <td style="white-space: nowrap;">{{ $antrian->no_rekam_medis }}</td>
+                                    <td style="white-space: nowrap;">{{ $antrian->pasien->nama_pasien }}</td>
+                                    <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
+                                    <td style="white-space: nowrap;">{{ $antrian->pasien->jaminan_kesehatan }}</td>
+                                    <td style="white-space: nowrap;">{{ $antrian->poli ? $antrian->poli->nama_poli : 'Tidak ada' }}</td>
+                                    <td style="white-space: nowrap;">
+                                        <span class="badge bg-danger">{{ $antrian->status }}</span>
+                                    </td>
+                                    <td style="white-space: nowrap;">
+                                        <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-bs-toggle="modal"
+                                            data-bs-target="#modalHasilPeriksa" data-pasien-id="{{ $antrian->pasien->id }}">Hasil Periksa</button>
+                                        <button type="button" class="btn btn-primary btn-sm rounded btnRacikObat"
+                                            data-pasien-id="{{ $antrian->pasien->id }}">Racik Obat</button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="mt-3">
                         <div class="d-flex justify-content-between align-items-center w-50">
                             <div class="small text-muted mb-2 text-start ps-3">
@@ -296,11 +297,11 @@
 @endsection
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const modalHasilPeriksa = new bootstrap.Modal(document.getElementById('modalHasilPeriksa'));
 
         document.querySelectorAll('.btnHasilPeriksa').forEach(button => {
-            button.addEventListener('click', function () {
+            button.addEventListener('click', function() {
                 const pasienId = this.getAttribute('data-pasien-id');
 
                 fetch(`/apoteker/hasil-periksa/${pasienId}`)

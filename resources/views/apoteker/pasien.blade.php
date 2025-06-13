@@ -22,59 +22,61 @@
                         </button>
                     </form>
                 </div>
-                <table class="table table-hover my-0" id="apotekerPasien">
-                    <thead>
-                        <tr>
-                            <th style="white-space: nowrap;">No.</th>
-                            <th style="white-space: nowrap;">No. RM</th>
-                            <th style="white-space: nowrap;">Nama Pasien</th>
-                            <th style="white-space: nowrap;">Tempat, Tanggal Lahir</th>
-                            <th style="white-space: nowrap;">Jenis Kelamin</th>
-                            <th style="white-space: nowrap;">Gol.Darah</th>
-                            <th style="white-space: nowrap;">JamKes</th>
-                            <th style="white-space: nowrap;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($pasiens as $index => $pasien)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $pasien->no_rekam_medis }}</td>
-                            <td>{{ $pasien->nama_pasien}}</td>
-                            <td>
-                                {{ $pasien->tempat_lahir }},
-                                {{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}
-                            </td>
-                            <td>{{ $pasien->jenis_kelamin }}</td>
-                            <td>{{ $pasien->gol_darah }}</td>
-                            <td>{{ $pasien->jaminan_kesehatan }}</td>
-                            <td>
-                                <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
-                                    data-bs-target="#modalPasienDetail"
-                                    data-no_rekam_medis="{{ $pasien->no_rekam_medis }}" data-nik="{{ $pasien->nik }}"
-                                    data-nama="{{ $pasien->nama_pasien }}"
-                                    data-tempat_lahir="{{ $pasien->tempat_lahir }}"
-                                    data-tanggal_lahir="{{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}"
-                                    data-jenis_kelamin="{{ $pasien->jenis_kelamin }}"
-                                    data-gol_darah="{{ $pasien->gol_darah }}" data-agama="{{ $pasien->agama }}"
-                                    data-pekerjaan="{{ $pasien->pekerjaan }}"
-                                    data-status_pernikahan="{{ $pasien->status_pernikahan }}"
-                                    data-alamat="{{ $pasien->alamat_jalan }}" data-rt="{{ $pasien->rt }}"
-                                    data-rw="{{ $pasien->rw }}" data-kelurahan="{{ $pasien->kelurahan }}"
-                                    data-kecamatan="{{ $pasien->kecamatan }}" data-kabupaten="{{ $pasien->kabupaten }}"
-                                    data-provinsi="{{ $pasien->provinsi }}"
-                                    data-jaminan="{{ $pasien->jaminan_kesehatan }}"
-                                    data-no_kepesertaan="{{ $pasien->nomor_kepesertaan }}"
-                                    data-kepala_keluarga="{{ $pasien->kepala_keluarga}}"
-                                    data-no_hp="{{ $pasien->no_hp}}">
-                                    Selengkapnya
-                                </button>
-                                <!-- Removed Riwayat Berobat button as per user request -->
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-hover my-0" id="apotekerPasien">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">No.</th>
+                                <th style="white-space: nowrap;">No. RM</th>
+                                <th style="white-space: nowrap;">Nama Pasien</th>
+                                <th style="white-space: nowrap;">Tempat, Tanggal Lahir</th>
+                                <th style="white-space: nowrap;">Jenis Kelamin</th>
+                                <th style="white-space: nowrap;">Gol.Darah</th>
+                                <th style="white-space: nowrap;">JamKes</th>
+                                <th style="white-space: nowrap;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($pasiens as $index => $pasien)
+                            <tr>
+                                <td style="white-space: nowrap;">{{ $index + 1 }}</td>
+                                <td style="white-space: nowrap;">{{ $pasien->no_rekam_medis }}</td>
+                                <td style="white-space: nowrap;">{{ $pasien->nama_pasien}}</td>
+                                <td style="white-space: nowrap;">
+                                    {{ $pasien->tempat_lahir }},
+                                    {{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}
+                                </td>
+                                <td style="white-space: nowrap;">{{ $pasien->jenis_kelamin }}</td>
+                                <td style="white-space: nowrap;">{{ $pasien->gol_darah }}</td>
+                                <td style="white-space: nowrap;">{{ $pasien->jaminan_kesehatan }}</td>
+                                <td style="white-space: nowrap;">
+                                    <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
+                                        data-bs-target="#modalPasienDetail"
+                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}" data-nik="{{ $pasien->nik }}"
+                                        data-nama="{{ $pasien->nama_pasien }}"
+                                        data-tempat_lahir="{{ $pasien->tempat_lahir }}"
+                                        data-tanggal_lahir="{{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}"
+                                        data-jenis_kelamin="{{ $pasien->jenis_kelamin }}"
+                                        data-gol_darah="{{ $pasien->gol_darah }}" data-agama="{{ $pasien->agama }}"
+                                        data-pekerjaan="{{ $pasien->pekerjaan }}"
+                                        data-status_pernikahan="{{ $pasien->status_pernikahan }}"
+                                        data-alamat="{{ $pasien->alamat_jalan }}" data-rt="{{ $pasien->rt }}"
+                                        data-rw="{{ $pasien->rw }}" data-kelurahan="{{ $pasien->kelurahan }}"
+                                        data-kecamatan="{{ $pasien->kecamatan }}" data-kabupaten="{{ $pasien->kabupaten }}"
+                                        data-provinsi="{{ $pasien->provinsi }}"
+                                        data-jaminan="{{ $pasien->jaminan_kesehatan }}"
+                                        data-no_kepesertaan="{{ $pasien->nomor_kepesertaan }}"
+                                        data-kepala_keluarga="{{ $pasien->kepala_keluarga}}"
+                                        data-no_hp="{{ $pasien->no_hp}}">
+                                        Selengkapnya
+                                    </button>
+                                    <!-- Removed Riwayat Berobat button as per user request -->
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
                 <div class="mt-3">
                     <div class="d-flex justify-content-between align-items-center w-50">
                         <div class="small text-muted mb-2 text-start ps-3">
@@ -359,7 +361,7 @@
 @section('scripts')
 <script>
     var pasienDetailModal = document.getElementById('modalPasienDetail');
-    pasienDetailModal.addEventListener('show.bs.modal', function (event) {
+    pasienDetailModal.addEventListener('show.bs.modal', function(event) {
         var button = event.relatedTarget;
         // Extract info from data-bs-* attributes
         var noRekamMedis = button.getAttribute('data-no_rekam_medis');
@@ -407,11 +409,10 @@
         pasienDetailModal.querySelector('#modalKepalaKeluarga').value = kepalaKeluarga || '';
         pasienDetailModal.querySelector('#modalNoHp').value = noHp || '';
     });
-
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
         const pasienTableBody = document.querySelector('#apotekerPasien tbody');
 
@@ -425,14 +426,14 @@
             pasiens.forEach((pasien, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${pasien.no_rekam_medis}</td>
-                            <td>${pasien.nama_pasien}</td>
-                            <td>${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>
-                            <td>${pasien.jenis_kelamin}</td>
-                            <td>${pasien.gol_darah}</td>
-                            <td>${pasien.jaminan_kesehatan}</td>
-                            <td>
+                            <td style="white-space: nowrap;">${index + 1}</td>
+                            <td style="white-space: nowrap;">${pasien.no_rekam_medis}</td>
+                            <td style="white-space: nowrap;">${pasien.nama_pasien}</td>
+                            <td style="white-space: nowrap;">${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>
+                            <td style="white-space: nowrap;">${pasien.jenis_kelamin}</td>
+                            <td style="white-space: nowrap;">${pasien.gol_darah}</td>
+                            <td style="white-space: nowrap;">${pasien.jaminan_kesehatan}</td>
+                            <td style="white-space: nowrap;">
                                 <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
                                     data-bs-target="#modalPasienDetail"
                                     data-no_rekam_medis="${pasien.no_rekam_medis}" data-nik="${pasien.nik}"
@@ -453,12 +454,6 @@
                                     data-no_hp="${pasien.no_hp}">
                                     Selengkapnya
                                 </button>
-                                <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
-                                    data-bs-target="#modalRiwayatBerobat"
-                                    data-no_rekam_medis="${pasien.no_rekam_medis}"
-                                    data-nama="${pasien.nama_pasien}">
-                                    Riwayat Berobat
-                                </button>
                             </td>
                         `;
                 pasienTableBody.appendChild(row);
@@ -466,7 +461,7 @@
         }
 
         let debounceTimeout;
-        searchInput.addEventListener('input', function () {
+        searchInput.addEventListener('input', function() {
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
                 const query = searchInput.value.trim();
@@ -485,7 +480,6 @@
             }, 300);
         });
     });
-
 </script>
 
 </script>
