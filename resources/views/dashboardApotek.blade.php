@@ -20,6 +20,7 @@
     <link rel="icon" type="image/png" href="{{ url('template/images/logo_puskesmas.png') }}">
 
     <link href="{{url('dokterAssets/css/app.css')}}" rel="stylesheet">
+    <link href="{{url('dokterAssets/css/custom-pagination.css')}}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="{{ url('resources/css/custom-navbar.css') }}" rel="stylesheet">

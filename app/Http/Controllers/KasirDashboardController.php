@@ -268,7 +268,7 @@ class KasirDashboardController extends Controller
 
         $pasien = Pasien::find($pasienId);
         if (!$pasien) {
-            \Log::warning('Pasien not found in getTagihan', ['pasienId' => $pasienId]);
+            // \Log::warning('Pasien not found in getTagihan', ['pasienId' => $pasienId]);
             return response()->json(['message' => 'Pasien tidak ditemukan'], 404);
         }
 

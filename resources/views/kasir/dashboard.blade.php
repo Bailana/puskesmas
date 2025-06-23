@@ -138,15 +138,15 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between align-items-center w-50">
+                    <div class="mt-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-center w-100">
                             <div class="small text-muted mb-2 text-start ps-3 pagination-info-text" style="max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 Showing {{ $antrians->firstItem() }} to {{ $antrians->lastItem() }} of
                                 {{ $antrians->total() }} results
                             </div>
                             <nav class="d-flex justify-content-center">
-                                <ul class="pagination d-flex flex-row gap-2"
-                                    style="list-style-type: none; padding-left: 0; margin-bottom: 0; flex-wrap: nowrap; overflow-x: auto;">
+                                <ul class="pagination d-flex flex-row flex-wrap gap-2"
+                                    style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
                                     {{-- Previous Page Link --}}
                                     @if ($antrians->onFirstPage())
                                     <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
@@ -160,46 +160,46 @@
 
                                     {{-- Pagination Elements --}}
                                     @php
-                                        $totalPages = $antrians->lastPage();
-                                        $currentPage = $antrians->currentPage();
-                                        $maxButtons = 3;
+                                    $totalPages = $antrians->lastPage();
+                                    $currentPage = $antrians->currentPage();
+                                    $maxButtons = 3;
 
-                                        if ($totalPages <= $maxButtons) {
-                                            $start = 1;
-                                            $end = $totalPages;
+                                    if ($totalPages <= $maxButtons) {
+                                        $start=1;
+                                        $end=$totalPages;
                                         } else {
-                                            if ($currentPage == 1) {
-                                                $start = 1;
-                                                $end = 3;
-                                            } elseif ($currentPage == $totalPages) {
-                                                $start = $totalPages - 2;
-                                                $start = $totalPages - 2;
-                                                $end = $totalPages;
-                                            } else {
-                                                $start = $currentPage - 1;
-                                                $end = $currentPage + 1;
-                                            }
+                                        if ($currentPage==1) {
+                                        $start=1;
+                                        $end=3;
+                                        } elseif ($currentPage==$totalPages) {
+                                        $start=$totalPages - 2;
+                                        $start=$totalPages - 2;
+                                        $end=$totalPages;
+                                        } else {
+                                        $start=$currentPage - 1;
+                                        $end=$currentPage + 1;
                                         }
-                                    @endphp
-                                    @for ($page = $start; $page <= $end; $page++)
-                                        @if ($page == $currentPage)
-                                            <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+                                        }
+                                        @endphp
+                                        @for ($page=$start; $page <=$end; $page++)
+                                        @if ($page==$currentPage)
+                                        <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
                                         @else
-                                            <li class="page-item"><a class="page-link" href="{{ $antrians->url($page) }}">{{ $page }}</a></li>
+                                        <li class="page-item"><a class="page-link" href="{{ $antrians->url($page) }}">{{ $page }}</a></li>
                                         @endif
-                                    @endfor
+                                        @endfor
 
-                                    {{-- Next Page Link --}}
-                                    @if ($antrians->hasMorePages())
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $antrians->nextPageUrl() }}" rel="next"
-                                            aria-label="Next">&raquo;</a>
-                                    </li>
-                                    @else
-                                    <li class="page-item disabled" aria-disabled="true" aria-label="Next">
-                                        <span class="page-link" aria-hidden="true">&raquo;</span>
-                                    </li>
-                                    @endif
+                                        {{-- Next Page Link --}}
+                                        @if ($antrians->hasMorePages())
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $antrians->nextPageUrl() }}" rel="next"
+                                                aria-label="Next">&raquo;</a>
+                                        </li>
+                                        @else
+                                        <li class="page-item disabled" aria-disabled="true" aria-label="Next">
+                                            <span class="page-link" aria-hidden="true">&raquo;</span>
+                                        </li>
+                                        @endif
                                 </ul>
                             </nav>
                         </div>
@@ -329,188 +329,191 @@
                     </div>
                 </div>
             </div>
-                <div class="modal-footer d-flex justify-content-end mt-3">
-                    <button type="button" class="btn btn-primary" id="btnBayar">Bayar</button>
-                </div>
+            <div class="modal-footer d-flex justify-content-end mt-3">
+                <button type="button" class="btn btn-primary" id="btnBayar">Bayar</button>
+            </div>
         </div>
     </div>
 </div>
 @endsection
 
 @section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const modalHasilPeriksa = new bootstrap.Modal(document.getElementById('modalHasilPeriksa'));
-            const modalTagihan = new bootstrap.Modal(document.getElementById('modalTagihan'));
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalHasilPeriksa = new bootstrap.Modal(document.getElementById('modalHasilPeriksa'));
+        const modalTagihan = new bootstrap.Modal(document.getElementById('modalTagihan'));
 
-            // Fix to allow background scrolling when modal is open without affecting navbar/footer
-            const originalBodyOverflow = document.body.style.overflow;
-            const originalBodyPaddingRight = document.body.style.paddingRight;
-            document.getElementById('modalHasilPeriksa').addEventListener('shown.bs.modal', function () {
-                // Keep scrollbar visible by restoring overflow and paddingRight
-                document.body.style.overflow = originalBodyOverflow || 'auto';
-                document.body.style.paddingRight = originalBodyPaddingRight || '0px';
+        // Fix to allow background scrolling when modal is open without affecting navbar/footer
+        const originalBodyOverflow = document.body.style.overflow;
+        const originalBodyPaddingRight = document.body.style.paddingRight;
+        document.getElementById('modalHasilPeriksa').addEventListener('shown.bs.modal', function() {
+            // Keep scrollbar visible by restoring overflow and paddingRight
+            document.body.style.overflow = originalBodyOverflow || 'auto';
+            document.body.style.paddingRight = originalBodyPaddingRight || '0px';
+        });
+        document.getElementById('modalHasilPeriksa').addEventListener('hidden.bs.modal', function() {
+            // Restore original overflow and paddingRight styles
+            document.body.style.overflow = originalBodyOverflow;
+            document.body.style.paddingRight = originalBodyPaddingRight;
+        });
+
+        document.querySelectorAll('.btnHasilPeriksa').forEach(button => {
+            button.addEventListener('click', function() {
+                const pasienId = this.getAttribute('data-pasien-id');
+
+                // Clear previous values
+                document.getElementById('anamnesis').value = '';
+                document.getElementById('pemeriksaanFisik').value = '';
+                document.getElementById('rencanaTerapi').value = '';
+                document.getElementById('diagnosis').value = '';
+                document.getElementById('edukasi').value = '';
+                document.getElementById('kodeICD').value = '';
+                document.getElementById('kesanStatusGizi').value = '';
+
+                fetch(`/kasir/hasil-periksa/${pasienId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Data hasil periksa tidak ditemukan');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Populate modal fields with data, all fields are read-only
+                        document.getElementById('anamnesis').value = data.anamnesis || '';
+                        document.getElementById('pemeriksaanFisik').value = data
+                            .pemeriksaan_fisik || '';
+                        document.getElementById('rencanaTerapi').value = data
+                            .rencana_dan_terapi || '';
+                        document.getElementById('diagnosis').value = data.diagnosis || '';
+                        document.getElementById('edukasi').value = data.edukasi || '';
+                        document.getElementById('kodeICD').value = data.kode_icd || '';
+                        document.getElementById('kesanStatusGizi').value = data
+                            .kesan_status_gizi || '';
+                        document.getElementById('penanggungJawab').value = data
+                            .penanggung_jawab || '';
+                        modalHasilPeriksa.show();
+                    })
+                    .catch(error => {
+                        toastr.error('Hasil periksa pasien tidak tersedia.');
+                        // Ensure modal is hidden if previously shown
+                        if (modalHasilPeriksa._isShown) {
+                            modalHasilPeriksa.hide();
+                        }
+                    });
             });
-            document.getElementById('modalHasilPeriksa').addEventListener('hidden.bs.modal', function () {
-                // Restore original overflow and paddingRight styles
-                document.body.style.overflow = originalBodyOverflow;
-                document.body.style.paddingRight = originalBodyPaddingRight;
-            });
+        });
 
-            document.querySelectorAll('.btnHasilPeriksa').forEach(button => {
-                button.addEventListener('click', function () {
-                    const pasienId = this.getAttribute('data-pasien-id');
+        document.querySelectorAll('.btnPeriksa').forEach(button => {
+            button.addEventListener('click', function() {
+                const pasienId = this.getAttribute('data-pasien-id');
 
-                    // Clear previous values
-                    document.getElementById('anamnesis').value = '';
-                    document.getElementById('pemeriksaanFisik').value = '';
-                    document.getElementById('rencanaTerapi').value = '';
-                    document.getElementById('diagnosis').value = '';
-                    document.getElementById('edukasi').value = '';
-                    document.getElementById('kodeICD').value = '';
-                    document.getElementById('kesanStatusGizi').value = '';
+                // Clear previous values
+                document.getElementById('tagihanNamaPasien').value = '';
+                document.getElementById('tagihanNomorRM').value = '';
+                document.getElementById('tagihanPoliTujuan').value = '';
+                document.querySelector('#tagihanObatTable tbody').innerHTML = '';
+                document.getElementById('tagihanTotalBiaya').value = '';
+                document.getElementById('tagihanStatus').value = '';
 
-                    fetch(`/kasir/hasil-periksa/${pasienId}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Data hasil periksa tidak ditemukan');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            // Populate modal fields with data, all fields are read-only
-                            document.getElementById('anamnesis').value = data.anamnesis || '';
-                            document.getElementById('pemeriksaanFisik').value = data
-                                .pemeriksaan_fisik || '';
-                            document.getElementById('rencanaTerapi').value = data
-                                .rencana_dan_terapi || '';
-                            document.getElementById('diagnosis').value = data.diagnosis || '';
-                            document.getElementById('edukasi').value = data.edukasi || '';
-                            document.getElementById('kodeICD').value = data.kode_icd || '';
-                            document.getElementById('kesanStatusGizi').value = data
-                                .kesan_status_gizi || '';
-                            document.getElementById('penanggungJawab').value = data
-                                .penanggung_jawab || '';
-                            modalHasilPeriksa.show();
-                        })
-                        .catch(error => {
-                            toastr.error('Hasil periksa pasien tidak tersedia.');
-                            // Ensure modal is hidden if previously shown
-                            if (modalHasilPeriksa._isShown) {
-                                modalHasilPeriksa.hide();
-                            }
-                        });
-                });
-            });
+                fetch(`/kasir/tagihan/${pasienId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Data tagihan tidak ditemukan');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById('tagihanNamaPasien').value = data.nama_pasien || '';
+                        document.getElementById('tagihanNomorRM').value = data.no_rekam_medis || '';
+                        document.getElementById('tagihanPasienId').value = data.pasien_id || '';
+                        document.getElementById('tagihanPoliTujuan').value = data.poli_tujuan || '';
 
-            document.querySelectorAll('.btnPeriksa').forEach(button => {
-                button.addEventListener('click', function () {
-                    const pasienId = this.getAttribute('data-pasien-id');
+                        const tbody = document.querySelector('#tagihanObatTable tbody');
+                        tbody.innerHTML = '';
 
-                    // Clear previous values
-                    document.getElementById('tagihanNamaPasien').value = '';
-                    document.getElementById('tagihanNomorRM').value = '';
-                    document.getElementById('tagihanPoliTujuan').value = '';
-                    document.querySelector('#tagihanObatTable tbody').innerHTML = '';
-                    document.getElementById('tagihanTotalBiaya').value = '';
-                    document.getElementById('tagihanStatus').value = '';
-
-                    fetch(`/kasir/tagihan/${pasienId}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Data tagihan tidak ditemukan');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            document.getElementById('tagihanNamaPasien').value = data.nama_pasien || '';
-                            document.getElementById('tagihanNomorRM').value = data.no_rekam_medis || '';
-                            document.getElementById('tagihanPasienId').value = data.pasien_id || '';
-                            document.getElementById('tagihanPoliTujuan').value = data.poli_tujuan || '';
-
-                            const tbody = document.querySelector('#tagihanObatTable tbody');
-                            tbody.innerHTML = '';
-
-                            function formatPrice(price) {
-                                if (typeof price === 'number' || typeof price === 'string') {
-                                    const num = typeof price === 'number' ? price : parseFloat(price);
-                                    if (!isNaN(num)) {
-                                        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(num);
-                                    }
+                        function formatPrice(price) {
+                            if (typeof price === 'number' || typeof price === 'string') {
+                                const num = typeof price === 'number' ? price : parseFloat(price);
+                                if (!isNaN(num)) {
+                                    return new Intl.NumberFormat('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR'
+                                    }).format(num);
                                 }
-                                return price || '';
                             }
+                            return price || '';
+                        }
 
-                            if (Array.isArray(data.resep_obat)) {
-                                data.resep_obat.forEach(item => {
-                                    const tr = document.createElement('tr');
-                                    const jumlah = parseFloat(item.jumlah) || 0;
-                                    const hargaSatuan = parseFloat(item.harga_satuan) || 0;
-                                    const totalHargaCalc = jumlah * hargaSatuan;
-                                    tr.innerHTML = `
+                        if (Array.isArray(data.resep_obat)) {
+                            data.resep_obat.forEach(item => {
+                                const tr = document.createElement('tr');
+                                const jumlah = parseFloat(item.jumlah) || 0;
+                                const hargaSatuan = parseFloat(item.harga_satuan) || 0;
+                                const totalHargaCalc = jumlah * hargaSatuan;
+                                tr.innerHTML = `
                                         <td>${item.nama_obat}</td>
                                         <td>${item.bentuk_obat || ''}</td>
                                         <td>${jumlah}</td>
                                         <td>${formatPrice(hargaSatuan)}</td>
                                         <td>${formatPrice(totalHargaCalc)}</td>
                                     `;
-                                    tbody.appendChild(tr);
-                                });
-                            }
+                                tbody.appendChild(tr);
+                            });
+                        }
 
-                            let totalBiayaKeseluruhan = 0;
-                            if (Array.isArray(data.resep_obat)) {
-                                data.resep_obat.forEach(item => {
-                                    const jumlah = parseFloat(item.jumlah) || 0;
-                                    const hargaSatuan = parseFloat(item.harga_satuan) || 0;
-                                    totalBiayaKeseluruhan += jumlah * hargaSatuan;
-                                });
-                            }
-                            document.getElementById('tagihanTotalBiaya').value = formatPrice(totalBiayaKeseluruhan);
-                            document.getElementById('tagihanStatus').value = data.status_pembayaran || '';
+                        let totalBiayaKeseluruhan = 0;
+                        if (Array.isArray(data.resep_obat)) {
+                            data.resep_obat.forEach(item => {
+                                const jumlah = parseFloat(item.jumlah) || 0;
+                                const hargaSatuan = parseFloat(item.harga_satuan) || 0;
+                                totalBiayaKeseluruhan += jumlah * hargaSatuan;
+                            });
+                        }
+                        document.getElementById('tagihanTotalBiaya').value = formatPrice(totalBiayaKeseluruhan);
+                        document.getElementById('tagihanStatus').value = data.status_pembayaran || '';
 
-                            modalTagihan.show();
-                        })
-                        .catch(error => {
-                            toastr.error('Tagihan pasien tidak tersedia.');
-                            if (modalTagihan._isShown) {
-                                modalTagihan.hide();
-                            }
-                        });
+                        modalTagihan.show();
+                    })
+                    .catch(error => {
+                        toastr.error('Tagihan pasien tidak tersedia.');
+                        if (modalTagihan._isShown) {
+                            modalTagihan.hide();
+                        }
+                    });
+            });
+        });
+
+        document.getElementById('btnBayar').addEventListener('click', function() {
+            const pasienId = document.getElementById('tagihanPasienId').value;
+            const totalBiaya = document.getElementById('tagihanTotalBiaya').value;
+            const poliTujuan = document.getElementById('tagihanPoliTujuan').value;
+            const resepObatRows = document.querySelectorAll('#tagihanObatTable tbody tr');
+
+            if (!pasienId) {
+                toastr.error('Data pasien tidak valid.');
+                return;
+            }
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                toastr.error('CSRF token tidak ditemukan. Pastikan meta tag CSRF ada di halaman.');
+                return;
+            }
+
+            // Collect resep_obat data from table rows
+            const resepObat = [];
+            resepObatRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                resepObat.push({
+                    nama_obat: cells[0].textContent,
+                    bentuk_obat: cells[1].textContent,
+                    jumlah: cells[2].textContent,
+                    harga_satuan: cells[3].textContent,
+                    total_harga: cells[4].textContent,
                 });
             });
 
-            document.getElementById('btnBayar').addEventListener('click', function () {
-                const pasienId = document.getElementById('tagihanPasienId').value;
-                const totalBiaya = document.getElementById('tagihanTotalBiaya').value;
-                const poliTujuan = document.getElementById('tagihanPoliTujuan').value;
-                const resepObatRows = document.querySelectorAll('#tagihanObatTable tbody tr');
-
-                if (!pasienId) {
-                    toastr.error('Data pasien tidak valid.');
-                    return;
-                }
-
-                const csrfToken = document.querySelector('meta[name="csrf-token"]');
-                if (!csrfToken) {
-                    toastr.error('CSRF token tidak ditemukan. Pastikan meta tag CSRF ada di halaman.');
-                    return;
-                }
-
-                // Collect resep_obat data from table rows
-                const resepObat = [];
-                resepObatRows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    resepObat.push({
-                        nama_obat: cells[0].textContent,
-                        bentuk_obat: cells[1].textContent,
-                        jumlah: cells[2].textContent,
-                        harga_satuan: cells[3].textContent,
-                        total_harga: cells[4].textContent,
-                    });
-                });
-
-                fetch('/kasir/tagihan/bayar', {
+            fetch('/kasir/tagihan/bayar', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -523,26 +526,26 @@
                         resep_obat: JSON.stringify(resepObat),
                     }),
                 })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Gagal melakukan pembayaran.');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        toastr.success(data.message || 'Pembayaran berhasil');
-                        // Update status pembayaran in modal
-                        document.getElementById('tagihanStatus').value = 'Lunas';
-                        // Close the modal after successful payment
-                        const modalTagihanEl = document.getElementById('modalTagihan');
-                        const modalTagihan = bootstrap.Modal.getInstance(modalTagihanEl);
-                        if (modalTagihan) {
-                            modalTagihan.hide();
-                        }
-                        // Refresh the antrian table to reflect updated status
-                        const searchInput = document.getElementById('searchInput');
-                        const query = searchInput ? searchInput.value.trim() : '';
-                        fetch(`{{ route('kasir.antrian') }}?search=${encodeURIComponent(query)}`, {
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Gagal melakukan pembayaran.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    toastr.success(data.message || 'Pembayaran berhasil');
+                    // Update status pembayaran in modal
+                    document.getElementById('tagihanStatus').value = 'Lunas';
+                    // Close the modal after successful payment
+                    const modalTagihanEl = document.getElementById('modalTagihan');
+                    const modalTagihan = bootstrap.Modal.getInstance(modalTagihanEl);
+                    if (modalTagihan) {
+                        modalTagihan.hide();
+                    }
+                    // Refresh the antrian table to reflect updated status
+                    const searchInput = document.getElementById('searchInput');
+                    const query = searchInput ? searchInput.value.trim() : '';
+                    fetch(`{{ route('kasir.antrian') }}?search=${encodeURIComponent(query)}`, {
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest'
                             }
@@ -572,7 +575,7 @@
                                 });
                                 // Reattach event listeners for new buttons after table refresh
                                 document.querySelectorAll('.btnHasilPeriksa').forEach(button => {
-                                    button.addEventListener('click', function () {
+                                    button.addEventListener('click', function() {
                                         const pasienId = this.getAttribute('data-pasien-id');
                                         // Clear previous values
                                         document.getElementById('anamnesis').value = '';
@@ -610,7 +613,7 @@
                                     });
                                 });
                                 document.querySelectorAll('.btnPeriksa').forEach(button => {
-                                    button.addEventListener('click', function () {
+                                    button.addEventListener('click', function() {
                                         const pasienId = this.getAttribute('data-pasien-id');
                                         // Clear previous values
                                         document.getElementById('tagihanNamaPasien').value = '';
@@ -633,11 +636,15 @@
                                                 document.getElementById('tagihanPoliTujuan').value = data.poli_tujuan || '';
                                                 const tbody = document.querySelector('#tagihanObatTable tbody');
                                                 tbody.innerHTML = '';
+
                                                 function formatPrice(price) {
                                                     if (typeof price === 'number' || typeof price === 'string') {
                                                         const num = typeof price === 'number' ? price : parseFloat(price);
                                                         if (!isNaN(num)) {
-                                                            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(num);
+                                                            return new Intl.NumberFormat('id-ID', {
+                                                                style: 'currency',
+                                                                currency: 'IDR'
+                                                            }).format(num);
                                                         }
                                                     }
                                                     return price || '';
@@ -685,12 +692,11 @@
                         .catch(error => {
                             console.error('Error refreshing antrian table:', error);
                         });
-                    })
-                    .catch(error => {
-                        toastr.error(error.message || 'Terjadi kesalahan saat melakukan pembayaran.');
-                    });
-            });
+                })
+                .catch(error => {
+                    toastr.error(error.message || 'Terjadi kesalahan saat melakukan pembayaran.');
+                });
         });
-
-    </script>
+    });
+</script>
 @endsection

@@ -156,8 +156,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between align-items-center w-50">
+                    <div class="mt-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-center w-100">
                             <div class="small text-muted mb-2 text-start ps-3 pagination-info-text" style="max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 Showing {{ $antrians->firstItem() }} to {{ $antrians->lastItem() }} of
                                 {{ $antrians->total() }} results

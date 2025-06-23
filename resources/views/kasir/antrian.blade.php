@@ -52,15 +52,15 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-3">
-                    <div class="d-flex justify-content-between align-items-center w-50">
+                <div class="mt-3 mb-2">
+                    <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="small text-muted mb-2 text-start ps-3 pagination-info-text" style="max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             Showing {{ $antrians->firstItem() }} to {{ $antrians->lastItem() }} of
                             {{ $antrians->total() }} results
                         </div>
                         <nav class="d-flex justify-content-center">
-                            <ul class="pagination d-flex flex-row gap-2"
-                                style="list-style-type: none; padding-left: 0; margin-bottom: 0; flex-wrap: nowrap; overflow-x: auto;">
+                            <ul class="pagination d-flex flex-row flex-wrap gap-2"
+                                    style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
                                 {{-- Previous Page Link --}}
                                 @if ($antrians->onFirstPage())
                                 <li class="page-item disabled" aria-disabled="true" aria-label="Previous">

@@ -1,14 +1,127 @@
 /* Custom CSS for pagination in resepsionis dashboard */
+/* Unified pagination styles for all accounts: dokter, resepsionis, kasir */
+.pagination {
+  max-width: 100%;
+  overflow-x: visible;
+  white-space: normal;
+  overflow-y: visible;
+  flex-wrap: wrap;
+  padding-right: 1rem;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  justify-content: center !important;
+  gap: 0.5rem;
+}
+
+.pagination .page-item {
+  border-radius: 0.25rem !important;
+}
+
+.pagination .page-link {
+  border-radius: 0.25rem !important;
+  padding: 0.375rem 0.75rem !important;
+  min-width: 2.5rem;
+  text-align: center;
+  border: 1px solid #dee2e6 !important;
+  color: #0d6efd;
+  background-color: transparent;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.pagination .page-link:hover {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  text-decoration: none;
+}
+
+.pagination .page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  cursor: default;
+}
+
 #antrian-pagination {
   display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  flex-wrap: wrap;
+  overflow-x: visible;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
 }
 
 #antrian-pagination li {
   white-space: nowrap;
   margin-right: 8px; /* Add spacing between pagination buttons */
+  margin-top: -4px !important;
+}
+
+#antrian-pagination .page-link {
+  border: 0.75px solid #0d6efd; /* Bootstrap primary blue, thinner border */
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  min-width: 2rem;
+  text-align: center;
+  color: #0d6efd;
+  background-color: transparent;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#antrian-pagination .page-link:hover {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  text-decoration: none;
+}
+
+#antrian-pagination .page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  cursor: default;
+}
+
+#antrian-pagination li:last-child {
+  margin-right: 0; /* Remove margin on last button */
+}
+
+.pagination-info-text {
+
+#antrian-pagination li {
+  white-space: nowrap;
+  margin-right: 8px; /* Add spacing between pagination buttons */
+  margin-top: -4px !important;
+}
+
+#antrian-pagination .page-link {
+  border: 0.75px solid #0d6efd; /* Bootstrap primary blue, thinner border */
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  min-width: 2rem;
+  text-align: center;
+  color: #0d6efd;
+  background-color: transparent;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#antrian-pagination .page-link:hover {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  text-decoration: none;
+}
+
+#antrian-pagination .page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  cursor: default;
 }
 
 #antrian-pagination li:last-child {
@@ -20,4 +133,41 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 50%;
+}
+
+.pagination .page-link {
+  border: 0.75px solid #0d6efd; /* Bootstrap primary blue, thinner border */
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  min-width: 2rem;
+  text-align: center;
+  color: #0d6efd;
+  background-color: transparent;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.pagination .page-link:hover {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  text-decoration: none;
+}
+
+.pagination .page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  cursor: default;
+}
+
+.pagination {
+  max-width: 100%;
+  /* Remove horizontal scroll */
+  overflow-x: visible;
+  white-space: normal;
+  overflow-y: visible;
+  flex-wrap: wrap;
+  padding-right: 1rem;
 }

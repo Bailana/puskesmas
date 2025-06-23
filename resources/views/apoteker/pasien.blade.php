@@ -77,8 +77,8 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-3">
-                    <div class="d-flex justify-content-between align-items-center w-50">
+                <div class="mt-3 mb-2">
+                    <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="small text-muted mb-2 text-start ps-3">
                             Showing {{ $pasiens->firstItem() }} to {{ $pasiens->lastItem() }} of
                             {{ $pasiens->total() }} results
