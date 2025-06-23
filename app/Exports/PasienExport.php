@@ -48,8 +48,8 @@ class PasienExport
         // Fill data
         $row = 2;
         foreach ($this->pasiens as $pasien) {
-            $sheet->setCellValue('A' . $row, $pasien['no_rekam_medis'] ?? '');
-            $sheet->setCellValue('B' . $row, $pasien['nik'] ?? '');
+            $sheet->setCellValueExplicit('A' . $row, $pasien['no_rekam_medis'] ?? '', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('B' . $row, $pasien['nik'] ?? '', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $sheet->setCellValue('C' . $row, $pasien['nama_pasien'] ?? '');
             $sheet->setCellValue('D' . $row, $pasien['tempat_lahir'] ?? '');
             $sheet->setCellValue('E' . $row, $pasien['tanggal_lahir'] ?? '');
@@ -66,7 +66,7 @@ class PasienExport
             $sheet->setCellValue('P' . $row, $pasien['kabupaten'] ?? '');
             $sheet->setCellValue('Q' . $row, $pasien['provinsi'] ?? '');
             $sheet->setCellValue('R' . $row, $pasien['jaminan_kesehatan'] ?? '');
-            $sheet->setCellValue('S' . $row, $pasien['nomor_kepesertaan'] ?? '');
+            $sheet->setCellValueExplicit('S' . $row, $pasien['nomor_kepesertaan'] ?? '', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $row++;
         }
 

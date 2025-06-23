@@ -420,12 +420,10 @@
                                     <label for="bentukObat" class="form-label">Bentuk Obat</label>
                                     <input type="text" class="form-control" name="bentuk_obat[]" value="" required readonly>
                                 </div>
-
                                 <div class="flex-grow-1 d-flex flex-column input-container equal-width">
-                                    <label for="jumlahObat" class="form-label">Jumlah Obat</label>
+                                    <label for="jumlahObat" class="form-label">Jumlah Obat <small class="text-muted" style="font-weight: normal;" name="stok_obat_display">Stok: -</small></label>
                                     <input type="number" class="form-control" name="jumlah_obat[]" min="1" value="" required>
                                 </div>
-
                                 <div class="btn-remove-container d-flex align-items-end" style="margin-bottom: 2px;">
                                     <button type="button" class="btn btn-danger btn-sm btnRemoveResep" title="Hapus Resep Obat" style="height: 28px; width: 28px; padding: 0; font-size: 1.2rem; line-height: 1;">&times;</button>
                                 </div>
@@ -526,23 +524,54 @@
 
     .btn-remove-container {
         display: flex;
-        align-items: flex-center;
-        /* align button to bottom of input + error message */
-    }
-</style>
-<style>
-    .equal-width {
-        flex: 1 1 0;
-        min-width: 0;
+        align-items: end !important;
+        margin-bottom: 0 !important;
+        height: 100%;
     }
 
-    .equal-width select.form-select,
-    .equal-width input.form-control {
-        width: 100%;
-        box-sizing: border-box;
-    }
+    .resep-obat-item { position: relative; }
+.hasil-cari-obat {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 2050; /* lebih tinggi dari modal bootstrap */
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+.item-obat.active, .item-obat:hover {
+    background: #f0f0f0;
+}
+.resep-obat-item {
+    align-items: flex-start;
+}
+.resep-obat-item .equal-width {
+    min-width: 0;
+    flex: 1 1 0;
+}
+.resep-obat-item .form-select,
+.resep-obat-item .form-control {
+    width: 100% !important;
+    min-width: 0;
+    box-sizing: border-box;
+}
+.resep-obat-item .input-container {
+    min-width: 0;
+}
+.resep-obat-item .is-invalid,
+.resep-obat-item .form-control.is-invalid,
+.resep-obat-item .form-select.is-invalid {
+    width: 100% !important;
+    min-width: 0;
+    box-sizing: border-box;
+}
 </style>
 @section('scripts')
+<!-- Select2 CSS & JS CDN -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
@@ -932,58 +961,99 @@
                 });
             });
         }
-    });
 
-    // Dynamic add/remove resep obat fields
-    document.addEventListener('DOMContentLoaded', function() {
-        const resepObatContainer = document.getElementById('resepObatContainer');
-        const btnTambahResep = document.getElementById('btnTambahResep');
+        // Dynamic add/remove resep obat fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const resepObatContainer = document.getElementById('resepObatContainer');
+            const btnTambahResep = document.getElementById('btnTambahResep');
 
-        btnTambahResep.addEventListener('click', function() {
-            const firstItem = resepObatContainer.querySelector('.resep-obat-item');
-            if (!firstItem) return;
+            btnTambahResep.addEventListener('click', function() {
+                const firstItem = resepObatContainer.querySelector('.resep-obat-item');
+                if (!firstItem) return;
 
-            const newItem = firstItem.cloneNode(true);
-            // Clear values in cloned fields
-            const select = newItem.querySelector('select');
-            const input = newItem.querySelector('input[type="number"]');
-            if (select) {
-                select.selectedIndex = 0;
-            }
-            if (input) {
-                input.value = 1;
-            }
-            resepObatContainer.appendChild(newItem);
-            // updateRemoveButtonAlignment(newItem);
-        });
+                const newItem = firstItem.cloneNode(true);
+                // Clear values in cloned fields
+                const select = newItem.querySelector('select');
+                const input = newItem.querySelector('input[type="number"]');
+                if (select) {
+                    select.selectedIndex = 0;
+                }
+                if (input) {
+                    input.value = 1;
+                }
+                resepObatContainer.appendChild(newItem);
+            });
 
-        // Use event delegation for remove buttons and input validation
-        resepObatContainer.addEventListener('click', function(event) {
-            if (event.target.classList.contains('btnRemoveResep')) {
-                if (resepObatContainer.children.length > 1) {
-                    event.target.closest('.resep-obat-item').remove();
+            // Use event delegation for remove buttons
+            resepObatContainer.addEventListener('click', function(event) {
+                if (event.target.classList.contains('btnRemoveResep')) {
+                    if (resepObatContainer.children.length > 1) {
+                        event.target.closest('.resep-obat-item').remove();
+                    }
+                }
+            });
+
+            // Update bentuk obat otomatis
+            const obatsData = @json($obats);
+            function updateBentukObat(selectElement) {
+                const selectedObatId = selectElement.value;
+                const bentukInput = selectElement.closest('.resep-obat-item').querySelector('input[name="bentuk_obat[]"]');
+                const jumlahInput = selectElement.closest('.resep-obat-item').querySelector('input[name="jumlah_obat[]"]');
+                const stokDisplay = selectElement.closest('.resep-obat-item').querySelector('small[name="stok_obat_display"]');
+                if (!selectedObatId) {
+                    bentukInput.value = '';
+                    if (jumlahInput) {
+                        jumlahInput.removeAttribute('max');
+                        jumlahInput.value = '';
+                    }
+                    if (stokDisplay) {
+                        stokDisplay.textContent = 'Stok: -';
+                    }
+                    return;
+                }
+                const obat = obatsData.find(o => o.id == selectedObatId);
+                if (obat) {
+                    bentukInput.value = obat.bentuk_obat || '';
+                    if (jumlahInput) {
+                        jumlahInput.setAttribute('max', obat.stok);
+                        if (parseInt(jumlahInput.value) > obat.stok) {
+                            jumlahInput.value = obat.stok;
+                        }
+                    }
+                    if (stokDisplay) {
+                        stokDisplay.textContent = 'Stok: ' + (obat.stok ?? '-');
+                    }
+                } else {
+                    bentukInput.value = '';
+                    if (jumlahInput) {
+                        jumlahInput.removeAttribute('max');
+                        jumlahInput.value = '';
+                    }
+                    if (stokDisplay) {
+                        stokDisplay.textContent = 'Stok: -';
+                    }
                 }
             }
-        });
-
-        resepObatContainer.addEventListener('input', function(event) {
-            if (event.target.tagName === 'SELECT' || (event.target.tagName === 'INPUT' && event.target.type === 'number')) {
-                const item = event.target.closest('.resep-obat-item');
-                if (item) {
-                    // updateRemoveButtonAlignment(item);
+            resepObatContainer.addEventListener('change', function(event) {
+                if (event.target.matches('select[name="resep_obat[]"]')) {
+                    updateBentukObat(event.target);
                 }
-            }
+            });
+            // Update bentuk obat untuk existing items
+            resepObatContainer.querySelectorAll('select[name="resep_obat[]"]').forEach(select => {
+                updateBentukObat(select);
+            });
+            // Update bentuk obat untuk resep baru
+            btnTambahResep.addEventListener('click', function() {
+                setTimeout(() => {
+                    const newSelect = resepObatContainer.querySelector('.resep-obat-item:last-child select[name="resep_obat[]"]');
+                    if (newSelect) {
+                        updateBentukObat(newSelect);
+                    }
+                }, 0);
+            });
         });
 
-        // Initial update for existing items
-        resepObatContainer.querySelectorAll('.resep-obat-item').forEach(item => {
-            // updateRemoveButtonAlignment(item);
-        });
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
         // Convert PHP $obats to JS object
         const obatsData = @json($obats);
 
@@ -992,15 +1062,49 @@
         function updateBentukObat(selectElement) {
             const selectedObatId = selectElement.value;
             const bentukInput = selectElement.closest('.resep-obat-item').querySelector('input[name="bentuk_obat[]"]');
+            const jumlahInput = selectElement.closest('.resep-obat-item').querySelector('input[name="jumlah_obat[]"]');
+            const stokDisplay = selectElement.closest('.resep-obat-item').querySelector('small[name="stok_obat_display"]');
             if (!selectedObatId) {
                 bentukInput.value = '';
+                if (jumlahInput) {
+                    jumlahInput.removeAttribute('max');
+                    jumlahInput.value = '';
+                }
+                if (stokDisplay) {
+                    stokDisplay.textContent = 'Stok: -';
+                }
                 return;
             }
-            const obat = obatsData.find(o => o.id == selectedObatId);
+            const obat = obatsData.find(o => o.id === parseInt(selectedObatId));
             if (obat) {
                 bentukInput.value = obat.bentuk_obat || '';
+                if (jumlahInput) {
+                    jumlahInput.setAttribute('max', obat.stok);
+                    if (parseInt(jumlahInput.value) > obat.stok) {
+                        jumlahInput.value = obat.stok;
+                    }
+                    // Add event listener to clamp input value to max
+                    jumlahInput.addEventListener('input', function() {
+                        const max = parseInt(this.getAttribute('max'));
+                        if (this.value !== '' && parseInt(this.value) > max) {
+                            this.value = max;
+                        } else if (this.value !== '' && parseInt(this.value) < 1) {
+                            this.value = 1;
+                        }
+                    });
+                }
+                if (stokDisplay) {
+                    stokDisplay.textContent = 'Stok: ' + (obat.stok ?? '-');
+                }
             } else {
                 bentukInput.value = '';
+                if (jumlahInput) {
+                    jumlahInput.removeAttribute('max');
+                    jumlahInput.value = '';
+                }
+                if (stokDisplay) {
+                    stokDisplay.textContent = 'Stok: -';
+                }
             }
         }
 
@@ -1019,7 +1123,6 @@
         // Also update bentuk obat when new resep obat item is added
         const btnTambahResep = document.getElementById('btnTambahResep');
         btnTambahResep.addEventListener('click', function() {
-            // Wait a tick for the new item to be added
             setTimeout(() => {
                 const newSelect = resepObatContainer.querySelector('.resep-obat-item:last-child select[name="resep_obat[]"]');
                 if (newSelect) {
@@ -1027,6 +1130,207 @@
                 }
             }, 0);
         });
+
+        $(document).ready(function() {
+            function initSelect2ResepObat() {
+                $('.select2-resep-obat').select2({
+                    theme: 'bootstrap-5',
+                    placeholder: 'Cari dan pilih obat',
+                    allowClear: true,
+                    ajax: {
+                        url: '/dokter/search-obat',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return { q: params.term };
+                        },
+                        processResults: function(data) {
+                            return { results: data.results };
+                        },
+                        cache: true
+                    }
+                }).on('select2:select', function(e) {
+                    var data = e.params.data;
+                    var $item = $(this).closest('.resep-obat-item');
+                    $item.find('input[name="bentuk_obat[]"]').val(data.bentuk_obat || '');
+                    $item.find('input[name="jumlah_obat[]"]').attr('max', data.stok || '');
+                    $item.find('[name="stok_obat_display"]').text('Stok: ' + (data.stok ?? '-'));
+                }).on('select2:clear', function(e) {
+                    var $item = $(this).closest('.resep-obat-item');
+                    $item.find('input[name="bentuk_obat[]"]').val('');
+                    $item.find('input[name="jumlah_obat[]"]').removeAttr('max').val('');
+                    $item.find('[name="stok_obat_display"]').text('Stok: -');
+                });
+            }
+            // Inisialisasi untuk resep obat yang sudah ada
+            initSelect2ResepObat();
+            // Inisialisasi ulang jika tambah resep obat baru
+            $('#btnTambahResep').on('click', function() {
+                setTimeout(function() {
+                    initSelect2ResepObat();
+                }, 100);
+            });
+        });
+
+        // Navigasi keyboard pada hasil pencarian
+        $(document).on('keydown', '.input-cari-obat', function(e) {
+            const $input = $(this);
+            const $hasil = $input.siblings('.hasil-cari-obat');
+            const $items = $hasil.find('.item-obat');
+            let idx = $items.index($hasil.find('.item-obat.active'));
+            if (!$hasil.is(':visible') || !$items.length) return;
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                idx = (idx + 1) % $items.length;
+                $items.removeClass('active');
+                $items.eq(idx).addClass('active').focus();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                idx = (idx - 1 + $items.length) % $items.length;
+                $items.removeClass('active');
+                $items.eq(idx).addClass('active').focus();
+            } else if (e.key === 'Enter') {
+                if (idx >= 0) {
+                    e.preventDefault();
+                    $items.eq(idx).trigger('click');
+                }
+            }
+        });
+        // Hover pada item
+        $(document).on('mouseenter', '.hasil-cari-obat .item-obat', function() {
+            $(this).addClass('active').siblings().removeClass('active');
+        });
+
+        // Tutup dropdown jika klik di luar input dan dropdown
+    $(document).on('mousedown', function(e) {
+        $('.input-cari-obat').each(function() {
+            const $input = $(this);
+            const $hasil = $input.siblings('.hasil-cari-obat');
+            if ($hasil.is(':visible')) {
+                if (!$(e.target).closest($input).length && !$(e.target).closest($hasil).length) {
+                    $hasil.hide();
+                }
+            }
+        });
     });
+    });
+
+    // Toggle dropdown saat field resep obat di-focus
+    $(document).on('focus', '.input-cari-obat', function() {
+        const input = this;
+        const $hasil = $(input).siblings('.hasil-cari-obat');
+        if ($hasil.is(':visible')) {
+            $hasil.hide();
+            return;
+        }
+        const query = input.value;
+        $.ajax({
+            url: '/dokter/search-obat',
+            data: {q: query},
+            success: function(res) {
+                if (res.results && res.results.length > 0) {
+                    let html = '';
+                    res.results.forEach(function(obat) {
+                        html += `<div class='item-obat px-2 py-1' style='cursor:pointer;' data-id='${obat.id}' data-nama='${obat.text}' data-bentuk='${obat.bentuk_obat}' data-stok='${obat.stok}'>${obat.text} <span class='text-muted small'>(${obat.bentuk_obat}, stok: ${obat.stok})</span></div>`;
+                    });
+                    $hasil.html(html).show();
+                } else {
+                    $hasil.html('<div class="px-2 py-1 text-muted">Obat tidak ditemukan</div>').show();
+                }
+            }
+        });
+    });
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resepObatContainer = document.getElementById('resepObatContainer');
+    const btnTambahResep = document.getElementById('btnTambahResep');
+
+    btnTambahResep.addEventListener('click', function() {
+        const firstItem = resepObatContainer.querySelector('.resep-obat-item');
+        if (!firstItem) return;
+        const newItem = firstItem.cloneNode(true);
+        // Clear values in cloned fields
+        const select = newItem.querySelector('select');
+        const input = newItem.querySelector('input[type="number"]');
+        if (select) {
+            select.selectedIndex = 0;
+        }
+        if (input) {
+            input.value = 1;
+        }
+        resepObatContainer.appendChild(newItem);
+    });
+
+    // Use event delegation for remove buttons
+    resepObatContainer.addEventListener('click', function(event) {
+        if (event.target.classList.contains('btnRemoveResep')) {
+            if (resepObatContainer.children.length > 1) {
+                event.target.closest('.resep-obat-item').remove();
+            }
+        }
+    });
+
+    // Update bentuk obat otomatis
+    const obatsData = @json($obats);
+    function updateBentukObat(selectElement) {
+        const selectedObatId = selectElement.value;
+        const bentukInput = selectElement.closest('.resep-obat-item').querySelector('input[name="bentuk_obat[]"]');
+        const jumlahInput = selectElement.closest('.resep-obat-item').querySelector('input[name="jumlah_obat[]"]');
+        const stokDisplay = selectElement.closest('.resep-obat-item').querySelector('small[name="stok_obat_display"]');
+        if (!selectedObatId) {
+            bentukInput.value = '';
+            if (jumlahInput) {
+                jumlahInput.removeAttribute('max');
+                jumlahInput.value = '';
+            }
+            if (stokDisplay) {
+                stokDisplay.textContent = 'Stok: -';
+            }
+            return;
+        }
+        const obat = obatsData.find(o => o.id == selectedObatId);
+        if (obat) {
+            bentukInput.value = obat.bentuk_obat || '';
+            if (jumlahInput) {
+                jumlahInput.setAttribute('max', obat.stok);
+                if (parseInt(jumlahInput.value) > obat.stok) {
+                    jumlahInput.value = obat.stok;
+                }
+            }
+            if (stokDisplay) {
+                stokDisplay.textContent = 'Stok: ' + (obat.stok ?? '-');
+            }
+        } else {
+            bentukInput.value = '';
+            if (jumlahInput) {
+                jumlahInput.removeAttribute('max');
+                jumlahInput.value = '';
+            }
+            if (stokDisplay) {
+                stokDisplay.textContent = 'Stok: -';
+            }
+        }
+    }
+    resepObatContainer.addEventListener('change', function(event) {
+        if (event.target.matches('select[name="resep_obat[]"]')) {
+            updateBentukObat(event.target);
+        }
+    });
+    // Update bentuk obat untuk existing items
+    resepObatContainer.querySelectorAll('select[name="resep_obat[]"]').forEach(select => {
+        updateBentukObat(select);
+    });
+    // Update bentuk obat untuk resep baru
+    btnTambahResep.addEventListener('click', function() {
+        setTimeout(() => {
+            const newSelect = resepObatContainer.querySelector('.resep-obat-item:last-child select[name="resep_obat[]"]');
+            if (newSelect) {
+                updateBentukObat(newSelect);
+            }
+        }, 0);
+    });
+});
 </script>
 @endsection

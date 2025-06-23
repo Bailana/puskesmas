@@ -140,7 +140,7 @@
                 </div>
             </div>
             <div class="modal-footer d-flex justify-content-end mt-3">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" id="btnSiapkanObatAntrian">Siapkan Obat</button>
             </div>
         </div>
     </div>
@@ -213,6 +213,32 @@
 @endsection
 
 @section('scripts')
+<!-- Tambahkan JS Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#selectObat').select2({
+            placeholder: 'Cari dan pilih obat',
+            minimumInputLength: 2,
+            ajax: {
+                url: '/dokter/search-obat', // Perbaikan URL sesuai route web.php
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        q: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.results
+                    };
+                },
+                cache: true
+            }
+        });
+    });
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const modalRacikObat = new bootstrap.Modal(document.getElementById('modalRacikObat'));
@@ -436,6 +462,95 @@
                         console.error('Error fetching search results:', error);
                     });
             }, 300);
+        });
+    });
+
+    // Store pasienId for use in Siapkan Obat button in antrian modal
+    let currentPasienIdAntrian = null;
+
+    document.querySelectorAll('.btnRacikObat').forEach(button => {
+        button.addEventListener('click', function() {
+            currentPasienIdAntrian = this.getAttribute('data-pasien-id');
+        });
+    });
+
+    // Remove any existing event listeners before adding a new one to prevent looping
+    const btnSiapkanObatAntrian = document.getElementById('btnSiapkanObatAntrian');
+    if (btnSiapkanObatAntrian) {
+        btnSiapkanObatAntrian.removeEventListener('click', siapkanObatHandler);
+        btnSiapkanObatAntrian.addEventListener('click', siapkanObatHandler);
+    }
+
+    function siapkanObatHandler() {
+        if (!currentPasienIdAntrian) {
+            alert('Pasien tidak ditemukan.');
+            return;
+        }
+
+        fetch(`/apoteker/antrian/update-status/${currentPasienIdAntrian}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw new Error(errData.message || 'Gagal memperbarui status antrian.');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message || 'Status antrian berhasil diperbarui.');
+            // Close modal
+            const modalRacikObat = bootstrap.Modal.getInstance(document.getElementById('modalRacikObat'));
+            modalRacikObat.hide();
+            // Optionally reload page or update UI
+            location.reload();
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    }
+
+    // Inisialisasi Select2 setiap kali modal dibuka
+    $(document).ready(function() {
+        $('#modalHasilPeriksa').on('shown.bs.modal', function () {
+            var $selectObat = $('#selectObat');
+            if ($selectObat.data('select2')) {
+                $selectObat.select2('destroy');
+            }
+            $selectObat.select2({
+                placeholder: 'Cari dan pilih obat',
+                minimumInputLength: 0, // agar dropdown muncul saat klik
+                ajax: {
+                    url: '/dokter/search-obat',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            q: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.results
+                        };
+                    },
+                    cache: true
+                },
+                width: '100%'
+            });
+            // Trigger dropdown saat klik field
+            $selectObat.on('select2:open', function() {
+                if (!$('.select2-results__option').length) {
+                    $selectObat.select2('open');
+                }
+            });
         });
     });
 </script>

@@ -15,6 +15,7 @@ Route::middleware(['auth', 'role:apoteker'])->group(function () {
     Route::post('/apoteker/obat', [ApotekerDashboardController::class, 'storeObat'])->name('apoteker.obat.store');
     Route::get('/apoteker/antrian', [ApotekerDashboardController::class, 'antrian'])->name('apoteker.antrian');
     Route::get('/apoteker/obat/{id}', [ApotekerDashboardController::class, 'getObatDetail'])->name('apoteker.obat.detail');
+    Route::post('/apoteker/antrian/update-status/{pasienId}', [ApotekerDashboardController::class, 'updateAntrianStatus'])->name('apoteker.antrian.updateStatus');
     Route::put('/apoteker/obat/{id}', [ApotekerDashboardController::class, 'updateObat'])->name('apoteker.obat.update');
     Route::delete('/apoteker/obat/{id}', [ApotekerDashboardController::class, 'destroyObat'])->name('apoteker.obat.destroy');
 
@@ -28,6 +29,9 @@ Route::middleware(['auth', 'role:apoteker'])->group(function () {
 Route::middleware(['auth', 'role:dokter'])->group(function () {
     Route::get('/dokter/riwayat-berobat/{no_rekam_medis}', [DokterDashboardController::class, 'getRiwayatBerobat'])->name('dokter.riwayat.berobat');
     Route::get('/dokter/hasil-periksa-detail/{no_rekam_medis}/{tanggal}', [DokterDashboardController::class, 'getHasilPeriksaDetail'])->name('dokter.hasil.periksa.detail');
+
+    // New route for medicine search API
+    Route::get('/dokter/search-obat', [DokterDashboardController::class, 'searchObat'])->name('dokter.searchObat');
 });
 
 Route::middleware(['auth', 'role:resepsionis'])->group(function () {

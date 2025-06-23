@@ -22,13 +22,80 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class ResepsionisDashboardController extends Controller
 {
-    // ... other methods unchanged ...
+    public function index()
+    {
+        $totalAntrianCount = \App\Models\Antrian::where('status', '!=', 'selesai')->count();
+        $antrianSelesaiCount = \App\Models\Antrian::where('status', 'selesai')->count();
+        $antrians = \App\Models\Antrian::with(['pasien', 'poli'])
+            ->where('status', '!=', 'selesai')
+            ->paginate(5);
+
+        return view('resepsionis.dashboard', compact('totalAntrianCount', 'antrianSelesaiCount', 'antrians'));
+    }
 
     public function exportExcel(Request $request)
     {
         $query = Pasien::query();
+
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(nama_pasien) LIKE ?', ['%' . $search . '%'])
+                  ->orWhereRaw('LOWER(no_rekam_medis) LIKE ?', ['%' . $search . '%'])
+                  ->orWhereRaw('LOWER(nik) LIKE ?', ['%' . $search . '%']);
+            });
+        }
+
+        if ($request->filled('jenis_kelamin')) {
+            $query->where('jenis_kelamin', $request->jenis_kelamin);
+        }
+        if ($request->filled('gol_darah')) {
+            $query->where('gol_darah', $request->gol_darah);
+        }
+        if ($request->filled('jaminan_kesehatan')) {
+            $query->where('jaminan_kesehatan', $request->jaminan_kesehatan);
+        }
+        if ($request->filled('tempat_lahir')) {
+            $query->where('tempat_lahir', 'like', '%' . $request->tempat_lahir . '%');
+        }
+        if ($request->filled('kecamatan')) {
+            $query->where('kecamatan', 'like', '%' . $request->kecamatan . '%');
+        }
+        if ($request->filled('kelurahan')) {
+            $query->where('kelurahan', 'like', '%' . $request->kelurahan . '%');
+        }
+        if ($request->filled('status_pernikahan')) {
+            $query->where('status_pernikahan', $request->status_pernikahan);
+        }
+        if ($request->filled('tanggal_lahir')) {
+            $query->whereDate('tanggal_lahir', $request->tanggal_lahir);
+        }
+
+        $pasiens = $query->get()->map(function ($pasien) {
+            return $pasien->toArray();
+        })->toArray();
+
+        $export = new PasienExport($pasiens);
+        return $export->export();
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $query = Pasien::query();
+
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(nama_pasien) LIKE ?', ['%' . $search . '%'])
+                  ->orWhereRaw('LOWER(no_rekam_medis) LIKE ?', ['%' . $search . '%'])
+                  ->orWhereRaw('LOWER(nik) LIKE ?', ['%' . $search . '%']);
+            });
+        }
 
         if ($request->filled('jenis_kelamin')) {
             $query->where('jenis_kelamin', $request->jenis_kelamin);
@@ -57,8 +124,8 @@ class ResepsionisDashboardController extends Controller
 
         $pasiens = $query->get();
 
-        $export = new PasienExport($pasiens);
-        return $export->export();
+        // Return HTML view for client-side PDF generation
+        return view('resepsionis.export_pdf_html', ['pasiens' => $pasiens]);
     }
 
     public function importExcel(Request $request)

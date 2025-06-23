@@ -24,6 +24,46 @@ class ApotekerDashboardController extends Controller
         return view('apoteker.dashboard', compact('antrians'));
     }
 
+    public function updateAntrianStatus(Request $request, $pasienId)
+    {
+        $antrian = \App\Models\Antrian::where('pasien_id', $pasienId)
+            ->where('status', 'Farmasi')
+            ->first();
+
+        if (!$antrian) {
+            return response()->json(['message' => 'Antrian tidak ditemukan atau sudah selesai'], 404);
+        }
+
+        // Fetch prescription items for the pasien
+        $resepObatItems = \DB::table('hasilperiksa_obat')
+            ->join('hasilperiksa', 'hasilperiksa_obat.hasilperiksa_id', '=', 'hasilperiksa.id')
+            ->where('hasilperiksa.pasien_id', $pasienId)
+            ->select('hasilperiksa_obat.obat_id', 'hasilperiksa_obat.jumlah')
+            ->get();
+
+        // Update stock for each obat
+        foreach ($resepObatItems as $item) {
+            $obat = \App\Models\Obat::find($item->obat_id);
+            if ($obat) {
+                $newStock = $obat->stok - $item->jumlah;
+                if ($newStock < 0) {
+                    return response()->json(['message' => "Stok obat {$obat->nama_obat} tidak cukup"], 400);
+                }
+                $obat->stok = $newStock;
+                $obat->save();
+            }
+        }
+
+        $antrian->status = 'Selesai';
+
+        try {
+            $antrian->save();
+            return response()->json(['message' => 'Status antrian berhasil diperbarui dan stok obat dikurangi']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Gagal memperbarui status antrian'], 500);
+        }
+    }
+
     public function profile()
     {
         return view('apoteker.profile');

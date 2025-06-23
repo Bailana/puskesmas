@@ -2,11 +2,11 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Data Pasien - Export PDF</title>
+    <title>Rekapan Tagihan Pasien - Cetak</title>
     <style>
         @page {
             size: A4;
-            margin: 20mm 10mm 20mm 10mm;
+            margin: 20mm 5mm 20mm 10mm;
         }
         body {
             font-family: Arial, sans-serif;
@@ -15,11 +15,38 @@
             margin: 0 auto;
             padding: 0 10mm 0 10mm;
             box-sizing: border-box;
-            max-width: 190mm;
-            min-height: 297mm;
+            max-width: 190mm; /* A4 width minus margins */
+            min-height: 297mm; /* A4 height */
             overflow-wrap: break-word;
             word-wrap: break-word;
             word-break: break-word;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #444;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .status-lunas {
+            color: green;
+            font-weight: bold;
+        }
+        .status-belum-lunas {
+            color: orange;
+            font-weight: bold;
         }
         .kop-surat {
             margin-bottom: 20px;
@@ -53,21 +80,6 @@
         .kop-surat .center-text .line2 {
             font-size: 14px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #444;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
         .signature {
             margin-top: 50px;
             text-align: right;
@@ -95,6 +107,7 @@
         </div>
         <div class="right-logo">
             @php
+                // Fallback to left logo if right logo file does not exist
                 $pathRight = public_path('template/images/logo_puskesmas_cross.png');
                 if (!file_exists($pathRight)) {
                     $pathRight = public_path('template/images/logo_puskesmas.png');
@@ -107,35 +120,35 @@
         </div>
     </div>
 
-    <h2>Data Pasien</h2>
+    <h2>Rekapan Tagihan Pasien</h2>
     <table>
         <thead>
             <tr>
                 <th>No.</th>
+                <th>Hari/Tanggal</th>
                 <th>No. RM</th>
                 <th>Nama Pasien</th>
-                <th>NIK</th>
-                <th>Jenis Kelamin</th>
-                <th>Gol. Darah</th>
-                <th>Tempat Lahir</th>
-                <th>Tanggal Lahir</th>
-                <th>Alamat</th>
-                <th>Jaminan Kesehatan</th>
+                <th>JamKes</th>
+                <th>Total Biaya</th>
+                <th>Status Pembayaran</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($pasiens as $index => $pasien)
+            @foreach ($tagihans as $index => $tagihan)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $pasien->no_rekam_medis }}</td>
-                <td>{{ $pasien->nama_pasien }}</td>
-                <td>{{ $pasien->nik }}</td>
-                <td>{{ $pasien->jenis_kelamin }}</td>
-                <td>{{ $pasien->gol_darah }}</td>
-                <td>{{ $pasien->tempat_lahir }}</td>
-                <td>{{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->locale('id')->isoFormat('DD MMMM YYYY') }}</td>
-                <td>{{ $pasien->alamat_jalan }}, RT {{ $pasien->rt }}/RW {{ $pasien->rw }}, {{ $pasien->kelurahan }}, {{ $pasien->kecamatan }}, {{ $pasien->kabupaten }}, {{ $pasien->provinsi }}</td>
-                <td>{{ $pasien->jaminan_kesehatan }}</td>
+                <td>{{ \Carbon\Carbon::parse($tagihan->created_at)->locale('id')->isoFormat('dddd, DD-MM-YYYY') }}</td>
+                <td>{{ $tagihan->pasien->no_rekam_medis ?? '-' }}</td>
+                <td>{{ $tagihan->pasien->nama_pasien ?? '-' }}</td>
+                <td>{{ $tagihan->pasien->jaminan_kesehatan ?? '-' }}</td>
+                <td>{{ 'Rp ' . number_format($tagihan->total_biaya * 1000, 2, ',', '.') }}</td>
+                <td>
+                    @if(strtolower($tagihan->status) == 'lunas')
+                        <span class="status-lunas">Lunas</span>
+                    @else
+                        <span class="status-belum-lunas">Belum Lunas</span>
+                    @endif
+                </td>
             </tr>
             @endforeach
         </tbody>
@@ -146,7 +159,21 @@
         <p>Mengetahui,</p>
         <br><br><br>
         <p><strong>__________________________</strong></p>
-        <p><em>Kepala UPT Puskesmas Pujud</em></p>
+        <p><em>Kasir UPT Puskesmas Pujud</em></p>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var element = document.body;
+            var opt = {
+                margin:       0.5,
+                filename:     'tagihan_pasien.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        });
+    </script>
 </body>
 </html>

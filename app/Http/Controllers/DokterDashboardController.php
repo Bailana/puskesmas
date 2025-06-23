@@ -18,7 +18,10 @@ class DokterDashboardController extends Controller
         $antrians = Antrian::where('poli_id', 1)
             ->where('status', 'Pemeriksaan')
             ->paginate(5);
-        return view('dokter.dashboard', compact('antrians'));
+
+        $obats = \App\Models\Obat::select('id', 'nama_obat', 'bentuk_obat', 'stok')->get();
+
+        return view('dokter.dashboard', compact('antrians', 'obats'));
     }
 
     public function pasien(Request $request)
@@ -89,10 +92,34 @@ class DokterDashboardController extends Controller
             return response()->json($antrians);
         }
 
-        // Get list of available medicines from 'obat' table with bentuk_obat
-        $obats = \App\Models\Obat::select('id', 'nama_obat', 'bentuk_obat')->get();
+        // Get list of available medicines from 'obat' table with bentuk_obat and stok
+        $obats = \App\Models\Obat::select('id', 'nama_obat', 'bentuk_obat', 'stok')->get();
 
         return view('dokter.antrian', compact('antrians', 'obats'));
+    }
+
+    // New method for medicine search API
+    public function searchObat(Request $request)
+    {
+        $query = \App\Models\Obat::query();
+
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where('nama_obat', 'like', '%' . $search . '%');
+        }
+
+        $obats = $query->select('id', 'nama_obat', 'bentuk_obat', 'stok')->limit(10)->get();
+
+        $results = $obats->map(function ($obat) {
+            return [
+                'id' => $obat->id,
+                'text' => $obat->nama_obat,
+                'bentuk_obat' => $obat->bentuk_obat,
+                'stok' => $obat->stok,
+            ];
+        });
+
+        return response()->json(['results' => $results]);
     }
 
     // Method to show the profile edit form

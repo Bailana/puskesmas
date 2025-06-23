@@ -172,9 +172,8 @@ class KasirDashboardController extends Controller
             })
             ->get();
 
-        $pdf = \PDF::loadView('kasir.export_pdf', ['tagihans' => $tagihans]);
-
-        return $pdf->download('tagihan_pasien.pdf');
+        // Use HTML view for export, user can print to PDF from browser
+        return view('kasir.export_pdf_html', ['tagihans' => $tagihans]);
     }
 
     public function exportExcel(Request $request)
@@ -238,7 +237,7 @@ class KasirDashboardController extends Controller
             });
         }
 
-        $antrians = $query->paginate(5);
+        $antrians = $query->paginate(1);
 
         if ($request->ajax()) {
             return response()->json($antrians);

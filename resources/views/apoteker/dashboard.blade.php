@@ -146,6 +146,7 @@
                                         <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-bs-toggle="modal"
                                             data-bs-target="#modalHasilPeriksa" data-pasien-id="{{ $antrian->pasien->id }}">Hasil Periksa</button>
                                         <button type="button" class="btn btn-primary btn-sm rounded btnRacikObat"
+                                            data-bs-toggle="modal" data-bs-target="#modalRacikObat"
                                             data-pasien-id="{{ $antrian->pasien->id }}">Racik Obat</button>
                                     </td>
                                 </tr>
@@ -233,7 +234,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <!-- Modal Hasil Periksa -->
@@ -294,6 +294,49 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalRacikObat" tabindex="-1" aria-labelledby="modalRacikObatLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
+        <div class="modal-content" style="overflow-x: hidden;">
+            <div class="modal-header d-flex justify-content-between">
+                <h3 class="modal-title" id="modalRacikObatLabel"><strong>Resep Obat Pasien</strong></h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                <div id="resepObatContent">
+                    <table class="table table-bordered" id="resepObatTable">
+                        <thead>
+                            <tr>
+                                <th>Nama Obat</th>
+                                <th>Bentuk Obat</th>
+                                <th>Jumlah</th>
+                                <th>Harga Satuan</th>
+                                <th>Total Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Baris obat akan diisi di sini -->
+                        </tbody>
+                    </table>
+                    <hr>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="totalBiaya" class="form-label">Total Biaya Keseluruhan</label>
+                            <input type="text" class="form-control form-control-sm" id="totalBiaya" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="statusPembayaran" class="form-label">Status Pembayaran</label>
+                            <input type="text" class="form-control form-control-sm" id="statusPembayaran" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-end mt-3">
+                <button type="button" class="btn btn-primary" id="btnSiapkanObat">Siapkan Obat</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('scripts')
 <script>
@@ -329,6 +372,106 @@
                             text: error.message,
                         });
                     });
+            });
+        });
+
+        const modalRacikObat = new bootstrap.Modal(document.getElementById('modalRacikObat'));
+
+        document.querySelectorAll('.btnRacikObat').forEach(button => {
+            button.addEventListener('click', function() {
+                const pasienId = this.getAttribute('data-pasien-id');
+
+                // Clear previous modal content
+                const tbody = document.querySelector('#resepObatTable tbody');
+                tbody.innerHTML = '';
+                document.getElementById('totalBiaya').value = '';
+                document.getElementById('statusPembayaran').value = '';
+
+                fetch(`/apoteker/tagihan/${pasienId}`, {
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errData => {
+                                throw new Error(errData.message || 'Data tagihan tidak ditemukan');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (Array.isArray(data.resep_obat)) {
+                            let totalBiayaKeseluruhan = 0;
+                            data.resep_obat.forEach(item => {
+                                const tr = document.createElement('tr');
+                                const jumlah = parseFloat(item.jumlah) || 0;
+                                const hargaSatuan = parseFloat(item.harga_satuan) || 0;
+                                const totalHarga = jumlah * hargaSatuan;
+                                tr.innerHTML = `
+                                    <td>${item.nama_obat}</td>
+                                    <td>${item.bentuk_obat || ''}</td>
+                                    <td>${jumlah}</td>
+                                    <td>${hargaSatuan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
+                                    <td>${totalHarga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
+                                `;
+                                tbody.appendChild(tr);
+                                totalBiayaKeseluruhan += totalHarga;
+                            });
+                            document.getElementById('totalBiaya').value = totalBiayaKeseluruhan.toLocaleString('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR'
+                            });
+                        }
+                        document.getElementById('statusPembayaran').value = data.status_pembayaran || '';
+                        modalRacikObat.show();
+                    })
+                    .catch(error => {
+                        alert(error.message || 'Gagal mengambil data tagihan.');
+                    });
+            });
+        });
+
+        // Store pasienId for use in Siapkan Obat button
+        let currentPasienId = null;
+
+        document.querySelectorAll('.btnRacikObat').forEach(button => {
+            button.addEventListener('click', function() {
+                currentPasienId = this.getAttribute('data-pasien-id');
+            });
+        });
+
+        document.getElementById('btnSiapkanObat').addEventListener('click', function() {
+            if (!currentPasienId) {
+                alert('Pasien tidak ditemukan.');
+                return;
+            }
+
+            fetch(`/apoteker/antrian/update-status/${currentPasienId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.message || 'Gagal memperbarui status antrian.');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message || 'Status antrian berhasil diperbarui.');
+                // Close modal
+                const modalRacikObat = bootstrap.Modal.getInstance(document.getElementById('modalRacikObat'));
+                modalRacikObat.hide();
+                // Optionally reload page or update UI
+                location.reload();
+            })
+            .catch(error => {
+                alert(error.message);
             });
         });
     });

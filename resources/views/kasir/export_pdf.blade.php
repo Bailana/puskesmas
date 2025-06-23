@@ -39,7 +39,21 @@
     </style>
 </head>
 <body>
-    <h2>Rekapan Tagihan Pasien</h2>
+    <div style="text-align: center; margin-bottom: 20px;">
+        @php
+            $path = public_path('template/images/logo_puskesmas.png');
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        @endphp
+        <img src="{{ $base64 }}" alt="Logo Puskesmas" style="width: 80px; height: 80px;">
+        <h1 style="margin: 0;">UPT Puskesmas Pujud</h1>
+        <p style="margin: 0;">Jl. Raya Pujud No. 123, Kecamatan Pujud, Kabupaten Rokan Hilir, Riau</p>
+        <p style="margin: 0;">Telp: (0765) 1234567 | Email: info@puskesmaspujud.go.id</p>
+        <hr style="margin-top: 10px; border: 1px solid #000;">
+    </div>
+
+    <h2 style="text-align: center;">Rekapan Tagihan Pasien</h2>
     <table>
         <thead>
             <tr>
@@ -72,5 +86,13 @@
             @endforeach
         </tbody>
     </table>
+
+    <div style="margin-top: 50px; text-align: right;">
+        <p>Rokan Hilir, {{ \Carbon\Carbon::now()->locale('id')->isoFormat('DD MMMM YYYY') }}</p>
+        <p>Mengetahui,</p>
+        <br><br><br>
+        <p><strong>__________________________</strong></p>
+        <p><em>Kasir UPT Puskesmas Pujud</em></p>
+    </div>
 </body>
 </html>

@@ -43,7 +43,7 @@ class TagihanExport
             $sheet->setCellValue('C' . $row, $tagihan->pasien->no_rekam_medis ?? '');
             $sheet->setCellValue('D' . $row, $tagihan->pasien->nama_pasien ?? '');
             $sheet->setCellValue('E' . $row, $tagihan->pasien->jaminan_kesehatan ?? '');
-            $sheet->setCellValue('F' . $row, $tagihan->total_biaya);
+            $sheet->setCellValueExplicit('F' . $row, 'Rp ' . number_format($tagihan->total_biaya * 1000, 0, ',', '.'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $sheet->setCellValue('G' . $row, $tagihan->status);
             $row++;
         }
