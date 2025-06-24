@@ -19,6 +19,10 @@ Route::middleware(['auth', 'role:apoteker'])->group(function () {
     Route::put('/apoteker/obat/{id}', [ApotekerDashboardController::class, 'updateObat'])->name('apoteker.obat.update');
     Route::delete('/apoteker/obat/{id}', [ApotekerDashboardController::class, 'destroyObat'])->name('apoteker.obat.destroy');
 
+    // Export routes for obat
+    Route::get('/apoteker/obat/export-pdf', [ApotekerDashboardController::class, 'exportPdf'])->name('apoteker.obat.exportPdf');
+    Route::get('/apoteker/obat/export-excel', [ApotekerDashboardController::class, 'exportExcel'])->name('apoteker.obat.exportExcel');
+
     // Add route for apoteker getHasilPeriksa
     Route::get('/apoteker/hasil-periksa/{pasienId}', [ApotekerDashboardController::class, 'getHasilPeriksa'])->name('apoteker.hasil.periksa');
 

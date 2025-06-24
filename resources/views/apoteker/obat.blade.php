@@ -19,7 +19,12 @@
                             data-bs-toggle="modal" data-bs-target="#filterModal">
                             <i class="fas fa-filter"></i> Filter
                         </button>
-                        <!-- Export buttons can be added here if needed -->
+                        <a href="{{ route('apoteker.obat.exportPdf', request()->query()) }}" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1" title="Export PDF" target="_blank">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </a>
+                        <a href="{{ route('apoteker.obat.exportExcel', request()->query()) }}" class="btn btn-outline-success btn-sm d-flex align-items-center gap-1" title="Export Excel" target="_blank">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </a>
                     </form>
                     <button type="button" class="btn btn-success btn-lg" style="padding: 5px 10px; font-size: 0.9rem;"
                         data-bs-toggle="modal" data-bs-target="#modalTambahObat">

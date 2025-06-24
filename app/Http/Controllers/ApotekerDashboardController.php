@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Obat;
@@ -22,6 +23,44 @@ class ApotekerDashboardController extends Controller
             ->paginate(5);
 
         return view('apoteker.dashboard', compact('antrians'));
+    }
+
+    public function obat(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = \App\Models\Obat::query();
+
+        if ($search) {
+            $query->where('nama_obat', 'like', '%' . $search . '%')
+                  ->orWhere('jenis_obat', 'like', '%' . $search . '%')
+                  ->orWhere('bentuk_obat', 'like', '%' . $search . '%')
+                  ->orWhere('nama_pabrikan', 'like', '%' . $search . '%');
+        }
+
+        $obats = $query->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json($obats);
+        }
+
+        return view('apoteker.obat', compact('obats'));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $filters = $request->all();
+        $fileName = 'data_obat_' . date('Ymd_His') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ObatExport($filters), $fileName);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $filters = $request->all();
+        $fileName = 'data_obat_' . date('Ymd_His') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ObatExport($filters), $fileName);
     }
 
     public function updateAntrianStatus(Request $request, $pasienId)
@@ -175,78 +214,6 @@ class ApotekerDashboardController extends Controller
         }
 
         return view('apoteker.pasien', compact('pasiens'));
-    }
-
-    public function obat(Request $request)
-    {
-        $search = $request->input('search');
-
-        $nama_obat = $request->input('nama_obat');
-        $jenis_obat = $request->input('jenis_obat');
-        $dosis = $request->input('dosis');
-        $bentuk_obat = $request->input('bentuk_obat');
-        $stok = $request->input('stok');
-        $harga_satuan = $request->input('harga_satuan');
-        $tanggal_kadaluarsa = $request->input('tanggal_kadaluarsa');
-        $nama_pabrikan = $request->input('nama_pabrikan');
-
-        $query = Obat::query();
-
-        // Apply individual filters if present and not empty
-        if (!empty($nama_obat)) {
-            $query->where('nama_obat', 'like', '%' . $nama_obat . '%');
-        }
-        if (!empty($jenis_obat)) {
-            $query->where('jenis_obat', 'like', '%' . $jenis_obat . '%');
-        }
-        if (!empty($dosis)) {
-            $query->where('dosis', 'like', '%' . $dosis . '%');
-        }
-        if (!empty($bentuk_obat)) {
-            $query->where('bentuk_obat', 'like', '%' . $bentuk_obat . '%');
-        }
-        if (!empty($stok)) {
-            $query->where('stok', $stok);
-        }
-        if (!empty($harga_satuan)) {
-            $query->where('harga_satuan', $harga_satuan);
-        }
-        if (!empty($tanggal_kadaluarsa)) {
-            $query->where('tanggal_kadaluarsa', $tanggal_kadaluarsa);
-        }
-        if (!empty($nama_pabrikan)) {
-            $query->where('nama_pabrikan', 'like', '%' . $nama_pabrikan . '%');
-        }
-
-        // Apply general search if present
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_obat', 'like', '%' . $search . '%')
-                  ->orWhere('jenis_obat', 'like', '%' . $search . '%')
-                  ->orWhere('bentuk_obat', 'like', '%' . $search . '%')
-                  ->orWhere('stok', 'like', '%' . $search . '%')
-                  ->orWhere('harga_satuan', 'like', '%' . $search . '%')
-                  ->orWhere('tanggal_kadaluarsa', 'like', '%' . $search . '%');
-            });
-        }
-
-        $obats = $query->paginate(10)->withQueryString();
-
-        if ($request->ajax()) {
-            return response()->json([
-                'data' => $obats->items(),
-                'pagination' => [
-                    'total' => $obats->total(),
-                    'per_page' => $obats->perPage(),
-                    'current_page' => $obats->currentPage(),
-                    'last_page' => $obats->lastPage(),
-                    'from' => $obats->firstItem(),
-                    'to' => $obats->lastItem(),
-                ],
-            ]);
-        }
-
-        return view('apoteker.obat', compact('obats'));
     }
 
     public function storeObat(Request $request)
