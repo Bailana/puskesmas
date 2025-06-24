@@ -8,6 +8,9 @@ use App\Http\Controllers\ApotekerDashboardController;
 use App\Http\Controllers\KasirDashboardController;
 use App\Http\Controllers\GigiDashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PerawatHasilAnalisaController;
+use App\Http\Controllers\PerawatProfileController;
+use App\Http\Controllers\PasienController;
 
 Route::middleware(['auth', 'role:apoteker'])->group(function () {
     Route::get('/apoteker/pasien', [ApotekerDashboardController::class, 'pasien'])->name('apoteker.pasien');
@@ -46,6 +49,25 @@ Route::middleware(['auth', 'role:resepsionis'])->group(function () {
 Route::middleware(['auth', 'role:doktergigi'])->group(function () {
     Route::get('/gigi/riwayat-berobat/{no_rekam_medis}', [\App\Http\Controllers\GigiDashboardController::class, 'getRiwayatBerobat'])->name('gigi.riwayat.berobat');
     Route::get('/gigi/hasil-periksa-detail/{no_rekam_medis}/{tanggal}', [\App\Http\Controllers\GigiDashboardController::class, 'getHasilPeriksaDetail'])->name('gigi.hasil.periksa.detail');
+});
+
+Route::middleware(['auth', 'role:perawat'])->group(function () {
+    Route::get('/perawat/dashboard', function () {
+        return view('perawat.dashboard');
+    })->name('perawat.dashboard');
+
+    // Hapus route antrian duplikat, gunakan controller agar konsisten
+    Route::get('/perawat/antrian', [PerawatDashboardController::class, 'antrian'])->name('perawat.antrian');
+
+    Route::get('/perawat/pasien', [PerawatDashboardController::class, 'pasien'])->name('perawat.pasien');
+    Route::get('/perawat/pasien/detail/{no_rekam_medis}', [PerawatDashboardController::class, 'getPatientDetail'])->name('perawat.pasien.detail');
+    Route::get('/perawat/pasien/detail-by-id/{pasien_id}', [PerawatDashboardController::class, 'getPatientDetailById'])->name('perawat.pasien.detailbyid');
+
+    // Pastikan hanya satu route store hasil analisa
+    Route::post('/perawat/hasilanalisa/store', [PerawatHasilAnalisaController::class, 'store'])->name('perawat.hasilanalisa.store');
+
+    Route::get('/perawat/profile', [PerawatProfileController::class, 'show'])->name('perawat.profile');
+    Route::post('/perawat/profile', [PerawatProfileController::class, 'update'])->name('perawat.profile.update');
 });
 
 Route::get('/', function () {

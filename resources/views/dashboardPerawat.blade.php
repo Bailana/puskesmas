@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -22,12 +23,12 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script> -->
 
     <link href="{{url('dokterAssets/css/app.css')}}" rel="stylesheet">
+    <link href="{{url('dokterAssets/css/custom-pagination.css')}}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- SweetAlert JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <!-- SweetAlert CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 </head>
 
@@ -41,12 +42,12 @@
                     <span class="align-middle">UPT PUSKESMAS PUJUD</span>
                 </div>
                 <ul class="sidebar-nav">
-                    <li class="sidebar-item {{ Request::is('perawat') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/perawat') }}">
-                            <i class="align-middle" data-feather="sliders"></i>
-                            <span class="align-middle">Dashboard</span>
-                        </a>
-                    </li>
+<li class="sidebar-item {{ Request::is('perawat') || Request::is('perawat/dashboard') ? 'active' : '' }}">
+    <a class="sidebar-link" href="{{ url('/perawat/dashboard') }}">
+        <i class="align-middle" data-feather="sliders"></i>
+        <span class="align-middle">Dashboard</span>
+    </a>
+</li>
 
                     <li class="sidebar-item {{ Request::is('perawat/pasien') ? 'active' : '' }}">
                         <a class="sidebar-link" href="{{ url('/perawat/pasien') }}">
@@ -62,8 +63,8 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-item {{ Request::is('jadwal') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/jadwal') }}">
+                    <li class="sidebar-item {{ Request::is('perawat/jadwaldokter') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ url('/perawat/jadwaldokter') }}">
                             <i class="align-middle" data-feather="clipboard"></i>
                             <span class="align-middle">Jadwal Dokter</span>
                         </a>
@@ -168,21 +169,15 @@
 
                             <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#"
                                 data-bs-toggle="dropdown">
-                                <img src="{{url('dokterAssets/img/avatars/avatar.jpg')}}"
-                                    class="avatar img-fluid rounded me-1" alt="Charles Hall" />
-                                <span class="text-dark">{{ Auth::user()->name }}</span>
+<img id="navbarProfilePhoto" src="{{ auth()->user()->profile_photo_path ? asset('storage/' . auth()->user()->profile_photo_path) : url('dokterAssets/img/avatars/avatar.jpg') }}"
+    class="avatar img-fluid rounded me-1" alt="Profile Photo" />
+    <span class="text-dark">{{ Auth::user()->name }}</span>
 
                             </a>
                             <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="{{ url('/perawat') }}">
-                                    <i class="align-middle me-1" data-feather="user"></i> Profile
-                                </a>
-                                <a class="dropdown-item" href="#"><i class="align-middle me-1"
-                                        data-feather="pie-chart"></i> Analytics</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="index.html"><i class="align-middle me-1"
-                                        data-feather="settings"></i> Settings & Privacy</a>
-                                <div class="dropdown-divider"></div>
+<a class="dropdown-item" href="{{ route('perawat.profile') }}">
+    <i class="align-middle me-1" data-feather="user"></i> Profile
+</a>
                                 <form method="POST" action="{{ route('logout') }}" id="logout-form">
                                     @csrf
                                     <button type="button" class="dropdown-item" onclick="logoutConfirmation()">Log out</button>
@@ -204,26 +199,10 @@
                             <p class="mb-0">
                                 <a class="text-muted" href="https://adminkit.io/"
                                     target="_blank"><strong>AdminKit</strong></a> - <a class="text-muted"
-                                    href="https://adminkit.io/" target="_blank"><strong>Bootstrap Admin
-                                        Template</strong></a> &copy;
+                                    href="https://adminkit.io/" target="_blank"><strong>© 2025 UPT Puskesmas Pujud. All Rights Reserved</strong></a> &copy;
                             </p>
                         </div>
                         <div class="col-6 text-end">
-                            <ul class="list-inline">
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Support</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Help Center</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Privacy</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Terms</a>
-                                </li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
             </footer>
@@ -369,7 +348,7 @@
             const minutes = now.getMinutes().toString().padStart(2, '0');
             const seconds = now.getSeconds().toString().padStart(2, '0');
 
-            timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+            timeElement.textContent = ${hours}:${minutes}:${seconds};
         }
 
         setInterval(updateTime, 1000); // Perbarui setiap detik
@@ -398,6 +377,7 @@
 
     </script>
 
+    @yield('scripts')
 </body>
 
 </html>
