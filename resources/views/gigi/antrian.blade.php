@@ -24,7 +24,6 @@
                                 <th>Umur</th>
                                 <th class="col-jamkes">JamKes</th>
                                 <!-- Removed Poli Tujuan column as per user request -->
-                                <th>Tgl. Berobat</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
@@ -38,7 +37,6 @@
                                 <td>{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
                                 <td>{{ $antrian->pasien->jaminan_kesehatan }}</td>
                                 <!-- Removed Poli Tujuan data cell as per user request -->
-                                <td>{{ \Carbon\Carbon::parse($antrian->tanggal_berobat)->format('d-m-Y') }}</td>
                                 <td><span class="badge bg-warning">{{ $antrian->status }}</span></td>
                                 <td>
                                     <button type="button" class="btn btn-success btn-sm rounded" data-bs-toggle="modal"

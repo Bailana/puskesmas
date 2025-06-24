@@ -106,7 +106,7 @@
                             <th>Nama Pasien</th>
                             <th>Umur</th>
                             <th>JamKes</th>
-                            <th>Tgl. Berobat</th>
+                            
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -123,7 +123,7 @@
                             <td>{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
                             <td>{{ $antrian->pasien->jaminan_kesehatan }}</td>
                             <!-- Removed Poli Tujuan data cell as per user request -->
-                            <td>{{ \Carbon\Carbon::parse($antrian->tanggal_berobat)->format('d-m-Y') }}</td>
+                            
                             <td>
                                 @if ($antrian->status == 'Perlu Analisa')
                                 <span class="badge bg-danger">{{ $antrian->status }}</span>

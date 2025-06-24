@@ -10,6 +10,8 @@ use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Obat;
 use App\Models\HasilPeriksa;
+use App\Exports\ObatExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ApotekerDashboardController extends Controller
 {
@@ -50,9 +52,49 @@ class ApotekerDashboardController extends Controller
     public function exportPdf(Request $request)
     {
         $filters = $request->all();
-        $fileName = 'data_obat_' . date('Ymd_His') . '.xlsx';
 
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ObatExport($filters), $fileName);
+        $query = \App\Models\Obat::query();
+
+        if (!empty($filters['nama_obat'])) {
+            $query->where('nama_obat', 'like', '%' . $filters['nama_obat'] . '%');
+        }
+        if (!empty($filters['jenis_obat'])) {
+            $query->where('jenis_obat', 'like', '%' . $filters['jenis_obat'] . '%');
+        }
+        if (!empty($filters['dosis'])) {
+            $query->where('dosis', 'like', '%' . $filters['dosis'] . '%');
+        }
+        if (!empty($filters['bentuk_obat'])) {
+            $query->where('bentuk_obat', 'like', '%' . $filters['bentuk_obat'] . '%');
+        }
+        if (!empty($filters['stok'])) {
+            $query->where('stok', $filters['stok']);
+        }
+        if (!empty($filters['harga_satuan'])) {
+            $query->where('harga_satuan', $filters['harga_satuan']);
+        }
+        if (!empty($filters['tanggal_kadaluarsa'])) {
+            $query->where('tanggal_kadaluarsa', $filters['tanggal_kadaluarsa']);
+        }
+        if (!empty($filters['nama_pabrikan'])) {
+            $query->where('nama_pabrikan', 'like', '%' . $filters['nama_pabrikan'] . '%');
+        }
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_obat', 'like', '%' . $search . '%')
+                  ->orWhere('jenis_obat', 'like', '%' . $search . '%')
+                  ->orWhere('bentuk_obat', 'like', '%' . $search . '%')
+                  ->orWhere('stok', 'like', '%' . $search . '%')
+                  ->orWhere('harga_satuan', 'like', '%' . $search . '%')
+                  ->orWhere('tanggal_kadaluarsa', 'like', '%' . $search . '%');
+            });
+        }
+
+        $obats = $query->get();
+
+        $export = new ObatExport($obats);
+        return $export->export();
     }
 
     public function exportExcel(Request $request)
