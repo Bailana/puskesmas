@@ -67,7 +67,9 @@ Route::middleware(['auth', 'role:perawat'])->group(function () {
     Route::post('/perawat/hasilanalisa/store', [PerawatHasilAnalisaController::class, 'store'])->name('perawat.hasilanalisa.store');
 
     Route::get('/perawat/profile', [PerawatProfileController::class, 'show'])->name('perawat.profile');
-    Route::post('/perawat/profile', [PerawatProfileController::class, 'update'])->name('perawat.profile.update');
+    Route::patch('/perawat/profile', [PerawatProfileController::class, 'update'])->name('perawat.profile.update');
+
+    Route::get('/perawat/jadwal-dokter', [PerawatDashboardController::class, 'jadwalDokter'])->name('perawat.jadwaldokter');
 });
 
 Route::get('/', function () {

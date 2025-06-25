@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -16,19 +15,19 @@
     <!-- <link rel="shortcut icon" href="{{url('dokterAssets/img/icons/icon-48x48.png')}}" /> -->
 
     <link rel="canonical" href="https://demo-basic.adminkit.io/" />
-    <title>Perawat | UPT Puskesmas Pujud</title>
+    <title>Bidan | UPT Puskesmas Pujud</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ url('template/images/logo_puskesmas.png') }}">
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script> -->
 
     <link href="{{url('dokterAssets/css/app.css')}}" rel="stylesheet">
-    <link href="{{url('dokterAssets/css/custom-pagination.css')}}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- SweetAlert JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
 
 </head>
 
@@ -36,35 +35,35 @@
     <div class="wrapper">
         <nav id="sidebar" class="sidebar js-sidebar">
             <div class="sidebar-content js-simplebar">
-                <div class="sidebar-brand d-flex align-items-center" href="{{ url('/perawat') }}">
+                <div class="sidebar-brand d-flex align-items-center" href="{{ url('/bidan') }}">
                     <img src="{{ url('template/images/logo_puskesmas.png') }}" alt="Logo"
                         style="width: 50px; height: 50px; margin-right: 10px;">
                     <span class="align-middle">UPT PUSKESMAS PUJUD</span>
                 </div>
                 <ul class="sidebar-nav">
-                    <li class="sidebar-item {{ Request::is('perawat') || Request::is('perawat/dashboard') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/perawat/dashboard') }}">
-                            <i class="align-middle" data-feather="sliders"></i>
-                            <span class="align-middle">Dashboard</span>
-                        </a>
-                    </li>
+<li class="sidebar-item {{ Request::is('bidan') || Request::is('bidan/dashboard') ? 'active' : '' }}">
+    <a class="sidebar-link" href="{{ url('/bidan/dashboard') }}">
+        <i class="align-middle" data-feather="sliders"></i>
+        <span class="align-middle">Dashboard</span>
+    </a>
+</li>
 
-                    <li class="sidebar-item {{ Request::is('perawat/pasien') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/perawat/pasien') }}">
+                    <li class="sidebar-item {{ Request::is('bidan/pasien') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ url('/bidan/pasien') }}">
                             <i class="align-middle" data-feather="user"></i>
                             <span class="align-middle">Data Pasien</span>
                         </a>
                     </li>
 
-                    <li class="sidebar-item {{ Request::is('perawat/antrian') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/perawat/antrian') }}">
+                    <li class="sidebar-item {{ Request::is('bidan/antrian') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ url('/bidan/antrian') }}">
                             <i class="align-middle" data-feather="users"></i>
                             <span class="align-middle">Antrian</span>
                         </a>
                     </li>
 
-                    <li class="sidebar-item {{ Request::routeIs('perawat.jadwaldokter') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ route('perawat.jadwaldokter') }}">
+                    <li class="sidebar-item {{ Request::is('bidan/jadwaldokter') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('bidan.jadwaldokter') }}">
                             <i class="align-middle" data-feather="clipboard"></i>
                             <span class="align-middle">Jadwal Dokter</span>
                         </a>
@@ -80,8 +79,9 @@
                     <i class="hamburger align-self-center"></i>
                 </a>
 
-                <div class="navbar-collapse collapse">
-                    <ul class="navbar-nav navbar-align live-time text-dark fw-bold ms-auto me-0">
+                <div class="navbar-collapse collapse d-flex justify-content-center position-relative">
+                    <ul class="navbar-nav navbar-align live-time text-dark fw-bold position-absolute start-50 translate-middle-x"
+                        style="margin: 0;">
                         <!-- Element untuk menampilkan live time -->
                         <li class="nav-item">
                             <div id="live-time" class="text-dark fw-bold"></div>
@@ -168,15 +168,15 @@
 
                             <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#"
                                 data-bs-toggle="dropdown">
-                                <img id="navbarProfilePhoto" src="{{ auth()->user()->profile_photo_path ? asset('storage/' . auth()->user()->profile_photo_path) : url('dokterAssets/img/avatars/avatar.jpg') }}"
-                                    class="avatar img-fluid rounded me-1" alt="Profile Photo" />
-                                <span class="text-dark">{{ Auth::user()->name }}</span>
+<img id="navbarProfilePhoto" src="{{ auth()->user()->profile_photo_path ? asset('storage/' . auth()->user()->profile_photo_path) : url('dokterAssets/img/avatars/avatar.jpg') }}"
+    class="avatar img-fluid rounded me-1" alt="Profile Photo" />
+    <span class="text-dark">{{ Auth::user()->name }}</span>
 
                             </a>
                             <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="{{ route('perawat.profile') }}">
-                                    <i class="align-middle me-1" data-feather="user"></i> Profile
-                                </a>
+<a class="dropdown-item" href="{{ route('bidan.profile') }}">
+    <i class="align-middle me-1" data-feather="user"></i> Profile
+</a>
                                 <form method="POST" action="{{ route('logout') }}" id="logout-form">
                                     @csrf
                                     <button type="button" class="dropdown-item" onclick="logoutConfirmation()">Log out</button>
@@ -188,7 +188,7 @@
             </nav>
 
             <main class="content">
-                @yield('perawat')
+                @yield('bidan')
             </main>
 
             <footer class="footer">
@@ -202,8 +202,8 @@
                             </p>
                         </div>
                         <div class="col-6 text-end">
-                        </div>
                     </div>
+                </div>
             </footer>
         </div>
     </div>
@@ -218,26 +218,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Fungsi Pencarian
-            $("#searchInput").on("keyup", function() {
+            $("#searchInput").on("keyup", function () {
                 var value = $(this).val().toLowerCase(); // Ambil input pencarian
-                $("#antrianTable tbody tr").filter(function() {
+                $("#antrianTable tbody tr").filter(function () {
                     $(this).toggle(
                         $(this).text().toLowerCase().indexOf(value) > -1
                     );
                 });
-                $("#dataPasienTabel tbody tr").filter(function() {
+                $("#dataPasienTabel tbody tr").filter(function () {
                     $(this).toggle(
                         $(this).text().toLowerCase().indexOf(value) > -1
                     );
                 });
             });
         });
+
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // Doughnut chart
             new Chart(document.getElementById("chartjs-doughnut"), {
                 type: "doughnut",
@@ -266,10 +267,11 @@
                 }
             });
         });
+
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // Line chart
             new Chart(document.getElementById("chartjs-line"), {
                 type: "line",
@@ -334,20 +336,23 @@
                 }
             });
         });
+
     </script>
 
     <script>
         function updateTime() {
             const timeElement = document.getElementById('live-time');
-            if (!timeElement) return;
             const now = new Date();
             const hours = now.getHours().toString().padStart(2, '0');
             const minutes = now.getMinutes().toString().padStart(2, '0');
             const seconds = now.getSeconds().toString().padStart(2, '0');
-            timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+
+            timeElement.textContent = ${hours}:${minutes}:${seconds};
         }
-        setInterval(updateTime, 1000);
-        updateTime();
+
+        setInterval(updateTime, 1000); // Perbarui setiap detik
+        updateTime(); // Panggil sekali saat halaman dimuat
+
     </script>
 
     <script>
@@ -368,9 +373,10 @@
                 }
             })
         }
+
     </script>
 
-    @yield('scripts')
 </body>
 
 </html>
+</create_file>

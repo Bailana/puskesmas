@@ -64,7 +64,9 @@ class PerawatHasilAnalisaController extends Controller
             $hasil = Hasilanalisa::create($validatedData);
 
             // Update status dan poli_id pada tabel antrian
-            $antrian = Antrian::where('pasien_id', $validatedData['pasien_id'])->where('status', 'Perlu Analisa')->first();
+            $antrian = Antrian::where('pasien_id', $validatedData['pasien_id'])
+                ->whereIn('status', ['Antri', 'Perlu Analisa'])
+                ->first();
             if ($antrian) {
                 $antrian->status = 'Pemeriksaan';
                 $antrian->poli_id = $validatedData['poli_tujuan'];

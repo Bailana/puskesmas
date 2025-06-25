@@ -36,7 +36,7 @@ class PerawatDashboardController extends Controller
                   ;
             });
         }
-        $antrians = $antrians->orderBy('created_at', 'desc')->paginate(10);
+        $antrians = $antrians->orderBy('id', 'asc')->paginate(5);
         if ($request->ajax()) {
             // Kirim data dengan relasi pasien secara eksplisit
             $antrians->getCollection()->transform(function($antrian) {
@@ -90,7 +90,7 @@ class PerawatDashboardController extends Controller
             });
         }
 
-        $pasiens = $pasiens->paginate(1);
+        $pasiens = $pasiens->paginate(5);
 
         if ($request->ajax()) {
             return response()->json($pasiens);
@@ -127,5 +127,14 @@ class PerawatDashboardController extends Controller
         }
         Log::info('Pasien ditemukan', ['pasien' => $pasien]);
         return response()->json($pasien);
+    }
+
+    /**
+     * Tampilkan jadwal dokter untuk perawat
+     */
+    public function jadwalDokter()
+    {
+        $jadwalDokters = \App\Models\JadwalDokter::all();
+        return view('perawat.jadwaldokter', compact('jadwalDokters'));
     }
 }

@@ -13,7 +13,8 @@
         bottom: 0;
         width: 100%;
         background: #fff;
-        /* border-top: 1px solid #dee2e6; */ /* Hapus garis atas */
+        /* border-top: 1px solid #dee2e6; */
+        /* Hapus garis atas */
         z-index: 10;
         padding: 16px 24px 16px 24px;
         display: flex;
@@ -24,7 +25,8 @@
     .modal-analisa-body-scroll {
         max-height: 400px;
         overflow-y: auto;
-        padding-bottom: 40px !important; /* Kurangi ruang kosong bawah */
+        padding-bottom: 40px !important;
+        /* Kurangi ruang kosong bawah */
     }
 
     .modal-analisa-position-relative {
@@ -59,57 +61,61 @@
                         </thead>
                         <tbody id="antrianTbody">
                             @if(isset($antrians))
-                                @forelse($antrians as $index => $antrian)
-                                    <tr>
-                                        <td style="white-space: nowrap;">{{ $index + 1 }}</td>
-                                        <td style="white-space: nowrap;">{{ $antrian->no_rekam_medis }}</td>
-                                        <td style="white-space: nowrap;">{{ $antrian->pasien ? $antrian->pasien->nama_pasien : 'Data Pasien Tidak Ditemukan' }}</td>
-                                        <td style="white-space: nowrap;">
-                                            @if($antrian->pasien && $antrian->pasien->tanggal_lahir)
-                                                {{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td style="white-space: nowrap;">{{ $antrian->pasien ? $antrian->pasien->jaminan_kesehatan : '-' }}</td>
-                                        <td style="white-space: nowrap;"><span class="badge bg-danger">{{ $antrian->status }}</span></td>
-                                        <td style="white-space: nowrap;">
-                                            <button type="button" class="btn btn-primary btn-sm rounded btn-analisa"
-                                                data-rekam-medis="{{ $antrian->no_rekam_medis }}"
-                                                data-pasien-id="{{ $antrian->pasien ? $antrian->pasien->id : '' }}"
-                                                data-nama="{{ $antrian->pasien ? $antrian->pasien->nama_pasien : '' }}"
-                                                data-tanggal-lahir="{{ $antrian->pasien ? $antrian->pasien->tanggal_lahir : '' }}"
-                                                data-bs-toggle="modal" data-bs-target="#modalAnalisa">Analisa</button>
-                                            <button type="button" class="btn btn-info btn-sm rounded btn-selengkapnya"
-                                                data-bs-toggle="modal" data-bs-target="#modalPasienDetail"
-                                                data-no-rekam-medis="{{ $antrian->no_rekam_medis }}"
-                                                data-nik="{{ $antrian->pasien ? $antrian->pasien->nik : '' }}"
-                                                data-nama="{{ $antrian->pasien ? $antrian->pasien->nama_pasien : '' }}"
-                                                data-tempat-lahir="{{ $antrian->pasien ? $antrian->pasien->tempat_lahir : '' }}"
-                                                data-tanggal-lahir="{{ $antrian->pasien ? $antrian->pasien->tanggal_lahir : '' }}"
-                                                data-jenis-kelamin="{{ $antrian->pasien ? $antrian->pasien->jenis_kelamin : '' }}"
-                                                data-golongan-darah="{{ $antrian->pasien ? $antrian->pasien->gol_darah : '' }}"
-                                                data-agama="{{ $antrian->pasien ? $antrian->pasien->agama : '' }}"
-                                                data-pekerjaan="{{ $antrian->pasien ? $antrian->pasien->pekerjaan : '' }}"
-                                                data-status-pernikahan="{{ $antrian->pasien ? $antrian->pasien->status_pernikahan : '' }}"
-                                                data-kepala-keluarga="{{ $antrian->pasien ? $antrian->pasien->kepala_keluarga : '' }}"
-                                                data-no-hp="{{ $antrian->pasien ? $antrian->pasien->no_hp : '' }}"
-                                                data-alamat="{{ $antrian->pasien ? $antrian->pasien->alamat_jalan : '' }}"
-                                                data-rt="{{ $antrian->pasien ? $antrian->pasien->rt : '' }}"
-                                                data-rw="{{ $antrian->pasien ? $antrian->pasien->rw : '' }}"
-                                                data-kelurahan="{{ $antrian->pasien ? $antrian->pasien->kelurahan : '' }}"
-                                                data-kecamatan="{{ $antrian->pasien ? $antrian->pasien->kecamatan : '' }}"
-                                                data-kabupaten="{{ $antrian->pasien ? $antrian->pasien->kabupaten : '' }}"
-                                                data-provinsi="{{ $antrian->pasien ? $antrian->pasien->provinsi : '' }}"
-                                                data-jaminan="{{ $antrian->pasien ? $antrian->pasien->jaminan_kesehatan : '' }}"
-                                                data-no-kepesertaan="{{ $antrian->pasien ? $antrian->pasien->nomor_kepesertaan : '' }}">
-                                                Selengkapnya
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr><td colspan="7" class="text-center">Antrian pasien tidak ditemukan</td></tr>
-                                @endforelse
+                            @forelse($antrians as $index => $antrian)
+                            <tr>
+                                <td style="white-space: nowrap;">{{ $antrians->firstItem() + $index }}</td>
+                                <td style="white-space: nowrap;">{{ $antrian->no_rekam_medis }}</td>
+                                <td style="white-space: nowrap;">{{ $antrian->pasien ? $antrian->pasien->nama_pasien : 'Data Pasien Tidak Ditemukan' }}</td>
+                                <td style="white-space: nowrap;">
+                                    @if($antrian->pasien && $antrian->pasien->tanggal_lahir)
+                                    {{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun
+                                    @else
+                                    -
+                                    @endif
+                                </td>
+                                <td style="white-space: nowrap;">{{ $antrian->pasien ? $antrian->pasien->jaminan_kesehatan : '-' }}</td>
+                                <td style="white-space: nowrap;"><span class="badge bg-danger">{{ $antrian->status }}</span></td>
+                                <td style="white-space: nowrap;">
+                                    <button type="button" class="btn btn-primary btn-sm rounded btn-analisa"
+                                        data-rekam-medis="{{ $antrian->no_rekam_medis }}"
+                                        data-pasien-id="{{ $antrian->pasien ? $antrian->pasien->id : '' }}"
+                                        data-nama="{{ $antrian->pasien ? $antrian->pasien->nama_pasien : '' }}"
+                                        data-tanggal-lahir="{{ $antrian->pasien ? $antrian->pasien->tanggal_lahir : '' }}"
+                                        data-bs-toggle="modal" data-bs-target="#modalAnalisa"
+                                        @if(!$antrian->pasien) disabled @endif>Analisa</button>
+                                    <button type="button" class="btn btn-info btn-sm rounded btn-selengkapnya"
+                                        data-bs-toggle="modal" data-bs-target="#modalPasienDetail"
+                                        data-no-rekam-medis="{{ $antrian->no_rekam_medis }}"
+                                        data-nik="{{ $antrian->pasien ? $antrian->pasien->nik : '' }}"
+                                        data-nama="{{ $antrian->pasien ? $antrian->pasien->nama_pasien : '' }}"
+                                        data-tempat-lahir="{{ $antrian->pasien ? $antrian->pasien->tempat_lahir : '' }}"
+                                        data-tanggal-lahir="{{ $antrian->pasien ? $antrian->pasien->tanggal_lahir : '' }}"
+                                        data-jenis-kelamin="{{ $antrian->pasien ? $antrian->pasien->jenis_kelamin : '' }}"
+                                        data-golongan-darah="{{ $antrian->pasien ? $antrian->pasien->gol_darah : '' }}"
+                                        data-agama="{{ $antrian->pasien ? $antrian->pasien->agama : '' }}"
+                                        data-pekerjaan="{{ $antrian->pasien ? $antrian->pasien->pekerjaan : '' }}"
+                                        data-status-pernikahan="{{ $antrian->pasien ? $antrian->pasien->status_pernikahan : '' }}"
+                                        data-kepala-keluarga="{{ $antrian->pasien ? $antrian->pasien->kepala_keluarga : '' }}"
+                                        data-no-hp="{{ $antrian->pasien ? $antrian->pasien->no_hp : '' }}"
+                                        data-alamat="{{ $antrian->pasien ? $antrian->pasien->alamat_jalan : '' }}"
+                                        data-rt="{{ $antrian->pasien ? $antrian->pasien->rt : '' }}"
+                                        data-rw="{{ $antrian->pasien ? $antrian->pasien->rw : '' }}"
+                                        data-kelurahan="{{ $antrian->pasien ? $antrian->pasien->kelurahan : '' }}"
+                                        data-kecamatan="{{ $antrian->pasien ? $antrian->pasien->kecamatan : '' }}"
+                                        data-kabupaten="{{ $antrian->pasien ? $antrian->pasien->kabupaten : '' }}"
+                                        data-provinsi="{{ $antrian->pasien ? $antrian->pasien->provinsi : '' }}"
+                                        data-jaminan="{{ $antrian->pasien ? $antrian->pasien->jaminan_kesehatan : '' }}"
+                                        data-no-kepesertaan="{{ $antrian->pasien ? $antrian->pasien->nomor_kepesertaan : '' }}"
+                                        @if(!$antrian->pasien) disabled @endif>
+                                        Selengkapnya
+                                    </button>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="text-center">Antrian pasien tidak ditemukan</td>
+                            </tr>
+                            @endforelse
                             @endif
                             <!-- Data antrian akan diisi via JS -->
                         </tbody>
@@ -118,10 +124,63 @@
                 <div class="mt-3 mb-2">
                     <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="small text-muted mb-2 text-start ps-3 pagination-info-text-antrian" style="max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            <!-- Info pagination antrian -->
+                            Showing {{ $antrians->firstItem() }} to {{ $antrians->lastItem() }} of {{ $antrians->total() }} result
                         </div>
                         <nav class="d-flex justify-content-center">
-                            <ul class="pagination d-flex flex-row flex-wrap gap-2" id="antrianPagination" style="list-style-type: none; padding-left: 0; margin-bottom: 0;"></ul>
+                            <ul class="pagination d-flex flex-row flex-wrap gap-2" style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
+                                {{-- Previous Page Link --}}
+                                @if ($antrians->onFirstPage())
+                                    <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
+                                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $antrians->previousPageUrl() }}" rel="prev" aria-label="Previous">&laquo;</a>
+                                    </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @php
+                                    $totalPages = $antrians->lastPage();
+                                    $currentPage = $antrians->currentPage();
+                                    $maxButtons = 3;
+                                    if ($totalPages <= $maxButtons) {
+                                        $start = 1;
+                                        $end = $totalPages;
+                                    } else {
+                                        if ($currentPage == 1) {
+                                            $start = 1;
+                                            $end = 3;
+                                        } elseif ($currentPage == $totalPages) {
+                                            $start = $totalPages - 2;
+                                            $end = $totalPages;
+                                        } else {
+                                            $start = $currentPage - 1;
+                                            $end = $currentPage + 1;
+                                        }
+                                        if ($start < 1) $start = 1;
+                                        if ($end > $totalPages) $end = $totalPages;
+                                    }
+                                @endphp
+                                @for ($i = $start; $i <= $end; $i++)
+                                    @if ($i == $currentPage)
+                                        <li class="page-item active" aria-current="page"><span class="page-link">{{ $i }}</span></li>
+                                    @else
+                                        <li class="page-item"><a class="page-link" href="{{ $antrians->url($i) }}">{{ $i }}</a></li>
+                                    @endif
+                                @endfor
+
+                                {{-- Next Page Link --}}
+                                @if ($antrians->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $antrians->nextPageUrl() }}" rel="next" aria-label="Next">&raquo;</a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled" aria-disabled="true" aria-label="Next">
+                                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                                    </li>
+                                @endif
+                            </ul>
                         </nav>
                     </div>
                 </div>
@@ -287,18 +346,15 @@
                         <select class="form-select" id="selectPoli" name="poli_tujuan" required>
                             <option value="" disabled selected>Pilih Poli</option>
                             <option value="1">Poli Umum</option>
-                            <option value="2">Poli Lansia</option>
-                            <option value="3">Poli KB</option>
-                            <option value="4">Poli KIA</option>
-                            <option value="5">Poli Anak</option>
-                            <option value="6">Poli Gigi</option>
-                            <option value="7">Poli Physiotherapy</option>
+                            <option value="2">Poli Gigi</option>
+                            <option value="3">Poli KIA</option>
+                            <option value="4">Poli Lansia</option>
                         </select>
                     </div>
+                    <div class="modal-footer modal-analisa-footer-fixed">
+                        <button type="submit" class="btn btn-success ms-2" id="btnSimpanAnalisa">Simpan</button>
+                    </div>
                 </form>
-            </div>
-            <div class="modal-footer modal-analisa-footer-fixed">
-                <button type="button" class="btn btn-success ms-2" id="btnSimpanAnalisa">Simpan</button>
             </div>
         </div>
     </div>
@@ -434,236 +490,138 @@
 </div>
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('searchInput');
-        const antrianTbody = document.getElementById('antrianTbody');
-        let timeout = null;
-
-        // Fungsi untuk attach event pada tombol Analisa (agar tetap aktif setelah render ulang)
-        function attachAnalisaButtonEvents() {
-            document.querySelectorAll('.btn-analisa').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    document.getElementById('pasien_id').value = this.getAttribute('data-pasien-id') || '';
-                    document.getElementById('nama_pasien_display').textContent = this.getAttribute('data-nama') || '';
-                });
-            });
-        }
-
-        // Fungsi untuk attach event pada tombol Selengkapnya (modal detail pasien)
-        function attachSelengkapnyaButtonEvents() {
-            document.querySelectorAll('.btn-selengkapnya').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    document.getElementById('modalNoRekamMedis').value = this.getAttribute('data-no-rekam-medis') || '';
-                    document.getElementById('modalNikPasien').value = this.getAttribute('data-nik') || '';
-                    document.getElementById('modalNamaPasien').value = this.getAttribute('data-nama') || '';
-                    document.getElementById('modalTempatLahir').value = this.getAttribute('data-tempat-lahir') || '';
-                    document.getElementById('modalTanggalLahir').value = this.getAttribute('data-tanggal-lahir') || '';
-                    document.getElementById('modalJenisKelamin').value = this.getAttribute('data-jenis-kelamin') || '';
-                    document.getElementById('modalGolonganDarah').value = this.getAttribute('data-golongan-darah') || '';
-                    document.getElementById('modalAgama').value = this.getAttribute('data-agama') || '';
-                    document.getElementById('modalPekerjaan').value = this.getAttribute('data-pekerjaan') || '';
-                    document.getElementById('modalStatusPernikahan').value = this.getAttribute('data-status-pernikahan') || '';
-                    document.getElementById('modalKepalaKeluarga').value = this.getAttribute('data-kepala-keluarga') || '';
-                    document.getElementById('modalNoHp').value = this.getAttribute('data-no-hp') || '';
-                    document.getElementById('modalAlamat').value = this.getAttribute('data-alamat') || '';
-                    document.getElementById('modalRt').value = this.getAttribute('data-rt') || '';
-                    document.getElementById('modalRw').value = this.getAttribute('data-rw') || '';
-                    document.getElementById('modalKelurahan').value = this.getAttribute('data-kelurahan') || '';
-                    document.getElementById('modalKecamatan').value = this.getAttribute('data-kecamatan') || '';
-                    document.getElementById('modalKabupaten').value = this.getAttribute('data-kabupaten') || '';
-                    document.getElementById('modalProvinsi').value = this.getAttribute('data-provinsi') || '';
-                    document.getElementById('modalJaminan').value = this.getAttribute('data-jaminan') || '';
-                    document.getElementById('modalNoKepesertaan').value = this.getAttribute('data-no-kepesertaan') || '';
-                });
-            });
-        }
-
-        // Ambil CSRF token dari meta jika ada (untuk Laravel)
-        function getCsrfToken() {
-            let meta = document.querySelector('meta[name="csrf-token"]');
-            if (meta) return meta.getAttribute('content');
-            let input = document.querySelector('input[name="_token"]');
-            return input ? input.value : '';
-        }
-
-        // Pastikan tidak ada event ganda pada btnSimpanAnalisa
-        function attachSimpanAnalisaEvent() {
-            const btn = document.getElementById('btnSimpanAnalisa');
-            const newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-            newBtn.addEventListener('click', function() {
-                const form = document.getElementById('formAnalisa');
-                // Validasi poli_tujuan dan pasien_id sebelum submit
-                const poli = form.querySelector('[name="poli_tujuan"]');
-                const pasienId = form.querySelector('[name="pasien_id"]');
-                if (!poli.value) {
-                    toastr.error('Pilih poli tujuan terlebih dahulu!');
-                    poli.focus();
-                    return;
-                }
-                if (!pasienId.value) {
-                    toastr.error('Pasien tidak valid!');
-                    return;
-                }
-                const formData = new FormData(form);
-                fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': getCsrfToken()
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        toastr.success(data.message || 'Data analisa berhasil disimpan.');
-                        // Tutup modal dan reset form
-                        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalAnalisa'));
-                        modal.hide();
-                        form.reset();
-                        fetchAntrian();
-                    } else {
-                        if (data.errors) {
-                            // Tampilkan semua error
-                            Object.values(data.errors).flat().forEach(msg => toastr.error(msg));
-                        } else {
-                            toastr.error(data.message || 'Gagal menyimpan data analisa.');
-                        }
-                    }
-                })
-                .catch(err => {
-                    toastr.error('Terjadi kesalahan saat menyimpan data.');
-                    console.error('AJAX error:', err);
-                });
-            });
-        }
-
-        // Fetch antrian data
-        function fetchAntrian(url = null) {
-            let query = searchInput.value;
-            let fetchUrl = url || `{{ route('perawat.antrian') }}?search=${encodeURIComponent(query)}`;
-            fetch(fetchUrl, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.data || data.data.length === 0) {
-                    antrianTbody.innerHTML = '<tr><td colspan="7" class="text-center">Antrian pasien tidak ditemukan</td></tr>';
-                } else {
-                    let rows = '';
-                    data.data.forEach((antrian, index) => {
-                        rows += `
-                            <tr>
-                                <td style="white-space: nowrap;">${data.from + index}</td>
-                                <td style="white-space: nowrap;">${antrian.no_rekam_medis}</td>
-                                <td style="white-space: nowrap;">${antrian.pasien ? antrian.pasien.nama_pasien : 'Data Pasien Tidak Ditemukan'}</td>
-                                <td style="white-space: nowrap;">${antrian.pasien && antrian.pasien.tanggal_lahir ? (new Date(antrian.pasien.tanggal_lahir).getFullYear() ? (new Date().getFullYear() - new Date(antrian.pasien.tanggal_lahir).getFullYear()) + ' tahun' : '-') : '-'}</td>
-                                <td style="white-space: nowrap;">${antrian.pasien ? antrian.pasien.jaminan_kesehatan : '-'}</td>
-                                <td style="white-space: nowrap;"><span class="badge bg-danger">${antrian.status}</span></td>
-                                <td style="white-space: nowrap;">
-                                    <button type="button" class="btn btn-primary btn-sm rounded btn-analisa"
-                                        data-rekam-medis="${antrian.no_rekam_medis}"
-                                        data-pasien-id="${antrian.pasien ? antrian.pasien.id : ''}"
-                                        data-nama="${antrian.pasien ? antrian.pasien.nama_pasien : ''}"
-                                        data-tanggal-lahir="${antrian.pasien ? antrian.pasien.tanggal_lahir : ''}"
-                                        data-bs-toggle="modal" data-bs-target="#modalAnalisa">Analisa</button>
-                                    <button type="button" class="btn btn-info btn-sm rounded btn-selengkapnya"
-                                        data-bs-toggle="modal" data-bs-target="#modalPasienDetail"
-                                        data-no-rekam-medis="${antrian.no_rekam_medis}"
-                                        data-nik="${antrian.pasien ? antrian.pasien.nik : ''}"
-                                        data-nama="${antrian.pasien ? antrian.pasien.nama_pasien : ''}"
-                                        data-tempat-lahir="${antrian.pasien ? antrian.pasien.tempat_lahir : ''}"
-                                        data-tanggal-lahir="${antrian.pasien ? antrian.pasien.tanggal_lahir : ''}"
-                                        data-jenis-kelamin="${antrian.pasien ? antrian.pasien.jenis_kelamin : ''}"
-                                        data-golongan-darah="${antrian.pasien ? antrian.pasien.gol_darah : ''}"
-                                        data-agama="${antrian.pasien ? antrian.pasien.agama : ''}"
-                                        data-pekerjaan="${antrian.pasien ? antrian.pasien.pekerjaan : ''}"
-                                        data-status-pernikahan="${antrian.pasien ? antrian.pasien.status_pernikahan : ''}"
-                                        data-kepala-keluarga="${antrian.pasien ? antrian.pasien.kepala_keluarga : ''}"
-                                        data-no-hp="${antrian.pasien ? antrian.pasien.no_hp : ''}"
-                                        data-alamat="${antrian.pasien ? antrian.pasien.alamat_jalan : ''}"
-                                        data-rt="${antrian.pasien ? antrian.pasien.rt : ''}"
-                                        data-rw="${antrian.pasien ? antrian.pasien.rw : ''}"
-                                        data-kelurahan="${antrian.pasien ? antrian.pasien.kelurahan : ''}"
-                                        data-kecamatan="${antrian.pasien ? antrian.pasien.kecamatan : ''}"
-                                        data-kabupaten="${antrian.pasien ? antrian.pasien.kabupaten : ''}"
-                                        data-provinsi="${antrian.pasien ? antrian.pasien.provinsi : ''}"
-                                        data-jaminan="${antrian.pasien ? antrian.pasien.jaminan_kesehatan : ''}"
-                                        data-no-kepesertaan="${antrian.pasien ? antrian.pasien.nomor_kepesertaan : ''}">
-                                        Selengkapnya
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                    antrianTbody.innerHTML = rows;
-                    attachAnalisaButtonEvents();
-                    attachSimpanAnalisaEvent();
-                    attachSelengkapnyaButtonEvents(); // <-- tambahkan ini agar event tetap aktif setelah render ulang
-                }
-                updatePaginationAntrian(data);
-            })
-            .catch(error => {
-                console.error('Error fetching antrian data:', error);
-                antrianTbody.innerHTML = '<tr><td colspan="7">Terjadi kesalahan saat memuat data.</td></tr>';
-            });
-        }
-        function updatePaginationAntrian(data) {
-            document.querySelector('.pagination-info-text-antrian').innerHTML = `Showing ${data.from} to ${data.to} of ${data.total} results`;
-            let nav = document.getElementById('antrianPagination');
-            if (!nav) return;
-            let totalPages = data.last_page;
-            let currentPage = data.current_page;
-            let maxButtons = 3;
-            let start, end;
-            if (totalPages <= maxButtons) { start = 1; end = totalPages; }
-            else if (currentPage == 1) { start = 1; end = 3; }
-            else if (currentPage == totalPages) { start = totalPages - 2; end = totalPages; }
-            else { start = currentPage - 1; end = currentPage + 1; }
-            let html = '';
-            if (currentPage == 1) {
-                html += '<li class="page-item disabled" aria-disabled="true" aria-label="Previous"><span class="page-link" aria-hidden="true">&laquo;</span></li>';
-            } else {
-                html += `<li class="page-item"><a class="page-link pagination-link-antrian" href="${data.prev_page_url}" rel="prev" aria-label="Previous">&laquo;</a></li>`;
-            }
-            for (let page = start; page <= end; page++) {
-                if (page == currentPage) {
-                    html += `<li class="page-item active" aria-current="page"><span class="page-link">${page}</span></li>`;
-                } else {
-                    html += `<li class="page-item"><a class="page-link pagination-link-antrian" href="${data.path}?page=${page}${searchInput.value ? '&search=' + encodeURIComponent(searchInput.value) : ''}">${page}</a></li>`;
-                }
-            }
-            if (data.next_page_url) {
-                html += `<li class="page-item"><a class="page-link pagination-link-antrian" href="${data.next_page_url}" rel="next" aria-label="Next">&raquo;</a></li>`;
-            } else {
-                html += '<li class="page-item disabled" aria-disabled="true" aria-label="Next"><span class="page-link" aria-hidden="true">&raquo;</span></li>';
-            }
-            nav.innerHTML = html;
-            attachPaginationEventsAntrian();
-        }
-        function attachPaginationEventsAntrian() {
-            document.querySelectorAll('.pagination-link-antrian').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    fetchAntrian(this.getAttribute('href'));
-                });
-            });
-        }
-        attachPaginationEventsAntrian();
-        fetchAntrian();
-        searchInput.addEventListener('input', function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                fetchAntrian();
-            }, 300);
-        });
-        // Prevent default submit formAnalisa jika ada
-        document.getElementById('formAnalisa').addEventListener('submit', function(e) { e.preventDefault(); });
+document.addEventListener('DOMContentLoaded', function() {
+    var modalAnalisa = document.getElementById('modalAnalisa');
+    modalAnalisa.addEventListener('show.bs.modal', function(event) {
+        var button = event.relatedTarget;
+        var pasienId = button.getAttribute('data-pasien-id');
+        var namaPasien = button.getAttribute('data-nama');
+        var tanggalLahir = button.getAttribute('data-tanggal-lahir');
+        modalAnalisa.querySelector('#pasien_id').value = pasienId;
+        modalAnalisa.querySelector('#nama_pasien_display').textContent = namaPasien;
     });
+
+    // Modal Detail Pasien: isi data ke setiap field
+    var modalPasienDetail = document.getElementById('modalPasienDetail');
+    modalPasienDetail.addEventListener('show.bs.modal', function(event) {
+        var button = event.relatedTarget;
+        var namaPasien = button.getAttribute('data-nama') || '';
+        if (!namaPasien) {
+            // Jika data pasien kosong/null, tampilkan pesan di modal
+            document.getElementById('modalNoRekamMedis').value = '';
+            document.getElementById('modalNikPasien').value = '';
+            document.getElementById('modalNamaPasien').value = 'Data Pasien Tidak Ditemukan';
+            // Kosongkan field lain
+            document.getElementById('modalTempatLahir').value = '';
+            document.getElementById('modalTanggalLahir').value = '';
+            document.getElementById('modalJenisKelamin').value = '';
+            document.getElementById('modalGolonganDarah').value = '';
+            document.getElementById('modalAgama').value = '';
+            document.getElementById('modalPekerjaan').value = '';
+            document.getElementById('modalStatusPernikahan').value = '';
+            document.getElementById('modalKepalaKeluarga').value = '';
+            document.getElementById('modalNoHp').value = '';
+            document.getElementById('modalAlamat').value = '';
+            document.getElementById('modalRt').value = '';
+            document.getElementById('modalRw').value = '';
+            document.getElementById('modalKelurahan').value = '';
+            document.getElementById('modalKecamatan').value = '';
+            document.getElementById('modalKabupaten').value = '';
+            document.getElementById('modalProvinsi').value = '';
+            document.getElementById('modalJaminan').value = '';
+            document.getElementById('modalNoKepesertaan').value = '';
+            return;
+        }
+        document.getElementById('modalNoRekamMedis').value = button.getAttribute('data-no-rekam-medis') || '';
+        document.getElementById('modalNikPasien').value = button.getAttribute('data-nik') || '';
+        document.getElementById('modalNamaPasien').value = namaPasien;
+        document.getElementById('modalTempatLahir').value = button.getAttribute('data-tempat-lahir') || '';
+        document.getElementById('modalTanggalLahir').value = button.getAttribute('data-tanggal-lahir') || '';
+        document.getElementById('modalJenisKelamin').value = button.getAttribute('data-jenis-kelamin') || '';
+        document.getElementById('modalGolonganDarah').value = button.getAttribute('data-golongan-darah') || '';
+        document.getElementById('modalAgama').value = button.getAttribute('data-agama') || '';
+        document.getElementById('modalPekerjaan').value = button.getAttribute('data-pekerjaan') || '';
+        document.getElementById('modalStatusPernikahan').value = button.getAttribute('data-status-pernikahan') || '';
+        document.getElementById('modalKepalaKeluarga').value = button.getAttribute('data-kepala-keluarga') || '';
+        document.getElementById('modalNoHp').value = button.getAttribute('data-no-hp') || '';
+        document.getElementById('modalAlamat').value = button.getAttribute('data-alamat') || '';
+        document.getElementById('modalRt').value = button.getAttribute('data-rt') || '';
+        document.getElementById('modalRw').value = button.getAttribute('data-rw') || '';
+        document.getElementById('modalKelurahan').value = button.getAttribute('data-kelurahan') || '';
+        document.getElementById('modalKecamatan').value = button.getAttribute('data-kecamatan') || '';
+        document.getElementById('modalKabupaten').value = button.getAttribute('data-kabupaten') || '';
+        document.getElementById('modalProvinsi').value = button.getAttribute('data-provinsi') || '';
+        document.getElementById('modalJaminan').value = button.getAttribute('data-jaminan') || '';
+        document.getElementById('modalNoKepesertaan').value = button.getAttribute('data-no-kepesertaan') || '';
+    });
+
+    // Tambahkan log untuk debug
+    var form = document.getElementById('formAnalisa');
+    if (!form) {
+        console.error('formAnalisa tidak ditemukan!');
+    }
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Submit formAnalisa dijalankan');
+        var url = form.action;
+        var formData = new FormData(form);
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value,
+                'Accept': 'application/json',
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => { throw errData; });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                toastr.success(data.message || 'Analisa berhasil disimpan!');
+                var modal = bootstrap.Modal.getInstance(modalAnalisa);
+                modal.hide();
+                form.reset();
+                location.reload();
+            } else {
+                toastr.error('Gagal menyimpan data analisa.');
+            }
+        })
+        .catch(errorData => {
+            if (errorData && errorData.errors) {
+                Object.values(errorData.errors).forEach(function(msgArr) {
+                    toastr.error(msgArr[0]);
+                });
+            } else {
+                toastr.error('Terjadi kesalahan saat menyimpan data.');
+            }
+        });
+    });
+
+    // Debug tombol simpan
+    var btnSimpan = document.getElementById('btnSimpanAnalisa');
+    if (btnSimpan) {
+        btnSimpan.addEventListener('click', function() {
+            console.log('Tombol Simpan diklik');
+        });
+    }
+
+    var btnTutup = document.getElementById('btnTutup');
+    if (btnTutup) {
+        btnTutup.addEventListener('click', function() {
+            var modal = bootstrap.Modal.getInstance(modalAnalisa);
+            modal.hide();
+            form.reset();
+        });
+    }
+    modalAnalisa.addEventListener('hidden.bs.modal', function() {
+        form.reset();
+    });
+});
 </script>
-@endpush
+@endsection
