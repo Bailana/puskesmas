@@ -95,54 +95,54 @@
                             <ul class="pagination d-flex flex-row flex-wrap gap-2" style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
                                 {{-- Previous Page Link --}}
                                 @if ($pasiens->onFirstPage())
-                                    <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
-                                        <span class="page-link" aria-hidden="true">&laquo;</span>
-                                    </li>
+                                <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
+                                    <span class="page-link" aria-hidden="true">&laquo;</span>
+                                </li>
                                 @else
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $pasiens->previousPageUrl() }}" rel="prev" aria-label="Previous">&laquo;</a>
-                                    </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ $pasiens->previousPageUrl() }}" rel="prev" aria-label="Previous">&laquo;</a>
+                                </li>
                                 @endif
 
                                 {{-- Pagination Elements --}}
                                 @php
-                                    $totalPages = $pasiens->lastPage();
-                                    $currentPage = $pasiens->currentPage();
-                                    $maxButtons = 3;
-                                    if ($totalPages <= $maxButtons) {
-                                        $start = 1;
-                                        $end = $totalPages;
+                                $totalPages = $pasiens->lastPage();
+                                $currentPage = $pasiens->currentPage();
+                                $maxButtons = 3;
+                                if ($totalPages <= $maxButtons) {
+                                    $start=1;
+                                    $end=$totalPages;
                                     } else {
-                                        if ($currentPage == 1) {
-                                            $start = 1;
-                                            $end = 3;
-                                        } elseif ($currentPage == $totalPages) {
-                                            $start = $totalPages - 2;
-                                            $end = $totalPages;
-                                        } else {
-                                            $start = $currentPage - 1;
-                                            $end = $currentPage + 1;
-                                        }
+                                    if ($currentPage==1) {
+                                    $start=1;
+                                    $end=3;
+                                    } elseif ($currentPage==$totalPages) {
+                                    $start=$totalPages - 2;
+                                    $end=$totalPages;
+                                    } else {
+                                    $start=$currentPage - 1;
+                                    $end=$currentPage + 1;
                                     }
-                                @endphp
-                                @for ($page = $start; $page <= $end; $page++)
-                                    @if ($page == $currentPage)
-                                        <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+                                    }
+                                    @endphp
+                                    @for ($page=$start; $page <=$end; $page++)
+                                    @if ($page==$currentPage)
+                                    <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
                                     @else
-                                        <li class="page-item"><a class="page-link" href="{{ $pasiens->url($page) }}">{{ $page }}</a></li>
+                                    <li class="page-item"><a class="page-link" href="{{ $pasiens->url($page) }}">{{ $page }}</a></li>
                                     @endif
-                                @endfor
+                                    @endfor
 
-                                {{-- Next Page Link --}}
-                                @if ($pasiens->hasMorePages())
+                                    {{-- Next Page Link --}}
+                                    @if ($pasiens->hasMorePages())
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $pasiens->nextPageUrl() }}" rel="next" aria-label="Next">&raquo;</a>
                                     </li>
-                                @else
+                                    @else
                                     <li class="page-item disabled" aria-disabled="true" aria-label="Next">
                                         <span class="page-link" aria-hidden="true">&raquo;</span>
                                     </li>
-                                @endif
+                                    @endif
                             </ul>
                         </nav>
                     </div>
@@ -459,18 +459,18 @@
             let query = searchInput.value;
             let fetchUrl = url || `{{ route('perawat.pasien') }}?search=${encodeURIComponent(query)}`;
             fetch(fetchUrl, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.data || data.data.length === 0) {
-                    pasienTableBody.innerHTML = '<tr><td colspan="7" class="text-center">Data pasien tidak ditemukan</td></tr>';
-                } else {
-                    let rows = '';
-                    data.data.forEach((pasien, index) => {
-                        rows += `
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.data || data.data.length === 0) {
+                        pasienTableBody.innerHTML = '<tr><td colspan="7" class="text-center">Data pasien tidak ditemukan</td></tr>';
+                    } else {
+                        let rows = '';
+                        data.data.forEach((pasien, index) => {
+                            rows += `
                             <tr>
                                 <td style="white-space: nowrap;">${data.from + index}</td>
                                 <td style="white-space: nowrap;">${pasien.no_rekam_medis}</td>
@@ -494,16 +494,16 @@
                                 </td>
                             </tr>
                         `;
-                    });
-                    pasienTableBody.innerHTML = rows;
-                }
-                // Update pagination info & buttons
-                updatePagination(data);
-            })
-            .catch(error => {
-                console.error('Error fetching pasien data:', error);
-                pasienTableBody.innerHTML = '<tr><td colspan="8">Terjadi kesalahan saat memuat data.</td></tr>';
-            });
+                        });
+                        pasienTableBody.innerHTML = rows;
+                    }
+                    // Update pagination info & buttons
+                    updatePagination(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching pasien data:', error);
+                    pasienTableBody.innerHTML = '<tr><td colspan="8">Terjadi kesalahan saat memuat data.</td></tr>';
+                });
         }
 
         function updatePagination(data) {
@@ -517,11 +517,19 @@
             let maxButtons = 3;
             let start, end;
             if (totalPages <= maxButtons) {
-                start = 1; end = totalPages;
+                start = 1;
+                end = totalPages;
             } else {
-                if (currentPage == 1) { start = 1; end = 3; }
-                else if (currentPage == totalPages) { start = totalPages - 2; end = totalPages; }
-                else { start = currentPage - 1; end = currentPage + 1; }
+                if (currentPage == 1) {
+                    start = 1;
+                    end = 3;
+                } else if (currentPage == totalPages) {
+                    start = totalPages - 2;
+                    end = totalPages;
+                } else {
+                    start = currentPage - 1;
+                    end = currentPage + 1;
+                }
             }
             let html = '<ul class="pagination d-flex flex-row flex-wrap gap-2" style="list-style-type: none; padding-left: 0; margin-bottom: 0;">';
             // Prev
@@ -625,13 +633,13 @@
     });
 </script>
 
-@push('styles')
+<!-- @push('styles')
 <style>
     /* Hilangkan border-radius pada tombol pagination agar tidak bulat */
     .pagination .page-link {
         border-radius: 0 !important;
     }
 </style>
-@endpush
+@endpush -->
 
 @endsection

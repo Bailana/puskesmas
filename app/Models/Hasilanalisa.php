@@ -36,4 +36,14 @@ class Hasilanalisa extends Model
         'penanggung_jawab',
         'tanggal_analisa',
     ];
+
+    public function poli()
+    {
+        return $this->belongsTo(\App\Models\Poli::class, 'poli_tujuan', 'id');
+    }
+
+    public function penanggungJawab()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'penanggung_jawab', 'id');
+    }
 }

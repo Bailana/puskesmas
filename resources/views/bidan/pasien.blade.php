@@ -8,7 +8,7 @@
             <div class="card flex-fill">
                 <div class="card-header d-flex justify-content-between">
                     <!-- Input Pencarian -->
-<form method="GET" action="{{ route('bidan.pasien') }}" class="d-flex align-items-center"
+                    <form method="GET" action="{{ route('bidan.pasien') }}" class="d-flex align-items-center"
                         style="gap: 10px;">
                         <div class="input-group" style="width: 250px;">
                             <input type="text" name="search" class="form-control" id="searchInput"
@@ -22,64 +22,131 @@
                         </button>
                     </form>
                 </div>
-                <table class="table table-hover my-0" id="dokterPasien">
-                    <thead>
-                        <tr>
-                            <th style="white-space: nowrap;">No.</th>
-                            <th style="white-space: nowrap;">No. RM</th>
-                            <th style="white-space: nowrap;">Nama Pasien</th>
-                            <th style="white-space: nowrap;">Tempat, Tanggal Lahir</th>
-                            <th style="white-space: nowrap;">Jenis Kelamin</th>
-                            <th style="white-space: nowrap;">Gol.Darah</th>
-                            <th style="white-space: nowrap;">JamKes</th>
-                            <th style="white-space: nowrap;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($pasiens as $index => $pasien)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $pasien->no_rekam_medis }}</td>
-                            <td>{{ $pasien->nama_pasien}}</td>
-                            <td>
-{{ $pasien->tempat_lahir }},
-{{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->format('d-m-Y') ?? 'Tanggal tidak tersedia' }}
-                            </td>
-                            <td>{{ $pasien->jenis_kelamin }}</td>
-                            <td>{{ $pasien->gol_darah }}</td>
-                            <td>{{ $pasien->jaminan_kesehatan }}</td>
-                            <td>
-                                <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
-                                    data-bs-target="#modalPasienDetail"
-                                    data-no_rekam_medis="{{ $pasien->no_rekam_medis }}" data-nik="{{ $pasien->nik }}"
-                                    data-nama="{{ $pasien->nama_pasien }}"
-                                    data-tempat_lahir="{{ $pasien->tempat_lahir }}"
-data-tanggal_lahir="{{ $pasien->tanggal_lahir ? \Carbon\Carbon::parse($pasien->tanggal_lahir)->format('d-m-Y') : 'Tanggal tidak tersedia' }}"
-                                    data-jenis_kelamin="{{ $pasien->jenis_kelamin }}"
-                                    data-gol_darah="{{ $pasien->gol_darah }}" data-agama="{{ $pasien->agama }}"
-                                    data-pekerjaan="{{ $pasien->pekerjaan }}"
-                                    data-status_pernikahan="{{ $pasien->status_pernikahan }}"
-                                    data-alamat="{{ $pasien->alamat_jalan }}" data-rt="{{ $pasien->rt }}"
-                                    data-rw="{{ $pasien->rw }}" data-kelurahan="{{ $pasien->kelurahan }}"
-                                    data-kecamatan="{{ $pasien->kecamatan }}" data-kabupaten="{{ $pasien->kabupaten }}"
-                                    data-provinsi="{{ $pasien->provinsi }}"
-                                    data-jaminan="{{ $pasien->jaminan_kesehatan }}"
-                                    data-no_kepesertaan="{{ $pasien->nomor_kepesertaan }}"
-                                    data-kepala_keluarga="{{ $pasien->kepala_keluarga}}"
-                                    data-no_hp="{{ $pasien->no_hp}}">
-                                    Selengkapnya
-                                </button>
-                                <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
-                                    data-bs-target="#modalRiwayatBerobat"
-                                    data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
-                                    data-nama="{{ $pasien->nama_pasien }}">
-                                    Riwayat Berobat
-                                </button>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-hover my-0" id="dokterPasien" style="font-size: 14px;">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">No.</th>
+                                <th style="white-space: nowrap;">No. RM</th>
+                                <th style="white-space: nowrap;">Nama Pasien</th>
+                                <th style="white-space: nowrap;">Tempat, Tanggal Lahir</th>
+                                <th style="white-space: nowrap;">Jenis Kelamin</th>
+                                <th style="white-space: nowrap;">JamKes</th>
+                                <th style="white-space: nowrap;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($pasiens as $index => $pasien)
+                            <tr>
+                                <td style="white-space: nowrap;">{{ $pasiens->firstItem() + $index }}</td>
+                                <td style="white-space: nowrap;">{{ $pasien->no_rekam_medis }}</td>
+                                <td style="white-space: nowrap;">{{ $pasien->nama_pasien}}</td>
+                                <td style="white-space: nowrap;">
+                                    {{ $pasien->tempat_lahir }},
+                                    {{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}
+                                </td>
+                                <td style="white-space: nowrap;">{{ $pasien->jenis_kelamin }}</td>
+                                <td style="white-space: nowrap;">{{ $pasien->jaminan_kesehatan }}</td>
+                                <td style="white-space: nowrap;">
+                                    <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
+                                        data-bs-target="#modalPasienDetail"
+                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}" data-nik="{{ $pasien->nik }}"
+                                        data-nama="{{ $pasien->nama_pasien }}"
+                                        data-tempat_lahir="{{ $pasien->tempat_lahir }}"
+                                        data-tanggal_lahir="{{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}"
+                                        data-jenis_kelamin="{{ $pasien->jenis_kelamin }}"
+                                        data-gol_darah="{{ $pasien->gol_darah }}" data-agama="{{ $pasien->agama }}"
+                                        data-pekerjaan="{{ $pasien->pekerjaan }}"
+                                        data-status_pernikahan="{{ $pasien->status_pernikahan }}"
+                                        data-alamat="{{ $pasien->alamat_jalan }}" data-rt="{{ $pasien->rt }}"
+                                        data-rw="{{ $pasien->rw }}" data-kelurahan="{{ $pasien->kelurahan }}"
+                                        data-kecamatan="{{ $pasien->kecamatan }}"
+                                        data-kabupaten="{{ $pasien->kabupaten }}"
+                                        data-provinsi="{{ $pasien->provinsi }}"
+                                        data-jaminan="{{ $pasien->jaminan_kesehatan }}"
+                                        data-no_kepesertaan="{{ $pasien->nomor_kepesertaan }}"
+                                        data-kepala_keluarga="{{ $pasien->kepala_keluarga}}"
+                                        data-no_hp="{{ $pasien->no_hp}}">
+                                        Selengkapnya
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
+                                        data-bs-target="#modalRiwayatBerobat"
+                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
+                                        data-nama="{{ $pasien->nama_pasien }}">
+                                        Riwayat Berobat
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                            @if ($pasiens->isEmpty())
+                            <tr>
+                                <td colspan="8" class="text-center">Data pasien tidak ditemukan</td>
+                            </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 mb-2">
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <div class="small text-muted mb-2 text-start ps-3 pagination-info-text" style="max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            Showing {{ $pasiens->firstItem() }} to {{ $pasiens->lastItem() }} of {{ $pasiens->total() }} results
+                        </div>
+                        <nav class="d-flex justify-content-center">
+                            <ul class="pagination d-flex flex-row flex-wrap gap-2" style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
+                                {{-- Previous Page Link --}}
+                                @if ($pasiens->onFirstPage())
+                                <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
+                                    <span class="page-link" aria-hidden="true">&laquo;</span>
+                                </li>
+                                @else
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ $pasiens->previousPageUrl() }}" rel="prev" aria-label="Previous">&laquo;</a>
+                                </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @php
+                                $totalPages = $pasiens->lastPage();
+                                $currentPage = $pasiens->currentPage();
+                                $maxButtons = 3;
+                                if ($totalPages <= $maxButtons) {
+                                    $start=1;
+                                    $end=$totalPages;
+                                    } else {
+                                    if ($currentPage==1) {
+                                    $start=1;
+                                    $end=3;
+                                    } elseif ($currentPage==$totalPages) {
+                                    $start=$totalPages - 2;
+                                    $end=$totalPages;
+                                    } else {
+                                    $start=$currentPage - 1;
+                                    $end=$currentPage + 1;
+                                    }
+                                    }
+                                    @endphp
+                                    @for ($page=$start; $page <=$end; $page++)
+                                    @if ($page==$currentPage)
+                                    <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+                                    @else
+                                    <li class="page-item"><a class="page-link" href="{{ $pasiens->url($page) }}">{{ $page }}</a></li>
+                                    @endif
+                                    @endfor
+
+                                    {{-- Next Page Link --}}
+                                    @if ($pasiens->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $pasiens->nextPageUrl() }}" rel="next" aria-label="Next">&raquo;</a>
+                                    </li>
+                                    @else
+                                    <li class="page-item disabled" aria-disabled="true" aria-label="Next">
+                                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                                    </li>
+                                    @endif
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </div>
 
             <!-- Modal Filter -->
@@ -87,7 +154,7 @@ data-tanggal_lahir="{{ $pasien->tanggal_lahir ? \Carbon\Carbon::parse($pasien->t
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
                     <div class="modal-content">
-<form method="GET" action="{{ route('perawat.pasien') }}">
+                        <form method="GET" action="{{ route('bidan.pasien') }}">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="filterModalLabel">Filter Data Pasien</h5>
                             </div>
@@ -180,10 +247,8 @@ data-tanggal_lahir="{{ $pasien->tanggal_lahir ? \Carbon\Carbon::parse($pasien->t
                 </div>
             </div>
         </div>
-
     </div>
 </div>
-
 <!-- Modal Data Pasien -->
 <div class="modal fade" id="modalPasienDetail" tabindex="-1" aria-labelledby="modalPasienDetailLabel"
     aria-hidden="true">
@@ -193,8 +258,6 @@ data-tanggal_lahir="{{ $pasien->tanggal_lahir ? \Carbon\Carbon::parse($pasien->t
                 <h3 class="modal-title" id="modalPasienDetailLabel"><strong>Detail Pasien</strong></h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
-            <!-- Modal Body with Scroll -->
             <div class="modal-body p-3" style="max-height: 400px; overflow-y: auto;">
                 <form>
                     <div class="container-fluid">
@@ -231,8 +294,7 @@ data-tanggal_lahir="{{ $pasien->tanggal_lahir ? \Carbon\Carbon::parse($pasien->t
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label for="modalGolonganDarah" class="form-label">Golongan Darah</label>
-                                <input type="text" class="form-control form-control-sm" id="modalGolonganDarah"
-                                    readonly>
+                                <input type="text" class="form-control form-control-sm" id="modalGolonganDarah" readonly>
                             </div>
                             <div class="col-md-4">
                                 <label for="modalAgama" class="form-label">Agama</label>
@@ -246,13 +308,11 @@ data-tanggal_lahir="{{ $pasien->tanggal_lahir ? \Carbon\Carbon::parse($pasien->t
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label for="modalStatusPernikahan" class="form-label">Status Pernikahan</label>
-                                <input type="text" class="form-control form-control-sm" id="modalStatusPernikahan"
-                                    readonly>
+                                <input type="text" class="form-control form-control-sm" id="modalStatusPernikahan" readonly>
                             </div>
                             <div class="col-md-4">
                                 <label for="modalKepalaKeluarga" class="form-label">Kepala Keluarga</label>
-                                <input type="text" class="form-control form-control-sm" id="modalKepalaKeluarga"
-                                    readonly>
+                                <input type="text" class="form-control form-control-sm" id="modalKepalaKeluarga" readonly>
                             </div>
                             <div class="col-md-4">
                                 <label for="modalNoHp" class="form-label">Nomor Telepon</label>
@@ -302,8 +362,7 @@ data-tanggal_lahir="{{ $pasien->tanggal_lahir ? \Carbon\Carbon::parse($pasien->t
                             </div>
                             <div class="col-md-6">
                                 <label for="modalNoKepesertaan" class="form-label">No. Kepesertaan</label>
-                                <input type="text" class="form-control form-control-sm" id="modalNoKepesertaan"
-                                    readonly>
+                                <input type="text" class="form-control form-control-sm" id="modalNoKepesertaan" readonly>
                             </div>
                         </div>
                     </div>
@@ -312,134 +371,235 @@ data-tanggal_lahir="{{ $pasien->tanggal_lahir ? \Carbon\Carbon::parse($pasien->t
         </div>
     </div>
 </div>
-
 @endsection
 
 @section('scripts')
 <script>
-    var pasienDetailModal = document.getElementById('modalPasienDetail');
-    pasienDetailModal.addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget;
-        var noRekamMedis = button.getAttribute('data-no_rekam_medis');
+    document.addEventListener('DOMContentLoaded', function() {
+        var pasienDetailModal = document.getElementById('modalPasienDetail');
+        pasienDetailModal.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+            var noRekamMedis = button.getAttribute('data-no_rekam_medis');
+            var nik = button.getAttribute('data-nik');
+            var nama = button.getAttribute('data-nama');
+            var tempatLahir = button.getAttribute('data-tempat_lahir');
+            var tanggalLahir = button.getAttribute('data-tanggal_lahir');
+            var jenisKelamin = button.getAttribute('data-jenis_kelamin');
+            var golDarah = button.getAttribute('data-gol_darah');
+            var agama = button.getAttribute('data-agama');
+            var pekerjaan = button.getAttribute('data-pekerjaan');
+            var statusPernikahan = button.getAttribute('data-status_pernikahan');
+            var alamat = button.getAttribute('data-alamat');
+            var rt = button.getAttribute('data-rt');
+            var rw = button.getAttribute('data-rw');
+            var kelurahan = button.getAttribute('data-kelurahan');
+            var kecamatan = button.getAttribute('data-kecamatan');
+            var kabupaten = button.getAttribute('data-kabupaten');
+            var provinsi = button.getAttribute('data-provinsi');
+            var jaminan = button.getAttribute('data-jaminan');
+            var noKepesertaan = button.getAttribute('data-no_kepesertaan');
+            var kepalaKeluarga = button.getAttribute('data-kepala_keluarga');
+            var noHp = button.getAttribute('data-no_hp');
 
-        // Fetch patient detail from server
-        fetch(`/bidan/pasien/detail/${noRekamMedis}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                alert(data.error);
-                return;
-            }
-            // Update the modal's input fields with fetched data
-            pasienDetailModal.querySelector('#modalNoRekamMedis').value = data.no_rekam_medis || '';
-            pasienDetailModal.querySelector('#modalNikPasien').value = data.nik || '';
-            pasienDetailModal.querySelector('#modalNamaPasien').value = data.nama_pasien || '';
-            pasienDetailModal.querySelector('#modalTempatLahir').value = data.tempat_lahir || '';
-            pasienDetailModal.querySelector('#modalTanggalLahir').value = data.tanggal_lahir ? new Date(data.tanggal_lahir).toLocaleDateString('id-ID') : '';
-            pasienDetailModal.querySelector('#modalJenisKelamin').value = data.jenis_kelamin || '';
-            pasienDetailModal.querySelector('#modalGolonganDarah').value = data.gol_darah || '';
-            pasienDetailModal.querySelector('#modalAgama').value = data.agama || '';
-            pasienDetailModal.querySelector('#modalPekerjaan').value = data.pekerjaan || '';
-            pasienDetailModal.querySelector('#modalStatusPernikahan').value = data.status_pernikahan || '';
-            pasienDetailModal.querySelector('#modalAlamat').value = data.alamat_jalan || '';
-            pasienDetailModal.querySelector('#modalRt').value = data.rt || '';
-            pasienDetailModal.querySelector('#modalRw').value = data.rw || '';
-            pasienDetailModal.querySelector('#modalKelurahan').value = data.kelurahan || '';
-            pasienDetailModal.querySelector('#modalKecamatan').value = data.kecamatan || '';
-            pasienDetailModal.querySelector('#modalKabupaten').value = data.kabupaten || '';
-            pasienDetailModal.querySelector('#modalProvinsi').value = data.provinsi || '';
-            pasienDetailModal.querySelector('#modalJaminan').value = data.jaminan_kesehatan || '';
-            pasienDetailModal.querySelector('#modalNoKepesertaan').value = data.nomor_kepesertaan || '';
-            pasienDetailModal.querySelector('#modalKepalaKeluarga').value = data.kepala_keluarga || '';
-            pasienDetailModal.querySelector('#modalNoHp').value = data.no_hp || '';
-        })
-        .catch(error => {
-            console.error('Error fetching patient detail:', error);
-            alert('Gagal mengambil data pasien.');
+            document.getElementById('modalNoRekamMedis').value = noRekamMedis || '';
+            document.getElementById('modalNikPasien').value = nik || '';
+            document.getElementById('modalNamaPasien').value = nama || '';
+            document.getElementById('modalTempatLahir').value = tempatLahir || '';
+            document.getElementById('modalTanggalLahir').value = tanggalLahir || '';
+            document.getElementById('modalJenisKelamin').value = jenisKelamin || '';
+            document.getElementById('modalGolonganDarah').value = golDarah || '';
+            document.getElementById('modalAgama').value = agama || '';
+            document.getElementById('modalPekerjaan').value = pekerjaan || '';
+            document.getElementById('modalStatusPernikahan').value = statusPernikahan || '';
+            document.getElementById('modalAlamat').value = alamat || '';
+            document.getElementById('modalRt').value = rt || '';
+            document.getElementById('modalRw').value = rw || '';
+            document.getElementById('modalKelurahan').value = kelurahan || '';
+            document.getElementById('modalKecamatan').value = kecamatan || '';
+            document.getElementById('modalKabupaten').value = kabupaten || '';
+            document.getElementById('modalProvinsi').value = provinsi || '';
+            document.getElementById('modalJaminan').value = jaminan || '';
+            document.getElementById('modalNoKepesertaan').value = noKepesertaan || '';
+            document.getElementById('modalKepalaKeluarga').value = kepalaKeluarga || '';
+            document.getElementById('modalNoHp').value = noHp || '';
         });
     });
-
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
         const pasienTableBody = document.querySelector('#dokterPasien tbody');
+        const filterForm = document.querySelector('#filterModal form');
+        const tableContainer = document.querySelector('.table-responsive');
+        let currentPage = 1;
+        let timeout = null;
 
-        function renderTableRows(pasiens) {
-            pasienTableBody.innerHTML = '';
-            if (pasiens.length === 0) {
-                pasienTableBody.innerHTML =
-                    '<tr><td colspan="8" class="text-center">Data pasien tidak ditemukan</td></tr>';
-                return;
+        function getAllFilterParams() {
+            const params = new URLSearchParams();
+            params.set('search', searchInput.value || '');
+            // Ambil semua input filter dari modal filter
+            const filterFields = [
+                'jenis_kelamin', 'gol_darah', 'jaminan_kesehatan', 'tempat_lahir',
+                'kecamatan', 'kelurahan', 'status_pernikahan', 'tanggal_lahir'
+            ];
+            filterFields.forEach(field => {
+                const el = document.getElementById(field);
+                if (el && el.value) {
+                    params.set(field, el.value);
+                }
+            });
+            return params.toString();
+        }
+
+        function fetchPasien(url = null) {
+            let fetchUrl;
+            let params = new URLSearchParams(getAllFilterParams());
+            if (!url) {
+                fetchUrl = `{{ route('bidan.pasien') }}?` + params.toString();
+            } else {
+                // Ambil page dari url pagination
+                let pageMatch = url.match(/[?&]page=(\d+)/);
+                let page = pageMatch ? pageMatch[1] : null;
+                if (page) {
+                    params.set('page', page);
+                }
+                fetchUrl = `{{ route('bidan.pasien') }}?` + params.toString();
             }
-            pasiens.forEach((pasien, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${pasien.no_rekam_medis}</td>
-                            <td>${pasien.nama_pasien}</td>
-                            <td>${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>
-                            <td>${pasien.jenis_kelamin}</td>
-                            <td>${pasien.gol_darah}</td>
-                            <td>${pasien.jaminan_kesehatan}</td>
-                            <td>
-                                <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
-                                    data-bs-target="#modalPasienDetail"
-                                    data-no_rekam_medis="${pasien.no_rekam_medis}" data-nik="${pasien.nik}"
-                                    data-nama="${pasien.nama_pasien}"
-                                    data-tempat_lahir="${pasien.tempat_lahir}"
-                                    data-tanggal_lahir="${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}"
-                                    data-jenis_kelamin="${pasien.jenis_kelamin}"
-                                    data-gol_darah="${pasien.gol_darah}" data-agama="${pasien.agama}"
-                                    data-pekerjaan="${pasien.pekerjaan}"
-                                    data-status_pernikahan="${pasien.status_pernikahan}"
-                                    data-alamat="${pasien.alamat_jalan}" data-rt="${pasien.rt}"
-                                    data-rw="${pasien.rw}" data-kelurahan="${pasien.kelurahan}"
-                                    data-kecamatan="${pasien.kecamatan}" data-kabupaten="${pasien.kabupaten}"
-                                    data-provinsi="${pasien.provinsi}"
-                                    data-jaminan="${pasien.jaminan_kesehatan}"
-                                    data-no_kepesertaan="${pasien.nomor_kepesertaan}"
-                                    data-kepala_keluarga="${pasien.kepala_keluarga}"
-                                    data-no_hp="${pasien.no_hp}">
-                                    Selengkapnya
-                                </button>
-                                <button type="button" class="btn btn-success btn-sm rounded" data-bs-toggle="modal"
-                                    data-bs-target="#modalRiwayatBerobat"
-                                    data-no_rekam_medis="${pasien.no_rekam_medis}"
-                                    data-nama="${pasien.nama_pasien}">
-                                    Riwayat Berobat
-                                </button>
-                            </td>
+            fetch(fetchUrl, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.data || data.data.length === 0) {
+                        pasienTableBody.innerHTML = '<tr><td colspan="8" class="text-center">Data pasien tidak ditemukan</td></tr>';
+                    } else {
+                        let rows = '';
+                        data.data.forEach((pasien, index) => {
+                            let no = (typeof data.from === 'number' && !isNaN(data.from)) ? (data.from + index) : (Number(data.from) ? Number(data.from) + index : (index + 1));
+                            rows += `
+                            <tr>
+                                <td style="white-space: nowrap;">${no}</td>
+                                <td style="white-space: nowrap;">${pasien.no_rekam_medis}</td>
+                                <td style="white-space: nowrap;">${pasien.nama_pasien}</td>
+                                <td style="white-space: nowrap;">${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : '-'}</td>
+                                <td style="white-space: nowrap;">${pasien.jenis_kelamin}</td>
+                                <td style="white-space: nowrap;">${pasien.jaminan_kesehatan}</td>
+                                <td style="white-space: nowrap;">
+                                    <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
+                                        data-bs-target="#modalPasienDetail"
+                                        data-no_rekam_medis="${pasien.no_rekam_medis}" data-nik="${pasien.nik}"
+                                        data-nama="${pasien.nama_pasien}"
+                                        data-tempat_lahir="${pasien.tempat_lahir}"
+                                        data-tanggal_lahir="${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}"
+                                        data-jenis_kelamin="${pasien.jenis_kelamin}"
+                                        data-gol_darah="${pasien.gol_darah}" data-agama="${pasien.agama}"
+                                        data-pekerjaan="${pasien.pekerjaan}"
+                                        data-status_pernikahan="${pasien.status_pernikahan}"
+                                        data-alamat="${pasien.alamat_jalan}" data-rt="${pasien.rt}"
+                                        data-rw="${pasien.rw}" data-kelurahan="${pasien.kelurahan}"
+                                        data-kecamatan="${pasien.kecamatan}" data-kabupaten="${pasien.kabupaten}"
+                                        data-provinsi="${pasien.provinsi}"
+                                        data-jaminan="${pasien.jaminan_kesehatan}"
+                                        data-no_kepesertaan="${pasien.nomor_kepesertaan}"
+                                        data-kepala_keluarga="${pasien.kepala_keluarga}"
+                                        data-no_hp="${pasien.no_hp}">
+                                        Selengkapnya
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
+                                        data-bs-target="#modalRiwayatBerobat"
+                                        data-no_rekam_medis="${pasien.no_rekam_medis}"
+                                        data-nama="${pasien.nama_pasien}">
+                                        Riwayat Berobat
+                                    </button>
+                                </td>
+                            </tr>
                         `;
-                pasienTableBody.appendChild(row);
+                        });
+                        pasienTableBody.innerHTML = rows;
+                    }
+                    updatePagination(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching pasien data:', error);
+                    pasienTableBody.innerHTML = '<tr><td colspan="8">Terjadi kesalahan saat memuat data.</td></tr>';
+                });
+        }
+
+        function updatePagination(data) {
+            // Update info
+            document.querySelector('.pagination-info-text').innerHTML = `Showing ${data.from} to ${data.to} of ${data.total} results`;
+            // Update pagination buttons
+            let nav = document.querySelector('nav.d-flex.justify-content-center');
+            if (!nav) return;
+            let totalPages = data.last_page;
+            let currentPage = data.current_page;
+            let maxButtons = 3;
+            let start, end;
+            if (totalPages <= maxButtons) {
+                start = 1;
+                end = totalPages;
+            } else {
+                if (currentPage == 1) {
+                    start = 1;
+                    end = 3;
+                } else if (currentPage == totalPages) {
+                    start = totalPages - 2;
+                    end = totalPages;
+                } else {
+                    start = currentPage - 1;
+                    end = currentPage + 1;
+                }
+            }
+            let html = '<ul class="pagination d-flex flex-row flex-wrap gap-2" style="list-style-type: none; padding-left: 0; margin-bottom: 0;">';
+            // Prev
+            if (currentPage == 1) {
+                html += '<li class="page-item disabled" aria-disabled="true" aria-label="Previous"><span class="page-link" aria-hidden="true">&laquo;</span></li>';
+            } else {
+                html += `<li class="page-item"><a class="page-link pagination-link" href="${data.prev_page_url}" rel="prev" aria-label="Previous">&laquo;</a></li>`;
+            }
+            // Numbered
+            for (let page = start; page <= end; page++) {
+                if (page == currentPage) {
+                    html += `<li class="page-item active" aria-current="page"><span class="page-link">${page}</span></li>`;
+                } else {
+                    html += `<li class="page-item"><a class="page-link pagination-link" href="${data.path}?page=${page}&${getAllFilterParams()}">${page}</a></li>`;
+                }
+            }
+            // Next
+            if (data.next_page_url) {
+                html += `<li class="page-item"><a class="page-link pagination-link" href="${data.next_page_url}" rel="next" aria-label="Next">&raquo;</a></li>`;
+            } else {
+                html += '<li class="page-item disabled" aria-disabled="true" aria-label="Next"><span class="page-link" aria-hidden="true">&raquo;</span></li>';
+            }
+            html += '</ul>';
+            nav.innerHTML = html;
+            // Re-attach event
+            attachPaginationEvents();
+        }
+
+        function attachPaginationEvents() {
+            document.querySelectorAll('.pagination-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    fetchPasien(this.getAttribute('href'));
+                });
             });
         }
 
-        let debounceTimeout;
-        searchInput.addEventListener('input', function () {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                const query = searchInput.value.trim();
-fetch("{{ route('bidan.pasien') }}?search=" + encodeURIComponent(query), {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        renderTableRows(data);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching search results:', error);
-                    });
+        // Initial attach
+        attachPaginationEvents();
+        // Fetch data pasien dan pagination info via AJAX saat halaman pertama kali dimuat
+        fetchPasien();
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                fetchPasien();
             }, 300);
         });
     });
-
 </script>
 @endsection
