@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 use App\Models\Hasilanalisa;
@@ -123,20 +122,66 @@ class BidanProfileController extends Controller
         ]);
     }
 
+    public function storeHasilPeriksaAnak(Request $request)
+    {
+        $validatedData = $request->validate([
+            'no_rekam_medis' => 'required|string',
+            'berat_badan' => 'required|string',
+            'makanan_anak' => 'required|string',
+            'gejala' => 'required|string',
+            'nasehat' => 'required|string',
+            'pegobatan' => 'required|string',
+        ]);
+
+        $pasien = \App\Models\Pasien::where('no_rekam_medis', $validatedData['no_rekam_medis'])->first();
+        if (!$pasien) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pasien tidak ditemukan.'
+            ], 404);
+        }
+
+        $hasilPeriksaAnak = new \App\Models\HasilperiksaAnak();
+        $hasilPeriksaAnak->pasien_id = $pasien->id;
+        $hasilPeriksaAnak->berat_badan = $validatedData['berat_badan'];
+        $hasilPeriksaAnak->makanan_anak = $validatedData['makanan_anak'];
+        $hasilPeriksaAnak->gejala = $validatedData['gejala'];
+        $hasilPeriksaAnak->nasehat = $validatedData['nasehat'];
+        $hasilPeriksaAnak->pegobatan = $validatedData['pegobatan'];
+        // Set penanggung_jawab ke id user yang sedang login
+        $hasilPeriksaAnak->penanggung_jawab = $request->user()->id;
+        $hasilPeriksaAnak->save();
+
+        // Update status antrian pasien menjadi 'Pembayaran'
+        $antrian = \App\Models\Antrian::where('no_rekam_medis', $validatedData['no_rekam_medis'])
+            ->where('status', 'Pemeriksaan')
+            ->latest()
+            ->first();
+        if ($antrian) {
+            $antrian->status = 'Pembayaran';
+            $antrian->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data hasil periksa anak berhasil disimpan.'
+        ]);
+    }
+
     public function pasien(Request $request)
     {
         $query = Pasien::query();
 
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nama_pasien', 'like', "%$search%")
-                  ->orWhere('no_rekam_medis', 'like', "%$search%")
-                  ->orWhere('nik', 'like', "%$search%")
-                  ->orWhere('alamat_jalan', 'like', "%$search%")
-                  ->orWhere('kepala_keluarga', 'like', "%$search%")
-                  ->orWhere('no_hp', 'like', "%$search%")
-                  ;
+                    ->orWhere('no_rekam_medis', 'like', "%$search%")
+                    ->orWhere('nik', 'like', "%$search%")
+                    ->orWhere('alamat_jalan', 'like', "%$search%")
+                    ->orWhere('kepala_keluarga', 'like', "%$search%")
+                    ->orWhere('no_hp', 'like', "%$search%")
+                ;
             });
         }
         if ($request->filled('jenis_kelamin')) {
@@ -149,13 +194,13 @@ class BidanProfileController extends Controller
             $query->where('jaminan_kesehatan', $request->input('jaminan_kesehatan'));
         }
         if ($request->filled('tempat_lahir')) {
-            $query->where('tempat_lahir', 'like', "%".$request->input('tempat_lahir')."%" );
+            $query->where('tempat_lahir', 'like', "%" . $request->input('tempat_lahir') . "%");
         }
         if ($request->filled('kecamatan')) {
-            $query->where('kecamatan', 'like', "%".$request->input('kecamatan')."%" );
+            $query->where('kecamatan', 'like', "%" . $request->input('kecamatan') . "%");
         }
         if ($request->filled('kelurahan')) {
-            $query->where('kelurahan', 'like', "%".$request->input('kelurahan')."%" );
+            $query->where('kelurahan', 'like', "%" . $request->input('kelurahan') . "%");
         }
         if ($request->filled('status_pernikahan')) {
             $query->where('status_pernikahan', $request->input('status_pernikahan'));
@@ -223,190 +268,28 @@ class BidanProfileController extends Controller
         return view('bidan.riwayat', compact('pasien', 'riwayat'));
     }
 
-    // API: Mendapatkan daftar tanggal kunjungan pasien
-    public function getVisitDates($no_rekam_medis)
-    {
-        $pasien = \App\Models\Pasien::where('no_rekam_medis', $no_rekam_medis)->firstOrFail();
-
-        // Get all dates from riwayatBerobat (Antrian)
-        $antrianDates = $pasien->riwayatBerobat()
-            ->pluck('tanggal_berobat')
-            ->toArray();
-
-        // Get all dates from hasilanalisa
-        $hasilAnalisaDates = \App\Models\Hasilanalisa::where('pasien_id', $pasien->id)
-            ->pluck(\DB::raw('DATE(tanggal_analisa) as date'))
-            ->toArray();
-
-        // Get all dates from hasilperiksa_anak
-        $hasilPeriksaAnakDates = \App\Models\HasilperiksaAnak::where('pasien_id', $pasien->id)
-            ->pluck(\DB::raw('DATE(created_at) as date'))
-            ->toArray();
-
-        // Get all dates from hasilperiksa
-        $hasilPeriksaDates = \App\Models\HasilPeriksa::where('pasien_id', $pasien->id)
-            ->pluck(\DB::raw('DATE(created_at) as date'))
-            ->toArray();
-
-        // Get all dates from hasilperiksagigi
-        $hasilPeriksaGigiDates = \App\Models\HasilPeriksagigi::where('pasien_id', $pasien->id)
-            ->pluck(\DB::raw('DATE(created_at) as date'))
-            ->toArray();
-
-        // Merge all dates and get unique sorted list
-        $allDates = array_unique(array_merge($antrianDates, $hasilAnalisaDates, $hasilPeriksaAnakDates, $hasilPeriksaDates, $hasilPeriksaGigiDates));
-        sort($allDates);
-
-        // Filter dates to only those that have at least one data record in any category
-        $filteredDates = [];
-        foreach ($allDates as $date) {
-            $hasData = \App\Models\Hasilanalisa::where('pasien_id', $pasien->id)->whereDate('tanggal_analisa', $date)->exists()
-                || \App\Models\HasilPeriksa::where('pasien_id', $pasien->id)->whereDate('created_at', $date)->exists()
-                || \App\Models\HasilperiksaAnak::where('pasien_id', $pasien->id)->whereDate('created_at', $date)->exists()
-                || \App\Models\HasilPeriksagigi::where('pasien_id', $pasien->id)->whereDate('created_at', $date)->exists();
-
-            if ($hasData) {
-                $filteredDates[] = $date;
-            }
-        }
-
-        return response()->json($filteredDates);
-    }
-
-    // API: Mendapatkan data hasil analisa dan periksa untuk tanggal tertentu
-    public function getVisitData($no_rekam_medis, $tanggal)
-    {
-        \Log::info('getVisitData called', ['no_rekam_medis' => $no_rekam_medis, 'tanggal' => $tanggal]);
-        $pasien = \App\Models\Pasien::where('no_rekam_medis', $no_rekam_medis)->firstOrFail();
-        $riwayat = $pasien->riwayatBerobat()
-            ->whereDate('tanggal_berobat', $tanggal)
-            ->first();
-
-        // Do not return 404 if riwayat is missing, proceed to fetch other data
-
-        // Ambil data hasil analisa dan hasil periksa terkait riwayat ini
-        $hasilAnalisa = \App\Models\Hasilanalisa::where('pasien_id', $pasien->id)
-            ->whereDate('tanggal_analisa', $tanggal)
-            ->with('poli')
-            ->latest()
-            ->first();
-
-        \Log::info('HasilAnalisa found', ['hasilAnalisa' => $hasilAnalisa]);
-
-        $data = [
-            'tanggal_periksa' => $tanggal,
-            'tekanan_darah' => $hasilAnalisa ? $hasilAnalisa->tekanan_darah : null,
-            'frekuensi_nadi' => $hasilAnalisa ? $hasilAnalisa->frekuensi_nadi : null,
-            'suhu' => $hasilAnalisa ? $hasilAnalisa->suhu : null,
-            'frekuensi_nafas' => $hasilAnalisa ? $hasilAnalisa->frekuensi_nafas : null,
-            'skor_nyeri' => $hasilAnalisa ? $hasilAnalisa->skor_nyeri : null,
-            'skor_jatuh' => $hasilAnalisa ? $hasilAnalisa->skor_jatuh : null,
-            'berat_badan' => $hasilAnalisa ? $hasilAnalisa->berat_badan : null,
-            'tinggi_badan' => $hasilAnalisa ? $hasilAnalisa->tinggi_badan : null,
-            'lingkar_kepala' => $hasilAnalisa ? $hasilAnalisa->lingkar_kepala : null,
-            'imt' => $hasilAnalisa ? $hasilAnalisa->imt : null,
-            'alat_bantu' => $hasilAnalisa ? $hasilAnalisa->alat_bantu : null,
-            'prosthesa' => $hasilAnalisa ? $hasilAnalisa->prosthesa : null,
-            'cacat_tubuh' => $hasilAnalisa ? $hasilAnalisa->cacat_tubuh : null,
-            'adl_mandiri' => $hasilAnalisa ? $hasilAnalisa->adl_mandiri : null,
-            'riwayat_jatuh' => $hasilAnalisa ? $hasilAnalisa->riwayat_jatuh : null,
-            'status_psikologi' => $hasilAnalisa ? $hasilAnalisa->status_psikologi : null,
-            'hambatan_edukasi' => $hasilAnalisa ? $hasilAnalisa->hambatan_edukasi : null,
-            'alergi' => $hasilAnalisa ? $hasilAnalisa->alergi : null,
-            'catatan' => $hasilAnalisa ? $hasilAnalisa->catatan : null,
-            'poli_tujuan' => $hasilAnalisa && $hasilAnalisa->poli ? $hasilAnalisa->poli->nama_poli : null,
-            'penanggung_jawab_nama' => $hasilAnalisa && $hasilAnalisa->penanggungJawab ? $hasilAnalisa->penanggungJawab->name : null,
-        ];
-
-        \Log::info('HasilAnalisa data array', ['data' => $data]);
-
-        $hasilPeriksa = \App\Models\HasilPeriksa::where('pasien_id', $pasien->id)
-            ->whereDate('created_at', $tanggal)
-            ->latest()
-            ->first();
-
-        $hasilPeriksaAnak = \App\Models\HasilperiksaAnak::where('pasien_id', $pasien->id)
-            ->whereDate('created_at', $tanggal)
-            ->latest()
-            ->first();
-
-        $hasilPeriksaGigi = \App\Models\HasilPeriksagigi::where('pasien_id', $pasien->id)
-            ->whereDate('created_at', $tanggal)
-            ->latest()
-            ->first();
-
-        if (!$riwayat && !$hasilAnalisa && !$hasilPeriksa && !$hasilPeriksaAnak && !$hasilPeriksaGigi) {
-            return response()->json(['error' => 'Data riwayat tidak ditemukan'], 404);
-        }
-
-        // Gabungkan data hasil analisa, hasil periksa, hasil periksa anak, dan hasil periksa gigi sesuai kebutuhan
-        $data = [
-            'tanggal_periksa' => $tanggal,
-            'tekanan_darah' => $hasilAnalisa ? $hasilAnalisa->tekanan_darah : null,
-            'frekuensi_nadi' => $hasilAnalisa ? $hasilAnalisa->frekuensi_nadi : null,
-            'suhu' => $hasilAnalisa ? $hasilAnalisa->suhu : null,
-            'frekuensi_nafas' => $hasilAnalisa ? $hasilAnalisa->frekuensi_nafas : null,
-            'skor_nyeri' => $hasilAnalisa ? $hasilAnalisa->skor_nyeri : null,
-            'skor_jatuh' => $hasilAnalisa ? $hasilAnalisa->skor_jatuh : null,
-            'berat_badan' => $hasilAnalisa ? $hasilAnalisa->berat_badan : null,
-            'tinggi_badan' => $hasilAnalisa ? $hasilAnalisa->tinggi_badan : null,
-            'lingkar_kepala' => $hasilAnalisa ? $hasilAnalisa->lingkar_kepala : null,
-            'imt' => $hasilAnalisa ? $hasilAnalisa->imt : null,
-            'alat_bantu' => $hasilAnalisa ? $hasilAnalisa->alat_bantu : null,
-            'prosthesa' => $hasilAnalisa ? $hasilAnalisa->prosthesa : null,
-            'cacat_tubuh' => $hasilAnalisa ? $hasilAnalisa->cacat_tubuh : null,
-            'adl_mandiri' => $hasilAnalisa ? $hasilAnalisa->adl_mandiri : null,
-            'riwayat_jatuh' => $hasilAnalisa ? $hasilAnalisa->riwayat_jatuh : null,
-            'status_psikologi' => $hasilAnalisa ? $hasilAnalisa->status_psikologi : null,
-            'hambatan_edukasi' => $hasilAnalisa ? $hasilAnalisa->hambatan_edukasi : null,
-            'alergi' => $hasilAnalisa ? $hasilAnalisa->alergi : null,
-            'catatan' => $hasilAnalisa ? $hasilAnalisa->catatan : null,
-            'poli_tujuan' => $hasilAnalisa ? $hasilAnalisa->poli_tujuan : null,
-            'penanggung_jawab_nama' => $hasilAnalisa && $hasilAnalisa->penanggungJawab ? $hasilAnalisa->penanggungJawab->name : null,
-            'anamnesis' => $hasilPeriksa ? $hasilPeriksa->anamnesis : null,
-            'pemeriksaan_fisik' => $hasilPeriksa ? $hasilPeriksa->pemeriksaan_fisik : null,
-            'rencana_dan_terapi' => $hasilPeriksa ? $hasilPeriksa->rencana_dan_terapi : null,
-            'diagnosis' => $hasilPeriksa ? $hasilPeriksa->diagnosis : null,
-            'edukasi' => $hasilPeriksa ? $hasilPeriksa->edukasi : null,
-            'kode_icd' => $hasilPeriksa ? $hasilPeriksa->kode_icd : null,
-            'berat_badan_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->berat_badan : null,
-            'makanan_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->makanan_anak : null,
-            'gejala_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->gejala : null,
-            'nasehat_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->nasehat : null,
-            'pegobatan_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->pegobatan : null,
-            'anamnesis_gigi' => $hasilPeriksaGigi ? $hasilPeriksaGigi->anamnesis : null,
-            'pemeriksaan_fisik_gigi' => $hasilPeriksaGigi ? $hasilPeriksaGigi->pemeriksaan_fisik : null,
-            'rencana_dan_terapi_gigi' => $hasilPeriksaGigi ? $hasilPeriksaGigi->rencana_dan_terapi : null,
-            'diagnosis_gigi' => $hasilPeriksaGigi ? $hasilPeriksaGigi->diagnosis : null,
-            'edukasi_gigi' => $hasilPeriksaGigi ? $hasilPeriksaGigi->edukasi : null,
-            'kode_icd_gigi' => $hasilPeriksaGigi ? $hasilPeriksaGigi->kode_icd : null,
-        ];
-
-        return response()->json($data);
-    }
-
     public function antrian()
     {
         $query = \App\Models\Antrian::with(['pasien', 'poli'])
             ->where('status', 'Pemeriksaan')
-            ->whereHas('poli', function($q) {
+            ->whereHas('poli', function ($q) {
                 $q->where('nama_poli', 'KIA');
             });
         // Filter pencarian
         $search = request('search');
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('no_rekam_medis', 'like', "%$search%")
-                  ->orWhereHas('pasien', function($q2) use ($search) {
-                      $q2->where('nama_pasien', 'like', "%$search%")
-                         ->orWhere('jaminan_kesehatan', 'like', "%$search%")
-                         ->orWhere('no_rekam_medis', 'like', "%$search%")
-                         ->orWhere('nik', 'like', "%$search%")
-                         ->orWhere('alamat_jalan', 'like', "%$search%")
-                         ->orWhere('kepala_keluarga', 'like', "%$search%")
-                         ->orWhere('no_hp', 'like', "%$search%")
-                         ;
-                  });
+                    ->orWhereHas('pasien', function ($q2) use ($search) {
+                        $q2->where('nama_pasien', 'like', "%$search%")
+                            ->orWhere('jaminan_kesehatan', 'like', "%$search%")
+                            ->orWhere('no_rekam_medis', 'like', "%$search%")
+                            ->orWhere('nik', 'like', "%$search%")
+                            ->orWhere('alamat_jalan', 'like', "%$search%")
+                            ->orWhere('kepala_keluarga', 'like', "%$search%")
+                            ->orWhere('no_hp', 'like', "%$search%")
+                        ;
+                    });
             });
         }
         $antrians = $query->orderBy('created_at', 'asc')->paginate(10)->withQueryString();
@@ -420,25 +303,21 @@ class BidanProfileController extends Controller
     public function hasilAnalisaAjax($no_rekam_medis)
     {
         try {
-            // Cari data antrian dengan no_rekam_medis
-            $antrian = \App\Models\Antrian::where('no_rekam_medis', $no_rekam_medis)->first();
-            if (!$antrian) {
+            $pasien = \App\Models\Pasien::where('no_rekam_medis', $no_rekam_medis)->first();
+            if (!$pasien) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Antrian tidak ditemukan.'
+                    'message' => 'Pasien tidak ditemukan.'
                 ]);
             }
-            // Ambil hasil analisa berdasarkan pasien_id
-            $hasil = \App\Models\Hasilanalisa::with(['poli', 'penanggungJawab'])
-                ->where('pasien_id', $antrian->pasien_id)
-                ->latest()
-                ->first();
+            $hasil = \App\Models\Hasilanalisa::with(['poli', 'penanggungJawab'])->where('pasien_id', $pasien->id)->latest()->first();
             if ($hasil) {
                 $data = $hasil->toArray();
-                $data['nama_poli'] = $hasil->poli ? $hasil->poli->nama_poli : '';
-                $data['nama_penanggung_jawab'] = $hasil->penanggungJawab ? $hasil->penanggungJawab->name : '';
-                $data['status_psikologi'] = $hasil->status_psikologi ? (is_array(json_decode($hasil->status_psikologi, true)) ? implode(', ', json_decode($hasil->status_psikologi, true)) : (is_string($hasil->status_psikologi) ? $hasil->status_psikologi : '')) : '';
-                $data['hambatan_edukasi'] = $hasil->hambatan_edukasi ? (is_array(json_decode($hasil->hambatan_edukasi, true)) ? implode(', ', json_decode($hasil->hambatan_edukasi, true)) : (is_string($hasil->hambatan_edukasi) ? $hasil->hambatan_edukasi : '')) : '';
+                $data['nama_poli'] = $hasil->poli ? $hasil->poli->nama_poli : '-';
+                $data['nama_penanggung_jawab'] = $hasil->penanggungJawab ? $hasil->penanggungJawab->name : '-';
+                $data['status_psikologi'] = $hasil->status_psikologi ? (is_array(json_decode($hasil->status_psikologi, true)) ? implode(', ', json_decode($hasil->status_psikologi, true)) : (is_string($hasil->status_psikologi) ? $hasil->status_psikologi : '-')) : '-';
+                $data['hambatan_edukasi'] = $hasil->hambatan_edukasi ? (is_array(json_decode($hasil->hambatan_edukasi, true)) ? implode(', ', json_decode($hasil->hambatan_edukasi, true)) : (is_string($hasil->hambatan_edukasi) ? $hasil->hambatan_edukasi : '-')) : '-';
+                // Jangan ubah value asli, biarkan kosong/null dikirim ke JS agar bisa di-handle di JS
                 return response()->json([
                     'success' => true,
                     'hasil' => $data
@@ -457,51 +336,205 @@ class BidanProfileController extends Controller
         }
     }
 
-    public function storeHasilPeriksaAnak(Request $request)
+    public function getVisitDates($no_rekam_medis)
     {
-        $validatedData = $request->validate([
-            'no_rekam_medis' => 'required|string|exists:pasiens,no_rekam_medis',
-            'berat_badan' => 'required|string',
-            'makanan_anak' => 'required|string',
-            'gejala' => 'required|string',
-            'nasehat' => 'required|string',
-            'pegobatan' => 'required|string',
-        ]);
+        try {
+            $pasien = \App\Models\Pasien::where('no_rekam_medis', $no_rekam_medis)->first();
+            if (!$pasien) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pasien tidak ditemukan.'
+                ]);
+            }
 
-        $pasien = \App\Models\Pasien::where('no_rekam_medis', $validatedData['no_rekam_medis'])->first();
+            // Ambil semua tanggal dari hasil_periksa, hasil_analisa, hasil_periksa_anak, hasil_periksa_gigi
+            $hasilPeriksaDates = \App\Models\HasilPeriksa::where('pasien_id', $pasien->id)
+                ->pluck('tanggal_periksa')
+                ->toArray();
+            $hasilAnalisaDates = \App\Models\Hasilanalisa::where('pasien_id', $pasien->id)
+                ->pluck('tanggal_analisa')
+                ->toArray();
+            $hasilPeriksaAnakDates = \App\Models\HasilperiksaAnak::where('pasien_id', $pasien->id)
+                ->pluck('created_at')
+                ->toArray();
+            $hasilPeriksaGigiDates = \App\Models\HasilPeriksagigi::where('pasien_id', $pasien->id)
+                ->pluck('tanggal_periksa')
+                ->toArray();
 
-        if (!$pasien) {
+            // Gabungkan semua tanggal, hilangkan duplikat, urutkan dari terlama ke terbaru
+            $allDates = array_merge($hasilPeriksaDates, $hasilAnalisaDates, $hasilPeriksaAnakDates, $hasilPeriksaGigiDates);
+            $allDates = array_filter($allDates); // hilangkan null/empty
+            $uniqueDates = array_unique(array_map(function($d) {
+                return date('Y-m-d', strtotime($d));
+            }, $allDates));
+            sort($uniqueDates); // urutkan dari terlama ke terbaru
+
+            return response()->json([
+                'success' => true,
+                'data' => array_values($uniqueDates),
+            ]);
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Pasien tidak ditemukan.',
-            ], 422);
+                'message' => 'Terjadi error: ' . $e->getMessage(),
+            ], 500);
         }
-
-        $hasilPeriksaAnak = new \App\Models\HasilperiksaAnak();
-        $hasilPeriksaAnak->pasien_id = $pasien->id;
-        $hasilPeriksaAnak->berat_badan = $validatedData['berat_badan'];
-        $hasilPeriksaAnak->makanan_anak = $validatedData['makanan_anak'];
-        $hasilPeriksaAnak->gejala = $validatedData['gejala'];
-        $hasilPeriksaAnak->nasehat = $validatedData['nasehat'];
-        $hasilPeriksaAnak->pegobatan = $validatedData['pegobatan'];
-        $hasilPeriksaAnak->penanggung_jawab = auth()->id();
-
-        $hasilPeriksaAnak->save();
-
-        // Update status antrian pasien menjadi 'Pembayaran'
-        $antrian = \App\Models\Antrian::where('pasien_id', $hasilPeriksaAnak->pasien_id)
-            ->where('status', 'Pemeriksaan')
-            ->latest()
-            ->first();
-
-        if ($antrian) {
-            $antrian->status = 'Pembayaran';
-            $antrian->save();
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data hasil periksa anak berhasil disimpan dan status antrian diperbarui.',
-        ]);
     }
- }
+
+    public function getVisitData($no_rekam_medis, $tanggal)
+    {
+        try {
+            $pasien = \App\Models\Pasien::where('no_rekam_medis', $no_rekam_medis)->first();
+            if (!$pasien) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pasien dengan nomor rekam medis ' . $no_rekam_medis . ' tidak ditemukan.'
+                ], 404);
+            }
+
+            // Parse tanggal to date format
+            $date = date('Y-m-d', strtotime($tanggal));
+
+            // Query Hasilanalisa for the patient and date
+            $hasilAnalisa = \App\Models\Hasilanalisa::where('pasien_id', $pasien->id)
+                ->whereDate('tanggal_analisa', $date)
+                ->latest()
+                ->first();
+
+            // Query HasilPeriksa for the patient and date
+            $hasilPeriksa = \App\Models\HasilPeriksa::where('pasien_id', $pasien->id)
+                ->whereDate('tanggal_periksa', $date)
+                ->latest()
+                ->first();
+
+            // Query HasilperiksaAnak for the patient and date
+            $hasilPeriksaAnak = \App\Models\HasilperiksaAnak::where('pasien_id', $pasien->id)
+                ->whereDate('created_at', $date)
+                ->latest()
+                ->first();
+
+            // Query HasilPeriksagigi for the patient and date
+            $hasilPeriksaGigi = \App\Models\HasilPeriksagigi::where('pasien_id', $pasien->id)
+                ->whereDate('tanggal_periksa', $date)
+                ->latest()
+                ->first();
+
+            if (!$hasilAnalisa && !$hasilPeriksa && !$hasilPeriksaAnak && !$hasilPeriksaGigi) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak ada data hasil analisa atau hasil periksa untuk tanggal ' . $date . ' dan nomor rekam medis ' . $no_rekam_medis . '.',
+                ], 404);
+            }
+
+            // Prepare response data
+            $penanggungJawabNama = null;
+            if ($hasilAnalisa && method_exists($hasilAnalisa, 'penanggungJawab')) {
+                try {
+                    $penanggungJawab = $hasilAnalisa->penanggungJawab;
+                    if ($penanggungJawab) {
+                        $penanggungJawabNama = $penanggungJawab->name;
+                    }
+                } catch (\Throwable $e) {
+                    $penanggungJawabNama = null;
+                }
+            }
+
+            // Ambil tanggal periksa yang valid dari hasil query (ISO 8601)
+            $tanggalPeriksa = null;
+            if ($hasilPeriksa && $hasilPeriksa->tanggal_periksa) {
+                $tanggalPeriksa = \Carbon\Carbon::parse($hasilPeriksa->tanggal_periksa)->toISOString();
+            } elseif ($hasilAnalisa && $hasilAnalisa->tanggal_analisa) {
+                $tanggalPeriksa = \Carbon\Carbon::parse($hasilAnalisa->tanggal_analisa)->toISOString();
+            } elseif ($hasilPeriksaAnak && $hasilPeriksaAnak->created_at) {
+                $tanggalPeriksa = \Carbon\Carbon::parse($hasilPeriksaAnak->created_at)->toISOString();
+            } elseif ($hasilPeriksaGigi && $hasilPeriksaGigi->tanggal_periksa) {
+                $tanggalPeriksa = \Carbon\Carbon::parse($hasilPeriksaGigi->tanggal_periksa)->toISOString();
+            } else {
+                $tanggalPeriksa = "-";
+            }
+
+            $namaPoliTujuan = null;
+            if ($hasilAnalisa && method_exists($hasilAnalisa, 'poli') && $hasilAnalisa->poli) {
+                $namaPoliTujuan = $hasilAnalisa->poli->nama_poli;
+            } elseif ($hasilAnalisa && $hasilAnalisa->poli_tujuan) {
+                $namaPoliTujuan = $hasilAnalisa->poli_tujuan;
+            }
+
+            $data = [
+                'tanggal_periksa' => $tanggalPeriksa,
+                // Hasil Periksa fields
+                'anamnesis' => $hasilPeriksa ? $hasilPeriksa->anamnesis : null,
+                'pemeriksaan_fisik' => $hasilPeriksa ? $hasilPeriksa->pemeriksaan_fisik : null,
+                'rencana_dan_terapi' => $hasilPeriksa ? $hasilPeriksa->rencana_dan_terapi : null,
+                'diagnosis' => $hasilPeriksa ? $hasilPeriksa->diagnosis : null,
+                'edukasi' => $hasilPeriksa ? $hasilPeriksa->edukasi : null,
+                'kode_icd' => $hasilPeriksa ? $hasilPeriksa->kode_icd : null,
+                'status_gizi' => $hasilPeriksa ? $hasilPeriksa->kesan_status_gizi : null,
+                'penanggung_jawab_periksa' => ($hasilPeriksa && $hasilPeriksa->penanggung_jawab) ? (\App\Models\User::find($hasilPeriksa->penanggung_jawab)->name ?? '-') : null,
+                // Hasil Periksa Gigi fields (mapping sesuai struktur tabel)
+                'odontogram' => $hasilPeriksaGigi ? $hasilPeriksaGigi->odontogram : null,
+                'pemeriksaan_subjektif' => $hasilPeriksaGigi ? $hasilPeriksaGigi->pemeriksaan_subjektif : null,
+                'pemeriksaan_objektif' => $hasilPeriksaGigi ? $hasilPeriksaGigi->pemeriksaan_objektif : null,
+                'diagnosa_gigi' => $hasilPeriksaGigi ? $hasilPeriksaGigi->diagnosa : null,
+                'terapi_anjuran_gigi' => $hasilPeriksaGigi ? $hasilPeriksaGigi->terapi_anjuran : null,
+                'catatan_gigi' => $hasilPeriksaGigi ? $hasilPeriksaGigi->catatan : null,
+                'penanggung_jawab_gigi' => ($hasilPeriksaGigi && $hasilPeriksaGigi->penanggung_jawab) ? (\App\Models\User::find($hasilPeriksaGigi->penanggung_jawab)->name ?? '-') : null,
+                // Hasil Analisa fields
+                'tekanan_darah' => $hasilAnalisa ? $hasilAnalisa->tekanan_darah : null,
+                'frekuensi_nadi' => $hasilAnalisa ? $hasilAnalisa->frekuensi_nadi : null,
+                'suhu' => $hasilAnalisa ? $hasilAnalisa->suhu : null,
+                'frekuensi_nafas' => $hasilAnalisa ? $hasilAnalisa->frekuensi_nafas : null,
+                'skor_nyeri' => $hasilAnalisa ? $hasilAnalisa->skor_nyeri : null,
+                'skor_jatuh' => $hasilAnalisa ? $hasilAnalisa->skor_jatuh : null,
+                'berat_badan' => $hasilAnalisa ? $hasilAnalisa->berat_badan : null,
+                'tinggi_badan' => $hasilAnalisa ? $hasilAnalisa->tinggi_badan : null,
+                'lingkar_kepala' => $hasilAnalisa ? $hasilAnalisa->lingkar_kepala : null,
+                'imt' => $hasilAnalisa ? $hasilAnalisa->imt : null,
+                'alat_bantu' => $hasilAnalisa ? $hasilAnalisa->alat_bantu : null,
+                'prosthesa' => $hasilAnalisa ? $hasilAnalisa->prosthesa : null,
+                'cacat_tubuh' => $hasilAnalisa ? $hasilAnalisa->cacat_tubuh : null,
+                'adl_mandiri' => $hasilAnalisa ? $hasilAnalisa->adl_mandiri : null,
+                'riwayat_jatuh' => $hasilAnalisa ? $hasilAnalisa->riwayat_jatuh : null,
+                'status_psikologi' => $hasilAnalisa ? (
+                    $hasilAnalisa->status_psikologi
+                        ? (is_array(json_decode($hasilAnalisa->status_psikologi, true))
+                            ? implode(', ', json_decode($hasilAnalisa->status_psikologi, true))
+                            : (is_string($hasilAnalisa->status_psikologi) ? $hasilAnalisa->status_psikologi : '-')
+                        )
+                        : null
+                ) : null,
+                'penanggung_jawab_analisa' => ($hasilAnalisa && $hasilAnalisa->penanggung_jawab) ? (\App\Models\User::find($hasilAnalisa->penanggung_jawab)->name ?? '-') : null,
+                'hambatan_edukasi' => $hasilAnalisa ? (
+                    $hasilAnalisa->hambatan_edukasi
+                        ? (is_array(json_decode($hasilAnalisa->hambatan_edukasi, true))
+                            ? implode(', ', json_decode($hasilAnalisa->hambatan_edukasi, true))
+                            : (is_string($hasilAnalisa->hambatan_edukasi) ? $hasilAnalisa->hambatan_edukasi : '-')
+                        )
+                        : null
+                ) : null,
+                'alergi' => $hasilAnalisa ? $hasilAnalisa->alergi : null,
+                'catatan' => $hasilAnalisa ? $hasilAnalisa->catatan : null,
+                'poli_tujuan' => $namaPoliTujuan,
+                'penanggung_jawab_nama' => $penanggungJawabNama,
+                // Hasil Periksa Anak fields
+                'berat_badan_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->berat_badan : null,
+                'makanan_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->makanan_anak : null,
+                'gejala_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->gejala : null,
+                'nasehat_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->nasehat : null,
+                'pegobatan_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->pegobatan : null,
+                'penanggung_jawab_anak' => ($hasilPeriksaAnak && $hasilPeriksaAnak->penanggung_jawab) ? (\App\Models\User::find($hasilPeriksaAnak->penanggung_jawab)->name ?? '-') : null,
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi error pada server: ' . $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 500);
+        }
+    }
+}

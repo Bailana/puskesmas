@@ -35,15 +35,23 @@ Route::middleware(['auth', 'role:apoteker'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:dokter'])->group(function () {
-    Route::get('/dokter/riwayat-berobat/{no_rekam_medis}', [DokterDashboardController::class, 'getRiwayatBerobat'])->name('dokter.riwayat.berobat');
-    Route::get('/dokter/hasil-periksa-detail/{no_rekam_medis}/{tanggal}', [DokterDashboardController::class, 'getHasilPeriksaDetail'])->name('dokter.hasil.periksa.detail');
+    Route::get('/dokter/pasien/{no_rekam_medis}/riwayat', [App\Http\Controllers\DokterDashboardController::class, 'riwayatBerobat'])
+        ->name('dokter.riwayat');
+    Route::get('/dokter/riwayat-berobat/{no_rekam_medis}/dates', [App\Http\Controllers\DokterDashboardController::class, 'getVisitDates'])->name('dokter.riwayat.dates');
+    // API route to get hasil analisa and periksa data for a date
+    Route::get('/dokter/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\DokterDashboardController::class, 'getVisitData'])->name('dokter.riwayat.data');
 
     // New route for medicine search API
     Route::get('/dokter/search-obat', [DokterDashboardController::class, 'searchObat'])->name('dokter.searchObat');
 });
 
 Route::middleware(['auth', 'role:resepsionis'])->group(function () {
-    Route::get('/resepsionis/riwayat-berobat/{no_rekam_medis}', [ResepsionisDashboardController::class, 'getRiwayatBerobat'])->name('resepsionis.riwayat.berobat');
+    Route::get('/resepsionis/pasien/{no_rekam_medis}/riwayat', [App\Http\Controllers\ResepsionisDashboardController::class, 'riwayatBerobat'])
+        ->name('resepsionis.riwayat');
+    Route::get('/resepsionis/riwayat-berobat/{no_rekam_medis}/dates', [App\Http\Controllers\ResepsionisDashboardController::class, 'getVisitDates'])->name('resepsionis.riwayat.dates');
+    // API route to get hasil analisa and periksa data for a date
+    Route::get('/resepsionis/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\ResepsionisDashboardController::class, 'getVisitData'])->name('resepsionis.riwayat.data');
+
     Route::get('/resepsionis/hasil-periksa-detail/{no_rekam_medis}/{tanggal}', [ResepsionisDashboardController::class, 'getHasilPeriksaDetail'])->name('resepsionis.hasil.periksa.detail');
 });
 
@@ -115,7 +123,7 @@ Route::middleware(['auth', 'role:bidan'])->group(function () {
     // API route to get hasil analisa and periksa data for a date
     Route::get('/bidan/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\BidanProfileController::class, 'getVisitData'])->name('bidan.riwayat.data');
 
-    Route::get('/bidan/hasilanalisa/{no_rekam_medis}', [\App\Http\Controllers\BidanProfileController::class, 'hasilAnalisaAjax'])->name('bidan.hasilanalisa.ajax');
+    Route::get('/bidan/hasil-analisa/{no_rekam_medis}', [\App\Http\Controllers\BidanProfileController::class, 'hasilAnalisaAjax'])->name('bidan.hasilanalisa.ajax');
 });
 
 Route::get('/', function () {

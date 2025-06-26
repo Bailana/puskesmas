@@ -54,9 +54,12 @@
                                     <button type="button" class="btn btn-primary btn-sm rounded btnPeriksa"
                                         data-bs-toggle="modal" data-bs-target="#modalPeriksaPasien"
                                         data-pasien-id="{{ $antrian->pasien->id }}">Periksa</button>
-                                    <button type="button" class="btn btn-danger btn-sm rounded btnRiwayat"
-                                        data-no-rekam-medis="{{ $antrian->pasien->no_rekam_medis }}">Riwayat
-                                        Berobat</button>
+                                    <button type="button" class="btn btn-danger btn-sm rounded btn-riwayat"
+                                        data-rekam-medis="{{ $antrian->no_rekam_medis }}"
+                                        data-nama="{{ $antrian->nama_pasien }}"
+                                        data-bs-toggle="modal" data-bs-target="#modalRiwayatBerobat">
+                                        Riwayat Berobat
+                                    </button>
                                 </td>
                             </tr>
                             @endforeach
@@ -135,8 +138,7 @@
         </div>
     </div>
     <!-- Modal Riwayat Berobat -->
-    <div class="modal fade" id="modalRiwayatBerobat" tabindex="-1" aria-labelledby="modalRiwayatBerobatLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="modalRiwayatBerobat" tabindex="-1" aria-labelledby="modalRiwayatBerobatLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
             <div class="modal-content" style="overflow-x: hidden;">
                 <div class="modal-header d-flex justify-content-between">
@@ -155,6 +157,12 @@
                                     <th>Tanggal Periksa</th>
                                     <td id="detailTanggal"></td>
                                 </tr>
+                            </tbody>
+                        </table>
+
+                        <h5 id="headingHasilPeriksa">Hasil Periksa</h5>
+                        <table class="table table-bordered" id="tableHasilPeriksa">
+                            <tbody>
                                 <tr>
                                     <th>Anamnesis</th>
                                     <td id="detailAnamnesis"></td>
@@ -181,7 +189,7 @@
                                 </tr>
                                 <tr>
                                     <th>Kesan Status Gizi</th>
-                                    <td id="detailKesanStatusGizi"></td>
+                                    <td id="detailStatusGizi"></td>
                                 </tr>
                                 <tr>
                                     <th>Penanggung Jawab</th>
@@ -189,6 +197,138 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                        <h5 id="headingHasilAnalisa">Hasil Analisa</h5>
+                        <table class="table table-bordered" id="tableHasilAnalisa">
+                            <tbody>
+                                <tr>
+                                    <th>Tekanan Darah (mmHg)</th>
+                                    <td id="detailTekananDarah"></td>
+                                </tr>
+                                <tr>
+                                    <th>Frekuensi Nadi (/menit)</th>
+                                    <td id="detailFrekuensiNadi"></td>
+                                </tr>
+                                <tr>
+                                    <th>Suhu (°C)</th>
+                                    <td id="detailSuhu"></td>
+                                </tr>
+                                <tr>
+                                    <th>Frekuensi Nafas (/menit)</th>
+                                    <td id="detailFrekuensiNafas"></td>
+                                </tr>
+                                <tr>
+                                    <th>Skor Nyeri</th>
+                                    <td id="detailSkorNyeri"></td>
+                                </tr>
+                                <tr>
+                                    <th>Skor Jatuh</th>
+                                    <td id="detailSkorJatuh"></td>
+                                </tr>
+                                <tr>
+                                    <th>Berat Badan</th>
+                                    <td id="detailBeratBadan"></td>
+                                </tr>
+                                <tr>
+                                    <th>Tinggi Badan</th>
+                                    <td id="detailTinggiBadan"></td>
+                                </tr>
+                                <tr>
+                                    <th>Lingkar Kepala</th>
+                                    <td id="detailLingkarKepala"></td>
+                                </tr>
+                                <tr>
+                                    <th>IMT</th>
+                                    <td id="detailIMT"></td>
+                                </tr>
+                                <tr>
+                                    <th>Alat Bantu</th>
+                                    <td id="detailAlatBantu"></td>
+                                </tr>
+                                <tr>
+                                    <th>Prosthesa</th>
+                                    <td id="detailProsthesa"></td>
+                                </tr>
+                                <tr>
+                                    <th>Cacat Tubuh</th>
+                                    <td id="detailCacatTubuh"></td>
+                                </tr>
+                                <tr>
+                                    <th>ADL Mandiri</th>
+                                    <td id="detailADLMandiri"></td>
+                                </tr>
+                                <tr>
+                                    <th>Riwayat Jatuh</th>
+                                    <td id="detailRiwayatJatuh"></td>
+                                </tr>
+                                <tr>
+                                    <th>Status Psikologi</th>
+                                    <td id="detailStatusPsikologi"></td>
+                                </tr>
+                                <tr>
+                                    <th>Hambatan Edukasi</th>
+                                    <td id="detailHambatanEdukasi"></td>
+                                </tr>
+                                <tr>
+                                    <th>Alergi</th>
+                                    <td id="detailAlergi"></td>
+                                </tr>
+                                <tr>
+                                    <th>Catatan</th>
+                                    <td id="detailCatatan"></td>
+                                </tr>
+                                <tr>
+                                    <th>Poli Tujuan</th>
+                                    <td id="detailPoliTujuan"></td>
+                                </tr>
+                                <tr>
+                                    <th>Penanggung Jawab</th>
+                                    <td id="detailPenanggungJawabAnalisa"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h5 id="headingHasilPeriksaAnak">Hasil Periksa Anak</h5>
+                        <table class="table table-bordered" id="hasilPeriksaAnakTable">
+                            <tbody>
+                                <!-- Data hasil periksa anak akan dimasukkan di sini -->
+                            </tbody>
+                        </table>
+
+                        <h5 id="headingHasilPeriksaGigi">Hasil Periksa Gigi</h5>
+                        <table class="table table-bordered" id="tableHasilPeriksaGigi">
+                            <tbody>
+                                <tr>
+                                    <th>Odontogram</th>
+                                    <td id="detailOdontogramGigi"></td>
+                                </tr>
+                                <tr>
+                                    <th>Pemeriksaan Subjektif</th>
+                                    <td id="detailPemeriksaanSubjektifGigi"></td>
+                                </tr>
+                                <tr>
+                                    <th>Pemeriksaan Objektif</th>
+                                    <td id="detailPemeriksaanObjektifGigi"></td>
+                                </tr>
+                                <tr>
+                                    <th>Diagnosis Gigi</th>
+                                    <td id="detailDiagnosisGigi"></td>
+                                </tr>
+                                <tr>
+                                    <th>Terapi/Anjuran Gigi</th>
+                                    <td id="detailTerapiAnjuranGigi"></td>
+                                </tr>
+                                <tr>
+                                    <th>Catatan Gigi</th>
+                                    <td id="detailCatatanGigi"></td>
+                                </tr>
+                                <tr>
+                                    <th>Penanggung Jawab Gigi</th>
+                                    <td id="detailPenanggungJawabGigi"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
                         <div class="d-flex justify-content-end">
                             <button type="button" class="btn btn-danger btn-sm mt-2" id="btnTutupDetail">Tutup</button>
                         </div>
@@ -348,107 +488,107 @@
         </div>
     </div>
 
-<!-- Modal Periksa Pasien -->
-<div class="modal fade" id="modalPeriksaPasien" tabindex="-1" aria-labelledby="modalPeriksaPasienLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
-        <div class="modal-content" style="overflow-x: hidden;">
-            <div class="modal-header d-flex justify-content-between">
-                <h3 class="modal-title" id="modalPeriksaPasienLabel"><strong>Periksa Pasien</strong></h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
-                <form id="formPeriksaPasien">
-                    <!-- Anamnesis -->
-                    <div class="mb-3">
-                        <label for="anamnesis" class="form-label">Anamnesis</label>
-                        <textarea class="form-control" id="anamnesis" rows="3" required></textarea>
-                    </div>
+    <!-- Modal Periksa Pasien -->
+    <div class="modal fade" id="modalPeriksaPasien" tabindex="-1" aria-labelledby="modalPeriksaPasienLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
+            <div class="modal-content" style="overflow-x: hidden;">
+                <div class="modal-header d-flex justify-content-between">
+                    <h3 class="modal-title" id="modalPeriksaPasienLabel"><strong>Periksa Pasien</strong></h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                    <form id="formPeriksaPasien">
+                        <!-- Anamnesis -->
+                        <div class="mb-3">
+                            <label for="anamnesis" class="form-label">Anamnesis</label>
+                            <textarea class="form-control" id="anamnesis" rows="3" required></textarea>
+                        </div>
 
-                    <!-- Pemeriksaan Fisik -->
-                    <div class="mb-3">
-                        <label for="pemeriksaanFisik" class="form-label">Pemeriksaan Fisik</label>
-                        <textarea class="form-control" id="pemeriksaanFisik" rows="3" required></textarea>
-                    </div>
+                        <!-- Pemeriksaan Fisik -->
+                        <div class="mb-3">
+                            <label for="pemeriksaanFisik" class="form-label">Pemeriksaan Fisik</label>
+                            <textarea class="form-control" id="pemeriksaanFisik" rows="3" required></textarea>
+                        </div>
 
-                    <!-- Rencana dan Terapi -->
-                    <div class="mb-3">
-                        <label for="rencanaTerapi" class="form-label">Rencana dan Terapi</label>
-                        <textarea class="form-control" id="rencanaTerapi" rows="3" required></textarea>
-                    </div>
+                        <!-- Rencana dan Terapi -->
+                        <div class="mb-3">
+                            <label for="rencanaTerapi" class="form-label">Rencana dan Terapi</label>
+                            <textarea class="form-control" id="rencanaTerapi" rows="3" required></textarea>
+                        </div>
 
-                    <!-- Diagnosis -->
-                    <div class="mb-3">
-                        <label for="diagnosis" class="form-label">Diagnosis</label>
-                        <textarea class="form-control" id="diagnosis" rows="3" required></textarea>
-                    </div>
+                        <!-- Diagnosis -->
+                        <div class="mb-3">
+                            <label for="diagnosis" class="form-label">Diagnosis</label>
+                            <textarea class="form-control" id="diagnosis" rows="3" required></textarea>
+                        </div>
 
-                    <!-- Edukasi -->
-                    <div class="mb-3">
-                        <label for="edukasi" class="form-label">Edukasi</label>
-                        <textarea class="form-control" id="edukasi" rows="3" required></textarea>
-                    </div>
+                        <!-- Edukasi -->
+                        <div class="mb-3">
+                            <label for="edukasi" class="form-label">Edukasi</label>
+                            <textarea class="form-control" id="edukasi" rows="3" required></textarea>
+                        </div>
 
-                    <!-- Code ICD -->
-                    <div class="mb-3">
-                        <label for="kodeICD" class="form-label">Kode ICD</label>
-                        <input type="text" class="form-control form-control-sm" id="kodeICD" required>
-                    </div>
+                        <!-- Code ICD -->
+                        <div class="mb-3">
+                            <label for="kodeICD" class="form-label">Kode ICD</label>
+                            <input type="text" class="form-control form-control-sm" id="kodeICD" required>
+                        </div>
 
-                    <!-- Kesan Status Gizi -->
-                    <div class="mb-3">
-                        <label for="kesanStatusGizi" class="form-label">Kesan Status Gizi</label>
-                        <select class="form-control form-control-sm" id="kesanStatusGizi" required>
-                            <option value="" disabled selected>Pilih Status Gizi</option>
-                            <option value="Gizi Kurang/Buruk">Gizi Kurang/Buruk</option>
-                            <option value="Gizi Cukup">Gizi Cukup</option>
-                            <option value="Gizi Lebih">Gizi Lebih</option>
-                        </select>
-                    </div>
-                    <div id="resepObatContainer" class="d-flex flex-column mb-2 gap-2">
-                        <div class="resep-obat-item d-flex gap-2">
-                            <div class="flex-grow-1 d-flex flex-column equal-width">
-                                <label for="resepObat" class="form-label text-start">Resep Obat</label>
-                                <select class="form-select" name="resep_obat[]" required>
-                                    <option value="" disabled selected>Pilih Obat</option>
-                                    @foreach ($obats as $obat)
-                                    <option value="{{ $obat->id }}">{{ $obat->nama_obat }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="flex-grow-1 d-flex flex-column input-container equal-width">
-                                <label for="bentukObat" class="form-label">Bentuk Obat</label>
-                                <input type="text" class="form-control" name="bentuk_obat[]" value="" required readonly>
-                            </div>
+                        <!-- Kesan Status Gizi -->
+                        <div class="mb-3">
+                            <label for="kesanStatusGizi" class="form-label">Kesan Status Gizi</label>
+                            <select class="form-control form-control-sm" id="kesanStatusGizi" required>
+                                <option value="" disabled selected>Pilih Status Gizi</option>
+                                <option value="Gizi Kurang/Buruk">Gizi Kurang/Buruk</option>
+                                <option value="Gizi Cukup">Gizi Cukup</option>
+                                <option value="Gizi Lebih">Gizi Lebih</option>
+                            </select>
+                        </div>
+                        <div id="resepObatContainer" class="d-flex flex-column mb-2 gap-2">
+                            <div class="resep-obat-item d-flex gap-2">
+                                <div class="flex-grow-1 d-flex flex-column equal-width">
+                                    <label for="resepObat" class="form-label text-start">Resep Obat</label>
+                                    <select class="form-select" name="resep_obat[]" required>
+                                        <option value="" disabled selected>Pilih Obat</option>
+                                        @foreach ($obats as $obat)
+                                        <option value="{{ $obat->id }}">{{ $obat->nama_obat }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="flex-grow-1 d-flex flex-column input-container equal-width">
+                                    <label for="bentukObat" class="form-label">Bentuk Obat</label>
+                                    <input type="text" class="form-control" name="bentuk_obat[]" value="" required readonly>
+                                </div>
 
-                            <div class="flex-grow-1 d-flex flex-column input-container equal-width">
-                                <label for="jumlahObat" class="form-label">Jumlah Obat <small class="text-muted" style="font-weight: normal;" name="stok_obat_display">Stok: -</small></label>
-                                <input type="number" class="form-control" name="jumlah_obat[]" min="1" value="" required>
-                            </div>
-                            
-                            <div class="btn-remove-container d-flex align-items-end" style="margin-bottom: 2px;">
-                                <button type="button" class="btn btn-danger btn-sm btnRemoveResep" title="Hapus Resep Obat" style="height: 28px; width: 28px; padding: 0; font-size: 1.2rem; line-height: 1;">&times;</button>
+                                <div class="flex-grow-1 d-flex flex-column input-container equal-width">
+                                    <label for="jumlahObat" class="form-label">Jumlah Obat <small class="text-muted" style="font-weight: normal;" name="stok_obat_display">Stok: -</small></label>
+                                    <input type="number" class="form-control" name="jumlah_obat[]" min="1" value="" required>
+                                </div>
+
+                                <div class="btn-remove-container d-flex align-items-end" style="margin-bottom: 2px;">
+                                    <button type="button" class="btn btn-danger btn-sm btnRemoveResep" title="Hapus Resep Obat" style="height: 28px; width: 28px; padding: 0; font-size: 1.2rem; line-height: 1;">&times;</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="catatanObat" class="form-label">Catatan Obat</label>
-                        <textarea class="form-control" id="catatanObat" rows="3"></textarea>
-                    </div>
-                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2 mt-2" id="btnTambahResep" title="Tambah Resep Obat" style="padding: 0 8px; min-width: auto; height: 28px; font-size: 0.875rem;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-                        </svg>
-                        Tambah Resep Obat Baru
-                    </button>
-                </form>
-            </div>
-            <div class="modal-footer d-flex justify-content-end mt-3">
-                <button type="button" class="btn btn-success ms-2" id="btnSimpanPeriksa">Simpan</button>
+                        <div class="mb-3">
+                            <label for="catatanObat" class="form-label">Catatan Obat</label>
+                            <textarea class="form-control" id="catatanObat" rows="3"></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary d-flex align-items-center gap-2 mt-2" id="btnTambahResep" title="Tambah Resep Obat" style="padding: 0 8px; min-width: auto; height: 28px; font-size: 0.875rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                            </svg>
+                            Tambah Resep Obat Baru
+                        </button>
+                    </form>
+                </div>
+                <div class="modal-footer d-flex justify-content-end mt-3">
+                    <button type="button" class="btn btn-success ms-2" id="btnSimpanPeriksa">Simpan</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 @endsection
 <style>
@@ -531,44 +671,64 @@
         height: 100%;
     }
 
-    .resep-obat-item { position: relative; }
-.hasil-cari-obat {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 2050; /* lebih tinggi dari modal bootstrap */
-    max-height: 220px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    background: #fff;
-}
-.item-obat.active, .item-obat:hover {
-    background: #f0f0f0;
-}
-.resep-obat-item {
-    align-items: flex-start;
-}
-.resep-obat-item .equal-width {
-    min-width: 0;
-    flex: 1 1 0;
-}
-.resep-obat-item .form-select,
-.resep-obat-item .form-control {
-    width: 100% !important;
-    min-width: 0;
-    box-sizing: border-box;
-}
-.resep-obat-item .input-container {
-    min-width: 0;
-}
-.resep-obat-item .is-invalid,
-.resep-obat-item .form-control.is-invalid,
-.resep-obat-item .form-select.is-invalid {
-    width: 100% !important;
-    min-width: 0;
-    box-sizing: border-box;
-}
+    .resep-obat-item {
+        position: relative;
+    }
+
+    .hasil-cari-obat {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 2050;
+        /* lebih tinggi dari modal bootstrap */
+        max-height: 220px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        background: #fff;
+    }
+
+    .item-obat.active,
+    .item-obat:hover {
+        background: #f0f0f0;
+    }
+
+    .resep-obat-item {
+        align-items: flex-start;
+    }
+
+    .resep-obat-item .equal-width {
+        min-width: 0;
+        flex: 1 1 0;
+    }
+
+    .resep-obat-item .form-select,
+    .resep-obat-item .form-control {
+        width: 100% !important;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .resep-obat-item .input-container {
+        min-width: 0;
+    }
+
+    .resep-obat-item .is-invalid,
+    .resep-obat-item .form-control.is-invalid,
+    .resep-obat-item .form-select.is-invalid {
+        width: 100% !important;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    #modalRiwayatBerobat th,
+    #modalRiwayatBerobat td {
+        font-size: 0.875rem !important;
+        font-weight: 400 !important;
+    }
+    #modalRiwayatBerobat th {
+        font-weight: 600 !important;
+    }
 </style>
 @section('scripts')
 <!-- Select2 CSS & JS CDN -->
@@ -640,164 +800,6 @@
                         console.error('Error fetching search results:', error);
                     });
             }, 300);
-        });
-
-        // Existing scripts below...
-
-        // Handle Riwayat Berobat button click
-        document.querySelectorAll('.btnRiwayat').forEach(button => {
-            button.addEventListener('click', function() {
-                const noRekamMedis = this.getAttribute('data-no-rekam-medis');
-                const modal = new bootstrap.Modal(document.getElementById(
-                    'modalRiwayatBerobat'));
-                const riwayatList = document.getElementById('riwayatList');
-                const hasilPeriksaDetail = document.getElementById('hasilPeriksaDetail');
-
-                // Clear previous content
-                riwayatList.innerHTML = '';
-                hasilPeriksaDetail.style.display = 'none';
-
-                // Fetch riwayat berobat dates
-                fetch(`/dokter/riwayat-berobat/${noRekamMedis}`)
-                    .then(response => response.json())
-                    .then(dates => {
-                        if (dates.length === 0) {
-                            riwayatList.innerHTML = '<p>Tidak ada riwayat berobat.</p>';
-                        } else {
-                            dates.forEach((tanggal, index) => {
-                                const dateObj = new Date(tanggal);
-                                const options = {
-                                    weekday: 'long',
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit'
-                                };
-                                const dateStr = dateObj.toLocaleDateString(
-                                    'id-ID',
-                                    options);
-                                const div = document.createElement('div');
-                                div.classList.add('d-flex',
-                                    'justify-content-between',
-                                    'align-items-center');
-                                if (index < dates.length - 1) {
-                                    div.style.borderBottom =
-                                        '1px solid #dee2e6';
-                                    div.style.paddingBottom = '0.5rem';
-                                    div.style.marginBottom = '0.5rem';
-                                }
-                                div.innerHTML = `
-                                    <span>${dateStr}</span>
-                                    <button class="btn btn-primary btn-sm btnLihat" data-tanggal="${tanggal}" data-no-rekam-medis="${noRekamMedis}">Lihat</button>
-                                `;
-                                riwayatList.appendChild(div);
-                            });
-
-                            // Add event listeners to Lihat buttons
-                            riwayatList.querySelectorAll('.btnLihat').forEach(
-                                btnLihat => {
-                                    btnLihat.addEventListener('click', function() {
-                                        const tanggal = this.getAttribute(
-                                            'data-tanggal');
-                                        const noRekamMedis = this
-                                            .getAttribute(
-                                                'data-no-rekam-medis');
-
-                                        fetch(
-                                                `/dokter/hasil-periksa-detail/${noRekamMedis}/${tanggal}`
-                                            )
-                                            .then(response => {
-                                                if (!response.ok) {
-                                                    throw new Error(
-                                                        'Data hasil periksa tidak ditemukan'
-                                                    );
-                                                }
-                                                return response.json();
-                                            })
-                                            .then(data => {
-                                                hasilPeriksaDetail.style
-                                                    .display = 'block';
-                                                riwayatList.style
-                                                    .display =
-                                                    'none';
-                                                const dateObj =
-                                                    new Date(
-                                                        data
-                                                        .tanggal_periksa
-                                                    );
-                                                const options = {
-                                                    weekday: 'long',
-                                                    year: 'numeric',
-                                                    month: '2-digit',
-                                                    day: '2-digit'
-                                                };
-                                                document.getElementById(
-                                                        'detailTanggal')
-                                                    .textContent =
-                                                    dateObj
-                                                    .toLocaleDateString(
-                                                        'id-ID', options
-                                                    );
-                                                document.getElementById(
-                                                        'detailAnamnesis'
-                                                    ).textContent =
-                                                    data.anamnesis ||
-                                                    '-';
-                                                document.getElementById(
-                                                        'detailPemeriksaanFisik'
-                                                    ).textContent =
-                                                    data
-                                                    .pemeriksaan_fisik ||
-                                                    '-';
-                                                document.getElementById(
-                                                        'detailRencanaTerapi'
-                                                    ).textContent =
-                                                    data
-                                                    .rencana_dan_terapi ||
-                                                    '-';
-                                                document.getElementById(
-                                                        'detailDiagnosis'
-                                                    ).textContent =
-                                                    data.diagnosis ||
-                                                    '-';
-                                                document.getElementById(
-                                                        'detailEdukasi')
-                                                    .textContent = data
-                                                    .edukasi || '-';
-                                                document.getElementById(
-                                                        'detailKodeICD')
-                                                    .textContent = data
-                                                    .kode_icd || '-';
-                                                document.getElementById(
-                                                        'detailKesanStatusGizi'
-                                                    ).textContent = data
-                                                    .kesan_status_gizi ||
-                                                    '-';
-                                                document.getElementById(
-                                                        'detailPenanggungJawab'
-                                                    ).textContent = data
-                                                    .penanggung_jawab_nama ||
-                                                    '-';
-                                            })
-                                            .catch(error => {
-                                                alert(error.message);
-                                            });
-                                    });
-                                });
-                        }
-                    })
-                    .catch(error => {
-                        riwayatList.innerHTML = `<p>Error: ${error.message}</p>`;
-                    });
-
-                modal.show();
-
-                // Add event listener for the new Tutup button inside detail view
-                document.getElementById('btnTutupDetail').addEventListener('click',
-                    function() {
-                        hasilPeriksaDetail.style.display = 'none';
-                        riwayatList.style.display = 'block';
-                    });
-            });
         });
 
         // Handle Periksa Pasien modal form submission
@@ -997,6 +999,7 @@
 
             // Update bentuk obat otomatis
             const obatsData = @json($obats);
+
             function updateBentukObat(selectElement) {
                 const selectedObatId = selectElement.value;
                 const bentukInput = selectElement.closest('.resep-obat-item').querySelector('input[name="bentuk_obat[]"]');
@@ -1144,10 +1147,14 @@
                         dataType: 'json',
                         delay: 250,
                         data: function(params) {
-                            return { q: params.term };
+                            return {
+                                q: params.term
+                            };
                         },
                         processResults: function(data) {
-                            return { results: data.results };
+                            return {
+                                results: data.results
+                            };
                         },
                         cache: true
                     }
@@ -1204,17 +1211,17 @@
         });
 
         // Tutup dropdown jika klik di luar input dan dropdown
-    $(document).on('mousedown', function(e) {
-        $('.input-cari-obat').each(function() {
-            const $input = $(this);
-            const $hasil = $input.siblings('.hasil-cari-obat');
-            if ($hasil.is(':visible')) {
-                if (!$(e.target).closest($input).length && !$(e.target).closest($hasil).length) {
-                    $hasil.hide();
+        $(document).on('mousedown', function(e) {
+            $('.input-cari-obat').each(function() {
+                const $input = $(this);
+                const $hasil = $input.siblings('.hasil-cari-obat');
+                if ($hasil.is(':visible')) {
+                    if (!$(e.target).closest($input).length && !$(e.target).closest($hasil).length) {
+                        $hasil.hide();
+                    }
                 }
-            }
+            });
         });
-    });
     });
 
     // Toggle dropdown saat field resep obat di-focus
@@ -1228,7 +1235,9 @@
         const query = input.value;
         $.ajax({
             url: '/dokter/search-obat',
-            data: {q: query},
+            data: {
+                q: query
+            },
             success: function(res) {
                 if (res.results && res.results.length > 0) {
                     let html = '';
@@ -1245,94 +1254,274 @@
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const resepObatContainer = document.getElementById('resepObatContainer');
-    const btnTambahResep = document.getElementById('btnTambahResep');
+    document.addEventListener('DOMContentLoaded', function() {
+        const resepObatContainer = document.getElementById('resepObatContainer');
+        const btnTambahResep = document.getElementById('btnTambahResep');
 
-    btnTambahResep.addEventListener('click', function() {
-        const firstItem = resepObatContainer.querySelector('.resep-obat-item');
-        if (!firstItem) return;
-        const newItem = firstItem.cloneNode(true);
-        // Clear values in cloned fields
-        const select = newItem.querySelector('select');
-        const input = newItem.querySelector('input[type="number"]');
-        if (select) {
-            select.selectedIndex = 0;
-        }
-        if (input) {
-            input.value = 1;
-        }
-        resepObatContainer.appendChild(newItem);
-    });
+        btnTambahResep.addEventListener('click', function() {
+            const firstItem = resepObatContainer.querySelector('.resep-obat-item');
+            if (!firstItem) return;
+            const newItem = firstItem.cloneNode(true);
+            // Clear values in cloned fields
+            const select = newItem.querySelector('select');
+            const input = newItem.querySelector('input[type="number"]');
+            if (select) {
+                select.selectedIndex = 0;
+            }
+            if (input) {
+                input.value = 1;
+            }
+            resepObatContainer.appendChild(newItem);
+        });
 
-    // Use event delegation for remove buttons
-    resepObatContainer.addEventListener('click', function(event) {
-        if (event.target.classList.contains('btnRemoveResep')) {
-            if (resepObatContainer.children.length > 1) {
-                event.target.closest('.resep-obat-item').remove();
-            }
-        }
-    });
-
-    // Update bentuk obat otomatis
-    const obatsData = @json($obats);
-    function updateBentukObat(selectElement) {
-        const selectedObatId = selectElement.value;
-        const bentukInput = selectElement.closest('.resep-obat-item').querySelector('input[name="bentuk_obat[]"]');
-        const jumlahInput = selectElement.closest('.resep-obat-item').querySelector('input[name="jumlah_obat[]"]');
-        const stokDisplay = selectElement.closest('.resep-obat-item').querySelector('small[name="stok_obat_display"]');
-        if (!selectedObatId) {
-            bentukInput.value = '';
-            if (jumlahInput) {
-                jumlahInput.removeAttribute('max');
-                jumlahInput.value = '';
-            }
-            if (stokDisplay) {
-                stokDisplay.textContent = 'Stok: -';
-            }
-            return;
-        }
-        const obat = obatsData.find(o => o.id == selectedObatId);
-        if (obat) {
-            bentukInput.value = obat.bentuk_obat || '';
-            if (jumlahInput) {
-                jumlahInput.setAttribute('max', obat.stok);
-                if (parseInt(jumlahInput.value) > obat.stok) {
-                    jumlahInput.value = obat.stok;
+        // Use event delegation for remove buttons
+        resepObatContainer.addEventListener('click', function(event) {
+            if (event.target.classList.contains('btnRemoveResep')) {
+                if (resepObatContainer.children.length > 1) {
+                    event.target.closest('.resep-obat-item').remove();
                 }
             }
-            if (stokDisplay) {
-                stokDisplay.textContent = 'Stok: ' + (obat.stok ?? '-');
+        });
+
+        // Update bentuk obat otomatis
+        const obatsData = @json($obats);
+
+        function updateBentukObat(selectElement) {
+            const selectedObatId = selectElement.value;
+            const bentukInput = selectElement.closest('.resep-obat-item').querySelector('input[name="bentuk_obat[]"]');
+            const jumlahInput = selectElement.closest('.resep-obat-item').querySelector('input[name="jumlah_obat[]"]');
+            const stokDisplay = selectElement.closest('.resep-obat-item').querySelector('small[name="stok_obat_display"]');
+            if (!selectedObatId) {
+                bentukInput.value = '';
+                if (jumlahInput) {
+                    jumlahInput.removeAttribute('max');
+                    jumlahInput.value = '';
+                }
+                if (stokDisplay) {
+                    stokDisplay.textContent = 'Stok: -';
+                }
+                return;
             }
-        } else {
-            bentukInput.value = '';
-            if (jumlahInput) {
-                jumlahInput.removeAttribute('max');
-                jumlahInput.value = '';
-            }
-            if (stokDisplay) {
-                stokDisplay.textContent = 'Stok: -';
+            const obat = obatsData.find(o => o.id == selectedObatId);
+            if (obat) {
+                bentukInput.value = obat.bentuk_obat || '';
+                if (jumlahInput) {
+                    jumlahInput.setAttribute('max', obat.stok);
+                    if (parseInt(jumlahInput.value) > obat.stok) {
+                        jumlahInput.value = obat.stok;
+                    }
+                }
+                if (stokDisplay) {
+                    stokDisplay.textContent = 'Stok: ' + (obat.stok ?? '-');
+                }
+            } else {
+                bentukInput.value = '';
+                if (jumlahInput) {
+                    jumlahInput.removeAttribute('max');
+                    jumlahInput.value = '';
+                }
+                if (stokDisplay) {
+                    stokDisplay.textContent = 'Stok: -';
+                }
             }
         }
-    }
-    resepObatContainer.addEventListener('change', function(event) {
-        if (event.target.matches('select[name="resep_obat[]"]')) {
-            updateBentukObat(event.target);
-        }
-    });
-    // Update bentuk obat untuk existing items
-    resepObatContainer.querySelectorAll('select[name="resep_obat[]"]').forEach(select => {
-        updateBentukObat(select);
-    });
-    // Update bentuk obat untuk resep baru
-    btnTambahResep.addEventListener('click', function() {
-        setTimeout(() => {
-            const newSelect = resepObatContainer.querySelector('.resep-obat-item:last-child select[name="resep_obat[]"]');
-            if (newSelect) {
-                updateBentukObat(newSelect);
+        resepObatContainer.addEventListener('change', function(event) {
+            if (event.target.matches('select[name="resep_obat[]"]')) {
+                updateBentukObat(event.target);
             }
-        }, 0);
+        });
+        // Update bentuk obat untuk existing items
+        resepObatContainer.querySelectorAll('select[name="resep_obat[]"]').forEach(select => {
+            updateBentukObat(select);
+        });
+        // Update bentuk obat untuk resep baru
+        btnTambahResep.addEventListener('click', function() {
+            setTimeout(() => {
+                const newSelect = resepObatContainer.querySelector('.resep-obat-item:last-child select[name="resep_obat[]"]');
+                if (newSelect) {
+                    updateBentukObat(newSelect);
+                }
+            }, 0);
+        });
     });
-});
+</script>
+<script>
+    // Handle Riwayat Berobat button click in antrian view (copy dari antrian.blade.php)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event delegation untuk .btn-riwayat
+        document.body.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-riwayat')) {
+                const button = e.target;
+                const noRekamMedis = button.getAttribute('data-rekam-medis');
+                const namaPasien = button.getAttribute('data-nama');
+                const modal = new bootstrap.Modal(document.getElementById('modalRiwayatBerobat'));
+                const riwayatList = document.getElementById('riwayatList');
+                const hasilPeriksaDetail = document.getElementById('hasilPeriksaDetail');
+
+                // Clear previous content
+                riwayatList.innerHTML = '';
+                hasilPeriksaDetail.style.display = 'none';
+                riwayatList.style.display = 'block';
+
+                // Fetch riwayat berobat dates by pasien no_rekam_medis
+                fetch(`/dokter/riwayat-berobat/${noRekamMedis}/dates`)
+                    .then(response => response.json())
+                    .then(result => {
+                        if (!result.success) {
+                            riwayatList.innerHTML = `<p>Error: ${result.message}</p>`;
+                            return;
+                        }
+                        const dates = result.data;
+                        if (dates.length === 0) {
+                            riwayatList.innerHTML = '<p>Tidak ada riwayat berobat.</p>';
+                        } else {
+                            dates.forEach((tanggal, index) => {
+                                const dateObj = new Date(tanggal);
+                                const options = {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit'
+                                };
+                                const dateStr = dateObj.toLocaleDateString('id-ID', options);
+                                const div = document.createElement('div');
+                                div.classList.add('d-flex', 'justify-content-between', 'align-items-center');
+                                if (index < dates.length - 1) {
+                                    div.style.borderBottom = '1px solid #dee2e6';
+                                    div.style.paddingBottom = '0.5rem';
+                                    div.style.marginBottom = '0.5rem';
+                                }
+                                div.innerHTML = `
+                                <span>${dateStr}</span>
+                                <button class="btn btn-primary btn-sm btnLihat" data-tanggal="${tanggal}" data-norm="${noRekamMedis}">Lihat</button>
+                            `;
+                                riwayatList.appendChild(div);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        riwayatList.innerHTML = `<p>Error: ${error.message}</p>`;
+                    });
+
+                modal.show();
+            }
+        });
+
+        // Event delegation untuk btnLihat di #riwayatList
+        document.getElementById('riwayatList').addEventListener('click', function(ev) {
+            if (ev.target.classList.contains('btnLihat')) {
+                const tanggal = ev.target.getAttribute('data-tanggal');
+                const noRekamMedis = ev.target.getAttribute('data-norm');
+                const hasilPeriksaDetail = document.getElementById('hasilPeriksaDetail');
+                const riwayatList = document.getElementById('riwayatList');
+                fetch(`/dokter/riwayat-berobat/${noRekamMedis}/${tanggal}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Data hasil periksa tidak ditemukan');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        hasilPeriksaDetail.style.display = 'block';
+                        riwayatList.style.display = 'none';
+                        const d = data.data || {};
+                        const dateObj = new Date(d.tanggal_periksa);
+                        const options = {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        };
+                        document.getElementById('detailTanggal').textContent = dateObj.toLocaleDateString('id-ID', options);
+
+                        // Cek apakah ada data pada hasil periksa
+                        const hasHasilPeriksa = d.anamnesis || d.pemeriksaan_fisik || d.rencana_dan_terapi || d.diagnosis || d.edukasi || d.kode_icd || d.status_gizi;
+                        document.getElementById('headingHasilPeriksa').style.display = hasHasilPeriksa ? 'block' : 'none';
+                        document.getElementById('tableHasilPeriksa').style.display = hasHasilPeriksa ? 'table' : 'none';
+                        if (hasHasilPeriksa) {
+                            document.getElementById('detailAnamnesis').textContent = d.anamnesis || '-';
+                            document.getElementById('detailPemeriksaanFisik').textContent = d.pemeriksaan_fisik || '-';
+                            document.getElementById('detailRencanaTerapi').textContent = d.rencana_dan_terapi || '-';
+                            document.getElementById('detailDiagnosis').textContent = d.diagnosis || '-';
+                            document.getElementById('detailEdukasi').textContent = d.edukasi || '-';
+                            document.getElementById('detailKodeICD').textContent = d.kode_icd || '-';
+                            document.getElementById('detailStatusGizi').textContent = d.status_gizi || '-';
+                            if (document.getElementById('detailPenanggungJawab')) {
+                                document.getElementById('detailPenanggungJawab').textContent = d.penanggung_jawab_periksa || '-';
+                            }
+                        }
+
+                        // Cek hasil analisa
+                        const hasHasilAnalisa = d.tekanan_darah || d.frekuensi_nadi || d.suhu || d.frekuensi_nafas || d.skor_nyeri || d.skor_jatuh || d.berat_badan || d.tinggi_badan || d.lingkar_kepala || d.imt || d.alat_bantu || d.prosthesa || d.cacat_tubuh || d.adl_mandiri || d.riwayat_jatuh || d.status_psikologi || d.hambatan_edukasi || d.alergi || d.catatan || d.poli_tujuan || d.penanggung_jawab_nama;
+                        document.getElementById('headingHasilAnalisa').style.display = hasHasilAnalisa ? 'block' : 'none';
+                        document.getElementById('tableHasilAnalisa').style.display = hasHasilAnalisa ? 'table' : 'none';
+                        if (hasHasilAnalisa) {
+                            document.getElementById('detailTekananDarah').textContent = d.tekanan_darah || '-';
+                            document.getElementById('detailFrekuensiNadi').textContent = d.frekuensi_nadi || '-';
+                            document.getElementById('detailSuhu').textContent = d.suhu || '-';
+                            document.getElementById('detailFrekuensiNafas').textContent = d.frekuensi_nafas || '-';
+                            document.getElementById('detailSkorNyeri').textContent = d.skor_nyeri || '-';
+                            document.getElementById('detailSkorJatuh').textContent = d.skor_jatuh || '-';
+                            document.getElementById('detailBeratBadan').textContent = d.berat_badan || '-';
+                            document.getElementById('detailTinggiBadan').textContent = d.tinggi_badan || '-';
+                            document.getElementById('detailLingkarKepala').textContent = d.lingkar_kepala || '-';
+                            document.getElementById('detailIMT').textContent = d.imt || '-';
+                            document.getElementById('detailAlatBantu').textContent = d.alat_bantu || '-';
+                            document.getElementById('detailProsthesa').textContent = d.prosthesa || '-';
+                            document.getElementById('detailCacatTubuh').textContent = d.cacat_tubuh || '-';
+                            document.getElementById('detailADLMandiri').textContent = d.adl_mandiri || '-';
+                            document.getElementById('detailRiwayatJatuh').textContent = d.riwayat_jatuh || '-';
+                            document.getElementById('detailStatusPsikologi').textContent = d.status_psikologi || '-';
+                            document.getElementById('detailHambatanEdukasi').textContent = d.hambatan_edukasi || '-';
+                            document.getElementById('detailAlergi').textContent = d.alergi || '-';
+                            document.getElementById('detailCatatan').textContent = d.catatan || '-';
+                            document.getElementById('detailPoliTujuan').textContent = d.poli_tujuan || '-';
+                            document.getElementById('detailPenanggungJawabAnalisa').textContent = d.penanggung_jawab_analisa || '-';
+                        }
+
+                        // Cek hasil periksa anak
+                        const hasHasilPeriksaAnak = d.berat_badan_anak || d.makanan_anak || d.gejala_anak || d.nasehat_anak || d.pegobatan_anak;
+                        document.getElementById('headingHasilPeriksaAnak').style.display = hasHasilPeriksaAnak ? 'block' : 'none';
+                        document.getElementById('hasilPeriksaAnakTable').style.display = hasHasilPeriksaAnak ? 'table' : 'none';
+                        if (hasHasilPeriksaAnak) {
+                            const tbodyAnak = document.querySelector('#hasilPeriksaAnakTable tbody');
+                            tbodyAnak.innerHTML = `
+                            <tr><th>Berat Badan Anak</th><td>${d.berat_badan_anak || '-'}</td></tr>
+                            <tr><th>Makanan Anak</th><td>${d.makanan_anak || '-'}</td></tr>
+                            <tr><th>Gejala Anak</th><td>${d.gejala_anak || '-'}</td></tr>
+                            <tr><th>Nasehat Anak</th><td>${d.nasehat_anak || '-'}</td></tr>
+                            <tr><th>Pengobatan Anak</th><td>${d.pegobatan_anak || '-'}</td></tr>
+                            <tr><th>Penanggung Jawab Anak</th><td>${d.penanggung_jawab_anak || '-'}</td></tr>
+                        `;
+                        } else {
+                            document.querySelector('#hasilPeriksaAnakTable tbody').innerHTML = '';
+                        }
+
+                        // Cek hasil periksa gigi
+                        const hasHasilPeriksaGigi = d.odontogram || d.pemeriksaan_subjektif || d.pemeriksaan_objektif || d.diagnosa_gigi || d.terapi_anjuran_gigi || d.catatan_gigi;
+                        document.getElementById('headingHasilPeriksaGigi').style.display = hasHasilPeriksaGigi ? 'block' : 'none';
+                        document.getElementById('tableHasilPeriksaGigi').style.display = hasHasilPeriksaGigi ? 'table' : 'none';
+                        if (hasHasilPeriksaGigi) {
+                            document.getElementById('detailOdontogramGigi').textContent = d.odontogram || '-';
+                            document.getElementById('detailPemeriksaanSubjektifGigi').textContent = d.pemeriksaan_subjektif || '-';
+                            document.getElementById('detailPemeriksaanObjektifGigi').textContent = d.pemeriksaan_objektif || '-';
+                            document.getElementById('detailDiagnosisGigi').textContent = d.diagnosa_gigi || '-';
+                            document.getElementById('detailTerapiAnjuranGigi').textContent = d.terapi_anjuran_gigi || '-';
+                            document.getElementById('detailCatatanGigi').textContent = d.catatan_gigi || '-';
+                            document.getElementById('detailPenanggungJawabGigi').textContent = d.penanggung_jawab_gigi || '-';
+                        }
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+            }
+        });
+
+        // Event listener tombol Tutup di detail view
+        document.getElementById('btnTutupDetail').addEventListener('click', function() {
+            document.getElementById('hasilPeriksaDetail').style.display = 'none';
+            document.getElementById('riwayatList').style.display = 'block';
+        });
+    });
 </script>
 @endsection
