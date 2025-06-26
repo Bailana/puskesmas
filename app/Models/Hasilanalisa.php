@@ -37,6 +37,10 @@ class Hasilanalisa extends Model
         'tanggal_analisa',
     ];
 
+    protected $casts = [
+        'tanggal_analisa' => 'date',
+    ];
+
     public function poli()
     {
         return $this->belongsTo(\App\Models\Poli::class, 'poli_tujuan', 'id');

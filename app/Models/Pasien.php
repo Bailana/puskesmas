@@ -15,4 +15,9 @@ class Pasien extends Model
     ];
 
     // Tambahkan relasi dan atribut lain sesuai kebutuhan
+
+    public function riwayatBerobat()
+    {
+        return $this->hasMany(Antrian::class, 'pasien_id')->orderByDesc('tanggal_berobat');
+    }
 }

@@ -78,19 +78,11 @@ Route::middleware(['auth', 'role:bidan'])->group(function () {
         return view('bidan.dashboard');
     })->name('bidan.dashboard');
 
-    Route::get('/bidan/antrian', function () {
-        // Ambil antrian dengan status 'Pemeriksaan' dan poli tujuan 'KIA' saja
-        $antrians = \App\Models\Antrian::with(['pasien', 'poli'])
-            ->where('status', 'Pemeriksaan')
-            ->whereHas('poli', function($q) {
-                $q->where('nama_poli', 'KIA');
-            })
-            ->orderBy('created_at', 'asc')
-            ->paginate(10);
-        return view('bidan.antrian', compact('antrians'));
-    })->name('bidan.antrian');
+    Route::get('/bidan/antrian', [\App\Http\Controllers\BidanProfileController::class, 'antrian'])->name('bidan.antrian');
 
     Route::post('/bidan/hasilanalisa/store', [\App\Http\Controllers\BidanProfileController::class, 'storeHasilAnalisa'])->name('bidan.hasilanalisa.store');
+
+    Route::post('/bidan/hasilperiksa-anak/store', [\App\Http\Controllers\BidanProfileController::class, 'storeHasilPeriksaAnak'])->name('bidan.hasilperiksa.anak.store');
 
     Route::get('/bidan/jadwaldokter', function () {
         $jadwalDokters = \App\Models\JadwalDokter::all();
@@ -117,57 +109,13 @@ Route::middleware(['auth', 'role:bidan'])->group(function () {
     Route::get('/bidan/pasien/{no_rekam_medis}/riwayat', [App\Http\Controllers\BidanProfileController::class, 'riwayatBerobat'])
         ->name('bidan.riwayat');
 
-    Route::get('/bidan/hasilanalisa/{no_rekam_medis}', function($no_rekam_medis) {
-        try {
-            // Cari pasien_id dari no_rekam_medis (toleran spasi dan case-insensitive)
-            $no_rekam_medis_clean = strtolower(str_replace(' ', '', $no_rekam_medis));
-            $pasien = \App\Models\Pasien::whereRaw('REPLACE(LOWER(no_rekam_medis), " ", "") = ?', [$no_rekam_medis_clean])->first();
-            if (!$pasien) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Pasien tidak ditemukan.'
-                ]);
-            }
-            $hasil = \App\Models\Hasilanalisa::where('pasien_id', $pasien->id)->latest()->first();
-            if ($hasil) {
-                $data = $hasil->toArray();
-                // Ambil nama poli dan nama penanggung jawab
-                $data['nama_poli'] = $hasil->poli ? $hasil->poli->nama_poli : '-';
-                $data['nama_penanggung_jawab'] = $hasil->penanggungJawab ? $hasil->penanggungJawab->name : '-';
-                // Decode JSON fields safely
-                $data['status_psikologi'] = $hasil->status_psikologi ? (is_array(json_decode($hasil->status_psikologi, true)) ? implode(', ', json_decode($hasil->status_psikologi, true)) : (is_string($hasil->status_psikologi) ? $hasil->status_psikologi : '-')) : '-';
-                $data['hambatan_edukasi'] = $hasil->hambatan_edukasi ? (is_array(json_decode($hasil->hambatan_edukasi, true)) ? implode(', ', json_decode($hasil->hambatan_edukasi, true)) : (is_string($hasil->hambatan_edukasi) ? $hasil->hambatan_edukasi : '-')) : '-';
-                // Pastikan field penanggung_jawab ada
-                if (!isset($data['penanggung_jawab']) || $data['penanggung_jawab'] === null || $data['penanggung_jawab'] === '') {
-                    $data['penanggung_jawab'] = '-';
-                }
-                // Untuk semua field, jika null/kosong, set '-'.
-                foreach ($data as $key => $value) {
-                    if ((is_string($value) && trim($value) === '') || is_null($value)) {
-                        $data[$key] = '-';
-                    }
-                    if (is_array($value) || is_object($value)) {
-                        $data[$key] = '-';
-                    }
-                }
-                // Kirim response JSON valid
-                return response()->json([
-                    'success' => true,
-                    'hasil' => $data
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data hasil analisa tidak ditemukan.'
-                ]);
-            }
-        } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi error: ' . $e->getMessage(),
-            ], 500);
-        }
-    })->name('bidan.hasilanalisa.ajax');
+    // API route to get visit dates as JSON
+    Route::get('/bidan/riwayat-berobat/{no_rekam_medis}/dates', [App\Http\Controllers\BidanProfileController::class, 'getVisitDates'])->name('bidan.riwayat.dates');
+
+    // API route to get hasil analisa and periksa data for a date
+    Route::get('/bidan/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\BidanProfileController::class, 'getVisitData'])->name('bidan.riwayat.data');
+
+    Route::get('/bidan/hasilanalisa/{no_rekam_medis}', [\App\Http\Controllers\BidanProfileController::class, 'hasilAnalisaAjax'])->name('bidan.hasilanalisa.ajax');
 });
 
 Route::get('/', function () {
