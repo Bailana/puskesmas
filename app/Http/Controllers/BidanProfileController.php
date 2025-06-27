@@ -292,7 +292,7 @@ class BidanProfileController extends Controller
                     });
             });
         }
-        $antrians = $query->orderBy('created_at', 'asc')->paginate(10)->withQueryString();
+        $antrians = $query->orderBy('created_at', 'asc')->paginate(1)->withQueryString();
         // Jika request AJAX, return hanya table dan pagination
         if (request()->ajax()) {
             return view('bidan.antrian', compact('antrians'))->render();

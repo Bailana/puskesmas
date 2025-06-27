@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Antrian;
 use App\Models\Pasien;
 use App\Models\HasilPeriksa;
+use App\Models\Hasilanalisa;
 
 class DokterDashboardController extends Controller
 {
@@ -22,6 +23,42 @@ class DokterDashboardController extends Controller
         $obats = \App\Models\Obat::select('id', 'nama_obat', 'bentuk_obat', 'stok')->get();
 
         return view('dokter.dashboard', compact('antrians', 'obats'));
+    }
+
+    public function hasilAnalisaAjax($no_rekam_medis)
+    {
+        try {
+            $pasien = \App\Models\Pasien::where('no_rekam_medis', $no_rekam_medis)->first();
+            if (!$pasien) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pasien tidak ditemukan.'
+                ]);
+            }
+            $hasil = \App\Models\Hasilanalisa::with(['poli', 'penanggungJawab'])->where('pasien_id', $pasien->id)->latest()->first();
+            if ($hasil) {
+                $data = $hasil->toArray();
+                $data['nama_poli'] = $hasil->poli ? $hasil->poli->nama_poli : '-';
+                $data['nama_penanggung_jawab'] = $hasil->penanggungJawab ? $hasil->penanggungJawab->name : '-';
+                $data['status_psikologi'] = $hasil->status_psikologi ? (is_array(json_decode($hasil->status_psikologi, true)) ? implode(', ', json_decode($hasil->status_psikologi, true)) : (is_string($hasil->status_psikologi) ? $hasil->status_psikologi : '-')) : '-';
+                $data['hambatan_edukasi'] = $hasil->hambatan_edukasi ? (is_array(json_decode($hasil->hambatan_edukasi, true)) ? implode(', ', json_decode($hasil->hambatan_edukasi, true)) : (is_string($hasil->hambatan_edukasi) ? $hasil->hambatan_edukasi : '-')) : '-';
+                // Jangan ubah value asli, biarkan kosong/null dikirim ke JS agar bisa di-handle di JS
+                return response()->json([
+                    'success' => true,
+                    'hasil' => $data
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data hasil analisa tidak ditemukan.'
+                ]);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi error: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function pasien(Request $request)
@@ -86,7 +123,7 @@ class DokterDashboardController extends Controller
             });
         }
 
-        $antrians = $query->paginate(5);
+        $antrians = $query->paginate(1);
 
         if ($request->ajax()) {
             return response()->json($antrians);
@@ -98,6 +135,64 @@ class DokterDashboardController extends Controller
         return view('dokter.antrian', compact('antrians', 'obats'));
     }
 
+    // public function storeHasilAnalisa(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'no_rekam_medis' => 'required|string',
+    //         'tekanan_darah' => 'nullable|string',
+    //         'frekuensi_nadi' => 'nullable|string',
+    //         'suhu' => 'nullable|string',
+    //         'frekuensi_nafas' => 'nullable|string',
+    //         'skor_nyeri' => 'nullable|string',
+    //         'skor_jatuh' => 'nullable|string',
+    //         'berat_badan' => 'nullable|string',
+    //         'tinggi_badan' => 'nullable|string',
+    //         'lingkar_kepala' => 'nullable|string',
+    //         'imt' => 'nullable|string',
+    //         'alat_bantu' => 'nullable|string',
+    //         'prosthesa' => 'nullable|string',
+    //         'cacat_tubuh' => 'nullable|string',
+    //         'adl_mandiri' => 'nullable|string',
+    //         'riwayat_jatuh' => 'nullable|string',
+    //         'status_psikologi' => 'nullable|array',
+    //         'hambatan_edukasi' => 'nullable|array',
+    //         'alergi' => 'nullable|string',
+    //         'catatan' => 'nullable|string',
+    //         'poli_tujuan' => 'required|string',
+    //         'nama_user' => 'nullable|string',
+    //     ]);
+
+    //     $hasilAnalisa = new Hasilanalisa();
+    //     $hasilAnalisa->no_rekam_medis = $validatedData['no_rekam_medis'];
+    //     $hasilAnalisa->tekanan_darah = $validatedData['tekanan_darah'] ?? null;
+    //     $hasilAnalisa->frekuensi_nadi = $validatedData['frekuensi_nadi'] ?? null;
+    //     $hasilAnalisa->suhu = $validatedData['suhu'] ?? null;
+    //     $hasilAnalisa->frekuensi_nafas = $validatedData['frekuensi_nafas'] ?? null;
+    //     $hasilAnalisa->skor_nyeri = $validatedData['skor_nyeri'] ?? null;
+    //     $hasilAnalisa->skor_jatuh = $validatedData['skor_jatuh'] ?? null;
+    //     $hasilAnalisa->berat_badan = $validatedData['berat_badan'] ?? null;
+    //     $hasilAnalisa->tinggi_badan = $validatedData['tinggi_badan'] ?? null;
+    //     $hasilAnalisa->lingkar_kepala = $validatedData['lingkar_kepala'] ?? null;
+    //     $hasilAnalisa->imt = $validatedData['imt'] ?? null;
+    //     $hasilAnalisa->alat_bantu = $validatedData['alat_bantu'] ?? null;
+    //     $hasilAnalisa->prosthesa = $validatedData['prosthesa'] ?? null;
+    //     $hasilAnalisa->cacat_tubuh = $validatedData['cacat_tubuh'] ?? null;
+    //     $hasilAnalisa->adl_mandiri = $validatedData['adl_mandiri'] ?? null;
+    //     $hasilAnalisa->riwayat_jatuh = $validatedData['riwayat_jatuh'] ?? null;
+    //     $hasilAnalisa->status_psikologi = isset($validatedData['status_psikologi']) ? json_encode($validatedData['status_psikologi']) : null;
+    //     $hasilAnalisa->hambatan_edukasi = isset($validatedData['hambatan_edukasi']) ? json_encode($validatedData['hambatan_edukasi']) : null;
+    //     $hasilAnalisa->alergi = $validatedData['alergi'] ?? null;
+    //     $hasilAnalisa->catatan = $validatedData['catatan'] ?? null;
+    //     $hasilAnalisa->poli_tujuan = $validatedData['poli_tujuan'];
+    //     $hasilAnalisa->nama_user = $validatedData['nama_user'] ?? null;
+
+    //     $hasilAnalisa->save();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Data analisa berhasil disimpan.',
+    //     ]);
+    // }
     // New method for medicine search API
     public function searchObat(Request $request)
     {

@@ -12,6 +12,11 @@ use App\Http\Controllers\PerawatHasilAnalisaController;
 use App\Http\Controllers\PerawatProfileController;
 use App\Http\Controllers\PasienController;
 use \App\Http\Controllers\BidanProfileController;
+use App\Http\Controllers\RawatinapUgdController;
+use App\Models\PasiensUgd;
+use App\Models\Pasien;
+
+
 
 Route::middleware(['auth', 'role:apoteker'])->group(function () {
     Route::get('/apoteker/pasien', [ApotekerDashboardController::class, 'pasien'])->name('apoteker.pasien');
@@ -40,7 +45,7 @@ Route::middleware(['auth', 'role:dokter'])->group(function () {
     Route::get('/dokter/riwayat-berobat/{no_rekam_medis}/dates', [App\Http\Controllers\DokterDashboardController::class, 'getVisitDates'])->name('dokter.riwayat.dates');
     // API route to get hasil analisa and periksa data for a date
     Route::get('/dokter/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\DokterDashboardController::class, 'getVisitData'])->name('dokter.riwayat.data');
-
+    Route::get('/dokter/hasil-analisa/{no_rekam_medis}', [\App\Http\Controllers\DokterDashboardController::class, 'hasilAnalisaAjax'])->name('dokter.hasilanalisa.ajax');
     // New route for medicine search API
     Route::get('/dokter/search-obat', [DokterDashboardController::class, 'searchObat'])->name('dokter.searchObat');
 });
@@ -126,6 +131,55 @@ Route::middleware(['auth', 'role:bidan'])->group(function () {
     Route::get('/bidan/hasil-analisa/{no_rekam_medis}', [\App\Http\Controllers\BidanProfileController::class, 'hasilAnalisaAjax'])->name('bidan.hasilanalisa.ajax');
 });
 
+Route::middleware(['auth', 'role:rawatinap'])->group(function () {
+    Route::get('/rawatinap/dashboard', function () {
+        $ugd_pasien = PasiensUgd::where('status', 'Perlu Analisa')->get();
+        $rawatinap_pasien = PasiensUgd::where('status', 'Rawat Inap')->get();
+        return view('rawatinap.dashboard', compact('ugd_pasien', 'rawatinap_pasien'));
+    })->name('rawatinap.dashboard');
+
+    Route::get('/rawatinap/profile', [App\Http\Controllers\RawatinapUgdController::class, 'profile'])->name('rawatinap.profile');
+
+    Route::post('/rawatinap/hasilanalisa/store', [App\Http\Controllers\RawatinapUgdController::class, 'storeAnalisa'])->name('rawatinap.hasilanalisa.store');
+
+    Route::get('/rawatinap/pasien/by-id/{id}', [App\Http\Controllers\RawatinapUgdController::class, 'getPatientById'])->name('rawatinap.pasien.byid');
+
+    Route::get('/rawatinap', function () {
+        $pasiens_ugd = PasiensUgd::where('status', 'Perlu Analisa')->get();
+        $pasiens = Pasien::all();
+        return view('rawatinap.ugd', compact('pasiens_ugd', 'pasiens'));
+    })->name('rawatinap.ugd');
+
+    Route::get('/rawatinap/pasien/riwayat-berobat/{no_rekam_medis}', [RawatinapUgdController::class, 'getRiwayatBerobatByPasienId'])->name('rawatinap.pasien.riwayatberobat');
+
+    Route::post('/rawatinap/ugd/store', [RawatinapUgdController::class, 'store'])->name('rawatinap.ugd.store');
+
+    Route::post('/rawatinap/periksa/store', [RawatinapUgdController::class, 'storeHasilPeriksa'])->name('rawatinap.periksa.store');
+    Route::get('/rawatinap/hasilperiksa/data/{pasien_id}', [RawatinapUgdController::class, 'getHasilPeriksaByPasienId'])->name('rawatinap.hasilperiksa.data');
+
+    Route::get('/rawatinap/antrian', function () {
+        // You can add logic to get rawatinap antrian data here
+        return view('rawatinap.antrian');
+    })->name('rawatinap.antrian');
+
+    Route::get('/rawatinap/pasien', [PasienController::class, 'rawatinapPasien'])->name('rawatinap.pasien');
+
+    Route::get('/rawatinap/pasien/detail/{no_rekam_medis}', [PasienController::class, 'getPatientDetail'])->name('rawatinap.pasien.detail');
+
+    Route::post('/rawatinap/pasien/store', [PasienController::class, 'store'])->name('rawatinap.pasien.store');
+
+    Route::get('/rawatinap/pasien/cari-nomor-kepesertaan', [App\Http\Controllers\PasienController::class, 'cariNomorKepesertaan']);
+    Route::get('/rawatinap/hasilanalisa/riwayat/{pasien_id}', [App\Http\Controllers\RawatinapUgdController::class, 'getRiwayatAnalisaRawatinap']);
+
+    // Detail pasien UGD by no_rekam_medis (ambil dari tabel pasiens)
+    Route::get('/rawatinap/ugd/detail/{no_rekam_medis}', [App\Http\Controllers\RawatinapUgdController::class, 'getUgdPatientDetail'])->name('rawatinap.ugd.detail');
+
+    Route::get('/rawatinap/rawatinap', function () {
+        $pasiens_ugd = \App\Models\PasiensUgd::where('status', 'Rawat Inap')->get();
+        return view('rawatinap.rawatinap', compact('pasiens_ugd'));
+    })->name('rawatinap.rawatinap');
+});
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -152,6 +206,8 @@ Route::get('/dashboard', function () {
             return redirect()->route('kasir.dashboard');
         case 'bidan':
             return redirect()->route('bidan.dashboard');
+        case 'rawatinap':
+            return redirect()->route('rawatinap.dashboard');
         default:
             return redirect()->route('login');
     }
@@ -208,7 +264,7 @@ Route::middleware('auth')->group(function () {
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::middleware(['auth', 'role:resepsionis'])->group(function () {
     Route::get('/resepsionis', [ResepsionisDashboardController::class, 'index'])->name('resepsionis.dashboard');
@@ -236,5 +292,4 @@ Route::middleware(['auth', 'role:resepsionis'])->group(function () {
     Route::post('/pasienResepsionis/update/{no_rekam_medis}', [ResepsionisDashboardController::class, 'updatePasien'])->name('resepsionis.pasien.update');
 
     Route::get('/pasienResepsionis/detail/{no_rekam_medis}', [ResepsionisDashboardController::class, 'getPasienDetail'])->name('resepsionis.pasien.detail');
-
 });
