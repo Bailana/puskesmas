@@ -138,11 +138,20 @@ Route::middleware(['auth', 'role:rawatinap'])->group(function () {
         return view('rawatinap.dashboard', compact('ugd_pasien', 'rawatinap_pasien'));
     })->name('rawatinap.dashboard');
 
+    Route::get('/pasienRawatinap/export-pdf', [RawatinapUgdController::class, 'exportPdf'])->name('rawatinap.pasien.exportPdf');
+
+    Route::get('/pasienRawatinap/export-excel', [RawatinapUgdController::class, 'exportExcel'])->name('rawatinap.pasien.exportExcel');
+
+    Route::post('/pasienRawatinap/tambah', [RawatinapUgdController::class, 'store'])->name('rawatinap.pasien.tambah');
+
     Route::get('/rawatinap/profile', [App\Http\Controllers\RawatinapUgdController::class, 'profile'])->name('rawatinap.profile');
 
     Route::post('/rawatinap/hasilanalisa/store', [App\Http\Controllers\RawatinapUgdController::class, 'storeAnalisa'])->name('rawatinap.hasilanalisa.store');
 
     Route::get('/rawatinap/pasien/by-id/{id}', [App\Http\Controllers\RawatinapUgdController::class, 'getPatientById'])->name('rawatinap.pasien.byid');
+
+    // Add route for pasienrawatinap update to fix 404 error
+    Route::post('/pasienrawatinap/update/{id}', [RawatinapUgdController::class, 'update'])->name('pasienrawatinap.update');
 
     Route::get('/rawatinap', function () {
         $pasiens_ugd = PasiensUgd::where('status', 'Perlu Analisa')->get();
@@ -163,6 +172,7 @@ Route::middleware(['auth', 'role:rawatinap'])->group(function () {
     })->name('rawatinap.antrian');
 
     Route::get('/rawatinap/pasien', [PasienController::class, 'rawatinapPasien'])->name('rawatinap.pasien');
+    Route::post('/rawatinap/update/{no_rekam_medis}', [RawatinapUgdController::class, 'updatePasien'])->name('rawatinap.pasien.update');
 
     Route::get('/rawatinap/pasien/detail/{no_rekam_medis}', [PasienController::class, 'getPatientDetail'])->name('rawatinap.pasien.detail');
 
@@ -173,6 +183,10 @@ Route::middleware(['auth', 'role:rawatinap'])->group(function () {
 
     // Detail pasien UGD by no_rekam_medis (ambil dari tabel pasiens)
     Route::get('/rawatinap/ugd/detail/{no_rekam_medis}', [App\Http\Controllers\RawatinapUgdController::class, 'getUgdPatientDetail'])->name('rawatinap.ugd.detail');
+
+    Route::get('/rawatinap/riwayat-berobat/{no_rekam_medis}/dates', [App\Http\Controllers\RawatinapUgdController::class, 'getVisitDates'])->name('rawatinap.riwayat.dates');
+    // API route to get hasil analisa and periksa data for a date
+    Route::get('/rawatinap/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\RawatinapUgdController::class, 'getVisitData'])->name('rawatinap.riwayat.data');
 
     Route::get('/rawatinap/rawatinap', function () {
         $pasiens_ugd = \App\Models\PasiensUgd::where('status', 'Rawat Inap')->get();
