@@ -16,13 +16,23 @@ class RawatinapUgdController extends Controller
 {
     public function index()
     {
+        // Keep existing index method unchanged
         // Join with pasien table to get jaminan_kesehatan
         $pasiens_ugd = PasiensUgd::select('pasiens_ugd.*', 'pasiens.jaminan_kesehatan')
             ->join('pasiens', 'pasiens_ugd.pasien_id', '=', 'pasiens.id')
             ->whereIn('pasiens_ugd.status', ['Rawat Inap'])
             ->paginate(10);
 
-        return view('rawatinap.ugd', compact('pasiens_ugd'));
+        $users = \App\Models\User::all();
+
+        return view('rawatinap.ugd', compact('pasiens_ugd', 'users'));
+    }
+
+    public function adminPasienRawatinap()
+    {
+        $pasiens_ugd = PasiensUgd::where('status', 'Rawat Inap')->paginate(10);
+        $users = \App\Models\User::all();
+        return view('admin.rawatinap', compact('pasiens_ugd', 'users'));
     }
 
     public function exportExcel(Request $request)
@@ -162,6 +172,7 @@ class RawatinapUgdController extends Controller
                 $message = 'Password berhasil diubah.';
             }
             return response()->json([
+                'success' => true,
                 'message' => $message,
                 'name' => $user->name,
                 'profile_photo_path' => $user->profile_photo_path,
@@ -522,7 +533,7 @@ class RawatinapUgdController extends Controller
         ]);
     }
 
-    public function getVisitDates($no_rekam_medis)
+    public function getVisitDates($no_rekam_medis, Request $request)
     {
         try {
             $pasien = \App\Models\Pasien::where('no_rekam_medis', $no_rekam_medis)->first();
@@ -533,32 +544,52 @@ class RawatinapUgdController extends Controller
                 ]);
             }
 
-            // Ambil semua tanggal dari hasil_periksa, hasil_analisa, hasil_periksa_anak, hasil_periksa_gigi
-            $hasilPeriksaDates = \App\Models\HasilPeriksa::where('pasien_id', $pasien->id)
-                ->pluck('tanggal_periksa')
-                ->toArray();
-            $hasilAnalisaDates = \App\Models\Hasilanalisa::where('pasien_id', $pasien->id)
-                ->pluck('tanggal_analisa')
-                ->toArray();
-            $hasilPeriksaAnakDates = \App\Models\HasilperiksaAnak::where('pasien_id', $pasien->id)
-                ->pluck('created_at')
-                ->toArray();
-            $hasilPeriksaGigiDates = \App\Models\HasilPeriksagigi::where('pasien_id', $pasien->id)
-                ->pluck('tanggal_periksa')
-                ->toArray();
+            $type = $request->query('type', 'rawatjalan');
 
-            // Gabungkan semua tanggal, hilangkan duplikat, urutkan dari terlama ke terbaru
-            $allDates = array_merge($hasilPeriksaDates, $hasilAnalisaDates, $hasilPeriksaAnakDates, $hasilPeriksaGigiDates);
-            $allDates = array_filter($allDates); // hilangkan null/empty
-            $uniqueDates = array_unique(array_map(function ($d) {
-                return date('Y-m-d', strtotime($d));
-            }, $allDates));
-            sort($uniqueDates); // urutkan dari terlama ke terbaru
+            if ($type === 'rawatinap') {
+                // Fetch dates from hasilperiksa_ugd table for rawat inap
+                $hasilPeriksaUgdDates = \DB::table('hasilperiksa_ugd')
+                    ->where('pasien_id', $pasien->id)
+                    ->pluck('tanggal')
+                    ->toArray();
 
-            return response()->json([
-                'success' => true,
-                'data' => array_values($uniqueDates),
-            ]);
+                $uniqueDates = array_unique(array_map(function ($d) {
+                    return date('Y-m-d', strtotime($d));
+                }, $hasilPeriksaUgdDates));
+                sort($uniqueDates);
+
+                return response()->json([
+                    'success' => true,
+                    'data' => array_values($uniqueDates),
+                ]);
+            } else {
+                // Ambil semua tanggal dari hasil_periksa, hasil_analisa, hasil_periksa_anak, hasil_periksa_gigi
+                $hasilPeriksaDates = \App\Models\HasilPeriksa::where('pasien_id', $pasien->id)
+                    ->pluck('tanggal_periksa')
+                    ->toArray();
+                $hasilAnalisaDates = \App\Models\Hasilanalisa::where('pasien_id', $pasien->id)
+                    ->pluck('tanggal_analisa')
+                    ->toArray();
+                $hasilPeriksaAnakDates = \App\Models\HasilperiksaAnak::where('pasien_id', $pasien->id)
+                    ->pluck('created_at')
+                    ->toArray();
+                $hasilPeriksaGigiDates = \App\Models\HasilPeriksagigi::where('pasien_id', $pasien->id)
+                    ->pluck('tanggal_periksa')
+                    ->toArray();
+
+                // Gabungkan semua tanggal, hilangkan duplikat, urutkan dari terlama ke terbaru
+                $allDates = array_merge($hasilPeriksaDates, $hasilAnalisaDates, $hasilPeriksaAnakDates, $hasilPeriksaGigiDates);
+                $allDates = array_filter($allDates); // hilangkan null/empty
+                $uniqueDates = array_unique(array_map(function ($d) {
+                    return date('Y-m-d', strtotime($d));
+                }, $allDates));
+                sort($uniqueDates); // urutkan dari terlama ke terbaru
+
+                return response()->json([
+                    'success' => true,
+                    'data' => array_values($uniqueDates),
+                ]);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,

@@ -3,10 +3,58 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Pasien;
 
 class PasienController extends Controller
 {
+    public function index(Request $request)
+    {
+        $query = $request->input('search');
+        $perPage = $request->input('per_page', 10);
+
+        $pasiens = Pasien::query();
+
+        // Apply filters
+        if ($request->filled('jenis_kelamin')) {
+            $pasiens->where('jenis_kelamin', $request->input('jenis_kelamin'));
+        }
+        if ($request->filled('gol_darah')) {
+            $pasiens->where('gol_darah', $request->input('gol_darah'));
+        }
+        if ($request->filled('jaminan_kesehatan')) {
+            $pasiens->where('jaminan_kesehatan', $request->input('jaminan_kesehatan'));
+        }
+        if ($request->filled('tempat_lahir')) {
+            $pasiens->where('tempat_lahir', 'like', '%' . $request->input('tempat_lahir') . '%');
+        }
+        if ($request->filled('kecamatan')) {
+            $pasiens->where('kecamatan', 'like', '%' . $request->input('kecamatan') . '%');
+        }
+        if ($request->filled('kelurahan')) {
+            $pasiens->where('kelurahan', 'like', '%' . $request->input('kelurahan') . '%');
+        }
+        if ($request->filled('status_pernikahan')) {
+            $pasiens->where('status_pernikahan', $request->input('status_pernikahan'));
+        }
+        if ($request->filled('tanggal_lahir')) {
+            $pasiens->whereDate('tanggal_lahir', $request->input('tanggal_lahir'));
+        }
+
+        if ($query) {
+            $pasiens = $pasiens->where(function ($q) use ($query) {
+                $q->where('nama_pasien', 'like', '%' . $query . '%')
+                  ->orWhere('no_rekam_medis', 'like', '%' . $query . '%');
+            });
+        }
+
+        $pasiens = $pasiens->paginate($perPage);
+
+        \Log::info('index result count', ['count' => $pasiens->count()]);
+
+        return view('admin.rawatjalan', compact('pasiens'));
+    }
+
     public function rawatinapPasien(Request $request)
     {
         \Log::info('rawatinapPasien called', ['search' => $request->input('search'), 'per_page' => $request->input('per_page'), 'ajax' => $request->ajax(), 'get_new_no_rm' => $request->has('get_new_no_rm')]);

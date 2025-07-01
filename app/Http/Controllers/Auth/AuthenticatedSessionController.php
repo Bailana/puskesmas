@@ -42,6 +42,8 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('apoteker.dashboard')->with('status', 'Anda berhasil login');
         } elseif ($user->role === 'kasir') {
             return redirect()->route('kasir.dashboard')->with('status', 'Login berhasil');
+        } elseif ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard')->with('status', 'Login berhasil');
         } else {
             $request->session()->invalidate();
             $request->session()->regenerateToken();

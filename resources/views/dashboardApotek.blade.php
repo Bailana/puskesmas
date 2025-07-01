@@ -17,7 +17,7 @@
     <link rel="canonical" href="https://demo-basic.adminkit.io/" />
     <title>Farmasi | UPT Puskesmas Pujud</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" type="image/png" href="{{ url('template/images/logo_puskesmas.png') }}">
+    <link rel="icon" type="image/png" href="{{ url('template/images/LogoRohil.png') }}">
 
     <link href="{{url('dokterAssets/css/app.css')}}" rel="stylesheet">
     <link href="{{url('dokterAssets/css/custom-pagination.css')}}" rel="stylesheet">
@@ -45,7 +45,7 @@
         <nav id="sidebar" class="sidebar js-sidebar">
             <div class="sidebar-content js-simplebar">
                 <div class="sidebar-brand d-flex align-items-center" href="{{ url('/resepsionis') }}">
-                    <img src="{{ url('template/images/logo_puskesmas.png') }}" alt="Logo"
+                    <img src="{{ url('template/images/LogoRohil.png') }}" alt="Logo"
                         style="width: 50px; height: 50px; margin-right: 10px;">
                     <span class="align-middle">UPT PUSKESMAS PUJUD</span>
                 </div>

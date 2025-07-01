@@ -1,12 +1,12 @@
-@extends('dashboardrawatinap')
+@extends('dashboardadmin')
 
-@section('rawatinap')
+@section('admin')
 <div class="container-fluid p-0">
-    <h2 class="h3 mb-3"><strong>Profil Rawat Inap</strong></h2>
+    <h2 class="h3 mb-3"><strong>Profil Perawat</strong></h2>
 
     <div class="card">
         <div class="card-body">
-            <form id="profileForm" method="POST" action="{{ route('rawatinap.profile.update') }}" enctype="multipart/form-data">
+            <form id="profileForm" method="POST" action="{{ route('perawat.profile.update') }}" enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')
 
@@ -52,7 +52,7 @@
                 <div class="mb-3 row">
                     <label for="current_password" class="col-sm-2 col-form-label">Password Lama</label>
                     <div class="col-sm-10">
-                        <input type="password" class="form-control @error('current_password') is-invalid @enderror" id="current_password" name="current_password" value="********" required>
+                        <input type="password" class="form-control @error('current_password') is-invalid @enderror" id="current_password" name="current_password" required>
                         @error('current_password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <title>Rawat Inap | UPT Puskesmas Pujud</title>
     <!-- <meta name="csrf-token" content="{{ csrf_token() }}"> -->
-    <link rel="icon" type="image/png" href="{{ url('template/images/logo_puskesmas.png') }}">
+    <link rel="icon" type="image/png" href="{{ url('template/images/LogoRohil.png') }}">
 
     <link href="{{url('dokterAssets/css/app.css')}}" rel="stylesheet">
     <link href="{{url('dokterAssets/css/custom-pagination.css')}}" rel="stylesheet">
@@ -32,7 +32,7 @@
         <nav id="sidebar" class="sidebar js-sidebar">
             <div class="sidebar-content js-simplebar">
                 <div class="sidebar-brand d-flex align-items-center" href="{{ url('/rawatinap') }}">
-                    <img src="{{ url('template/images/logo_puskesmas.png') }}" alt="Logo"
+                    <img src="{{ url('template/images/LogoRohil.png') }}" alt="Logo"
                         style="width: 50px; height: 50px; margin-right: 10px;">
                     <span class="align-middle">UPT PUSKESMAS PUJUD</span>
                 </div>
@@ -73,9 +73,9 @@
                     <i class="hamburger align-self-center"></i>
                 </a>
 
-                <div class="navbar-collapse collapse d-flex justify-content-center position-relative">
-                    <ul class="navbar-nav navbar-align live-time text-dark fw-bold position-absolute start-50 translate-middle-x"
-                        style="margin: 0;">
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav navbar-align live-time text-dark fw-bold ms-auto me-0">
+                        <!-- Element untuk menampilkan live time -->
                         <li class="nav-item">
                             <div id="live-time" class="text-dark fw-bold"></div>
                         </li>
@@ -83,7 +83,8 @@
 
                     <ul class="navbar-nav navbar-align">
                         <li class="nav-item dropdown">
-                            <a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
+                            <a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown"
+                                role="button">
                                 <div class="position-relative">
                                     <i class="align-middle" data-feather="bell"></i>
                                     <span class="indicator">4</span>
@@ -154,26 +155,31 @@
 
                         <li class="nav-item dropdown">
                             <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#"
-                                data-bs-toggle="dropdown">
+                                data-bs-toggle="dropdown" role="button">
                                 <i class="align-middle" data-feather="settings"></i>
                             </a>
 
-                            <a class="dropdown-toggle d-none d-sm-inline-block" href="#"
-                                data-bs-toggle="dropdown">
-                                <img id="navbarProfilePhoto"
-                                    src="{{ auth()->user()->profile_photo_path ? asset('storage/' . auth()->user()->profile_photo_path) : url('dokterAssets/img/avatars/avatar.jpg') }}"
-                                    class="avatar img-fluid rounded me-1" alt="Profile Photo" />
+                            <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#"
+                                data-bs-toggle="dropdown" role="button">
+                            @if(auth()->user()->profile_photo_path)
+                                <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}"
+                                    class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}" style="width: 40px; height: 40px; object-fit: cover;" />
+                            @else
+                                <img src="{{ url('resepsionisAssets/img/avatars/avatar.jpg') }}"
+                                    class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}" style="width: 40px; height: 40px; object-fit: cover;" />
+                            @endif
                                 <span class="text-dark">{{ Auth::user()->name }}</span>
 
                             </a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="{{ route('rawatinap.profile') }}">
+                            <div class="dropdown-menu dropdown-menu-end p-0">
+                                <a class="dropdown-item" href="{{ url('/rawatinap/profile') }}">
                                     <i class="align-middle me-1" data-feather="user"></i> Profile
                                 </a>
                                 <form method="POST" action="{{ route('logout') }}" id="logout-form">
                                     @csrf
-                                    <button type="button" class="dropdown-item" onclick="logoutConfirmation()">Log
-                                        out</button>
+                                    <button type="button" class="dropdown-item" onclick="logoutConfirmation()">
+                                        <i class="align-middle me-1" data-feather="log-out"></i> Log out
+                                    </button>
                                 </form>
                             </div>
                         </li>

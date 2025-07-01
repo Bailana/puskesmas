@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
     <title>Login | UPT Puskesmas Pujud</title>
-    <link rel="icon" type="image/png" href="{{ url('template/images/logo_puskesmas.png') }}">
+    <link rel="icon" type="image/png" href="{{ url('template/images/LogoRohil.png') }}">
 </head>
 
 <body class="img js-fullheight" style="background-image: url('{{ asset('template/images/klinik-asesment.jpg') }}')">
@@ -28,12 +28,8 @@
                     style="background-color: rgba(0, 0, 0, 0.4); border-radius: 20px">
                     <div class="login-wrap p-0">
                         <div class="row justify-content-center align-items-center">
-                            <div class="col-6 text-right">
-                                <img src="{{ url('template/images/logo_puskesmas.png') }}" alt=""
-                                    style="max-width: 40%; height: auto;">
-                            </div>
-                            <div class="col-6 text-left">
-                                <img src="{{ url('template/images/logo_puskesmas.png') }}" alt=""
+                            <div class="col-6 text-center">
+                                <img src="{{ url('template/images/LogoRohil.png') }}" alt=""
                                     style="max-width: 40%; height: auto;">
                             </div>
                         </div>

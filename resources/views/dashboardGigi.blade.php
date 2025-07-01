@@ -15,7 +15,7 @@
 
     <link rel="canonical" href="https://demo-basic.adminkit.io/" />
     <title>Gigi | UPT Puskesmas Pujud</title>
-    <link rel="icon" type="image/png" href="{{ url('template/images/logo_puskesmas.png') }}">
+    <link rel="icon" type="image/png" href="{{ url('template/images/LogoRohil.png') }}">
 
     <link href="{{url('dokterAssets/css/app.css')}}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
         <nav id="sidebar" class="sidebar js-sidebar">
             <div class="sidebar-content js-simplebar">
                 <div class="sidebar-brand d-flex align-items-center" href="{{ url('/gigi') }}">
-                    <img src="{{ url('template/images/logo_puskesmas.png') }}" alt="Logo"
+                    <img src="{{ url('template/images/LogoRohil.png') }}" alt="Logo"
                         style="width: 50px; height: 50px; margin-right: 10px;">
                     <span class="align-middle">UPT PUSKESMAS PUJUD</span>
                 </div>

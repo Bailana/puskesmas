@@ -103,22 +103,22 @@
                         <table class="table table-hover my-0" id="ugdTable">
                             <thead>
                                 <tr>
-                                    <th>No.</th>
-                                    <th>Hari/Tanggal Masuk</th>
-                                    <th>Nama Pasien</th>
-                                    <th>Umur</th>
-                                    <th>Status</th>
+                                    <th class="nowrap">No.</th>
+                                    <th class="nowrap">Hari/Tanggal Masuk</th>
+                                    <th class="nowrap">Nama Pasien</th>
+                                    <th class="nowrap">Umur</th>
+                                    <th class="nowrap">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if(count($ugd_pasien) > 0)
                                 @foreach ($ugd_pasien as $index => $pasien)
                                 <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($pasien->tanggal_masuk)->translatedFormat('l, d-m-Y') }}
+                                    <td class="nowrap">{{ $index + 1 }}</td>
+                                    <td class="nowrap">{{ \Carbon\Carbon::parse($pasien->tanggal_masuk)->locale('id')->translatedFormat('l, d F Y') }}
                                     </td>
-                                    <td>{{ $pasien->nama_pasien }}</td>
-                                    <td>
+                                    <td class="nowrap">{{ $pasien->nama_pasien }}</td>
+                                    <td class="nowrap">
                                         @php
                                         $umur = null;
                                         if ($pasien->pasien_id) {
@@ -130,20 +130,22 @@
                                         @endphp
                                         {{ $umur !== null ? $umur . ' tahun' : '-' }}
                                     </td>
-                                    <td>
-                                        @php
-                                            $status = $pasien->status ?: 'Perlu Analisa';
-                                            $badgeClass = 'bg-secondary';
-                                            if (strtolower($status) === 'perlu analisa') {
-                                                $badgeClass = 'bg-warning text-dark';
-                                            } elseif (strtolower($status) === 'rawat inap') {
-                                                $badgeClass = 'bg-primary';
-                                            } elseif (strtolower($status) === 'rawat jalan') {
-                                                $badgeClass = 'bg-success';
-                                            }
-                                        @endphp
-                                        <span class="badge {{ $badgeClass }}">{{ $status }}</span>
-                                    </td>
+                                    <td class="nowrap">
+                                @php
+                                    $status = $pasien->status ?: 'Perlu Analisa';
+                                    $badgeClass = 'bg-secondary';
+                                    if (strtolower($status) === 'perlu analisa') {
+                                        $badgeClass = 'bg-warning text-dark';
+                                    } elseif (strtolower($status) === 'ugd') {
+                                        $badgeClass = 'bg-warning text-dark';
+                                    } elseif (strtolower($status) === 'rawat inap') {
+                                        $badgeClass = 'bg-primary';
+                                    } elseif (strtolower($status) === 'rawat jalan') {
+                                        $badgeClass = 'bg-success';
+                                    }
+                                @endphp
+                                <span class="badge {{ $badgeClass }}">{{ $status }}</span>
+                            </td>
                                 </tr>
                                 @endforeach
                                 @else
@@ -166,22 +168,23 @@
                         <table class="table table-hover my-0" id="rawatinapTable">
                             <thead>
                                 <tr>
-                                    <th>No.</th>
-                                    <th>Hari/Tanggal Masuk</th>
-                                    <th>Nama Pasien</th>
-                                    <th>Umur</th>
-                                    <th>Status</th>
+                                    <th class="nowrap">No.</th>
+                                    <th class="nowrap">Hari/Tanggal Masuk</th>
+                                    <th class="nowrap">Nama Pasien</th>
+                                    <th class="nowrap">Umur</th>
+                                    <th class="nowrap">Ruangan</th>
+                                    <th class="nowrap">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if(count($rawatinap_pasien) > 0)
                                 @foreach ($rawatinap_pasien as $index => $pasien)
                                 <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($pasien->tanggal_masuk)->translatedFormat('l, d-m-Y') }}
+                                    <td class="nowrap">{{ $index + 1 }}</td>
+                                    <td class="nowrap">{{ \Carbon\Carbon::parse($pasien->tanggal_masuk)->locale('id')->translatedFormat('l, d F Y') }}
                                     </td>
-                                    <td>{{ $pasien->nama_pasien }}</td>
-                                    <td>
+                                    <td class="nowrap">{{ $pasien->nama_pasien }}</td>
+                                    <td class="nowrap">
                                         @php
                                         $umur = null;
                                         if ($pasien->pasien_id) {
@@ -193,7 +196,7 @@
                                         @endphp
                                         {{ $umur !== null ? $umur . ' tahun' : '-' }}
                                     </td>
-                                    <td>
+                                    <td class="nowrap">
                                         @php
                                             $status = $pasien->status ?: 'Perlu Analisa';
                                             $badgeClass = 'bg-secondary';

@@ -13,9 +13,90 @@ use App\Http\Controllers\PerawatProfileController;
 use App\Http\Controllers\PasienController;
 use \App\Http\Controllers\BidanProfileController;
 use App\Http\Controllers\RawatinapUgdController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AdminObatController;
+use App\Http\Controllers\AdminJadwalDokterController;
 use App\Models\PasiensUgd;
 use App\Models\Pasien;
 use App\Models\User;
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/ugd', function () {
+        $pasiens_ugd = \App\Models\PasiensUgd::with('pasien')->where('status', 'Perlu Analisa')->get();
+        return view('admin.ugd', compact('pasiens_ugd'));
+    })->name('admin.ugd');
+
+    Route::get('/admin/profile', function () {
+        return view('admin.profile');
+    })->name('admin.profile');
+
+    Route::get('/rawatinap/ugd/detail/{no_rekam_medis}', [App\Http\Controllers\RawatinapUgdController::class, 'getUgdPatientDetail'])->name('rawatinap.ugd.detail');
+
+    // Route::get('/admin/rawatinap', [\App\Http\Controllers\RawatinapUgdController::class, 'adminRawatinap'])->name('admin.rawatinap');
+
+Route::get('/admin/datapasien', function () {
+    $pasiens = \App\Models\Pasien::paginate(10);
+
+    return view('admin.datapasien', compact('pasiens'));
+})->name('admin.datapasien');
+
+    Route::put('/admin/datapasien/{id}', [\App\Http\Controllers\PasienController::class, 'update'])->name('admin.datapasien.update');
+
+    // New route for fetching riwayat berobat data for a pasien by pasien_id
+    Route::get('/admin/datapasien/riwayat-berobat/{pasien_id}', [\App\Http\Controllers\RawatinapUgdController::class, 'getRiwayatBerobatByPasienId'])->name('admin.datapasien.riwayatberobat');
+
+    Route::get('/admin/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+
+    Route::get('/admin/datauser', [AdminUserController::class, 'index'])->name('admin.datauser');
+
+    Route::get('/admin/obat', [AdminObatController::class, 'index'])->name('admin.obat');
+    Route::post('/admin/obat/store', [AdminObatController::class, 'store'])->name('admin.obat.store');
+    Route::get('/admin/obat/edit/{id}', [AdminObatController::class, 'edit'])->name('admin.obat.edit');
+    Route::put('/admin/obat/update/{id}', [AdminObatController::class, 'update'])->name('admin.obat.update');
+
+    Route::delete('/admin/obat/delete/{id}', [AdminObatController::class, 'destroy'])->name('admin.obat.destroy');
+
+    Route::put('/admin/users/edit/{id}', [AdminUserController::class, 'update'])->name('admin.users.update');
+
+    Route::post('/admin/users/create', [AdminUserController::class, 'store'])->name('admin.users.store');
+
+    Route::delete('/admin/users/delete/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+
+    Route::get('/admin/jadwaldokter', [AdminJadwalDokterController::class, 'index'])->name('admin.jadwaldokter');
+
+    Route::post('/admin/jadwaldokter/store', [AdminJadwalDokterController::class, 'store'])->name('admin.jadwaldokter.store');
+
+    Route::delete('/admin/jadwaldokter/delete/{id}', [AdminJadwalDokterController::class, 'destroy'])->name('admin.jadwaldokter.destroy');
+
+    Route::get('/admin/jadwaldokter/edit/{id}', [AdminJadwalDokterController::class, 'edit'])->name('admin.jadwaldokter.edit');
+    Route::put('/admin/jadwaldokter/update/{id}', [AdminJadwalDokterController::class, 'update'])->name('admin.jadwaldokter.update');
+
+    // Added route for admin rawat jalan page
+    Route::get('/admin/rawatjalan', [PasienController::class, 'index'])->middleware(['auth', 'role:admin'])->name('admin.rawatjalan');
+
+    // Added route for admin pasien rawat jalan page with path matching sidebar URL
+    // Re-adding route for admin pasien rawat jalan page with path matching sidebar URL
+    Route::get('/admin/pasien/rawatjalan', [PasienController::class, 'index'])->middleware(['auth', 'role:admin'])->name('admin.pasien.rawatjalan');
+
+    // Added route for admin pasien rawat inap page with path matching sidebar URL
+    Route::get('/admin/pasien/rawatinap', [RawatinapUgdController::class, 'adminPasienRawatinap'])->middleware(['auth', 'role:admin'])->name('admin.pasien.rawatinap');
+
+    // Routes for edit, update, destroy, and surat actions for rawatinap
+    Route::get('/admin/rawatinap/{id}/edit', [RawatinapUgdController::class, 'edit'])->middleware(['auth', 'role:admin'])->name('admin.rawatinap.edit');
+    Route::put('/admin/rawatinap/{id}', [RawatinapUgdController::class, 'update'])->middleware(['auth', 'role:admin'])->name('admin.rawatinap.update');
+    Route::delete('/admin/rawatinap/{id}', [RawatinapUgdController::class, 'destroy'])->middleware(['auth', 'role:admin'])->name('admin.rawatinap.destroy');
+    Route::get('/admin/rawatinap/{id}/surat', [RawatinapUgdController::class, 'surat'])->middleware(['auth', 'role:admin'])->name('admin.rawatinap.surat');
+
+    // Routes for edit, update, destroy, and     surat actions for rawatjalan
+    Route::get('/admin/rawatjalan/{id}/edit', [PasienController::class, 'edit'])->middleware(['auth', 'role:admin'])->name('admin.rawatjalan.edit');
+    Route::put('/admin/rawatjalan/{id}', [PasienController::class, 'update'])->middleware(['auth', 'role:admin'])->name('admin.rawatjalan.update');
+    Route::delete('/admin/rawatjalan/{id}', [PasienController::class, 'destroy'])->middleware(['auth', 'role:admin'])->name('admin.rawatjalan.destroy');
+    Route::get('/admin/rawatjalan/{id}/surat', [PasienController::class, 'surat'])->middleware(['auth', 'role:admin'])->name('admin.rawatjalan.surat');
+
+    Route::get('/admin/datapasien/{id}/surat', [PasienController::class, 'surat'])->middleware(['auth', 'role:admin'])->name('cetak.surat');
+});
 
 Route::middleware(['auth', 'role:apoteker'])->group(function () {
     Route::get('/apoteker/pasien', [ApotekerDashboardController::class, 'pasien'])->name('apoteker.pasien');
@@ -132,10 +213,12 @@ Route::middleware(['auth', 'role:bidan'])->group(function () {
 
 Route::middleware(['auth', 'role:rawatinap'])->group(function () {
     Route::get('/rawatinap/dashboard', function () {
-        $ugd_pasien = PasiensUgd::where('status', 'Perlu Analisa')->get();
+        $ugd_pasien = PasiensUgd::whereIn('status', ['Perlu Analisa', 'UGD'])->get();
         $rawatinap_pasien = PasiensUgd::where('status', 'Rawat Inap')->get();
         return view('rawatinap.dashboard', compact('ugd_pasien', 'rawatinap_pasien'));
     })->name('rawatinap.dashboard');
+
+    Route::patch('/rawatinap/profile', [App\Http\Controllers\RawatinapUgdController::class, 'updateProfile'])->name('rawatinap.profile.update');
 
     Route::get('/pasienRawatinap/export-pdf', [RawatinapUgdController::class, 'exportPdf'])->name('rawatinap.pasien.exportPdf');
 
@@ -193,7 +276,7 @@ Route::middleware(['auth', 'role:rawatinap'])->group(function () {
     Route::get('/rawatinap/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\RawatinapUgdController::class, 'getVisitData'])->name('rawatinap.riwayat.data');
 
     Route::get('/rawatinap/rawatinap', function () {
-        $pasiens_ugd = \App\Models\PasiensUgd::where('status', 'Rawat Inap')->get();
+        $pasiens_ugd = \App\Models\PasiensUgd::where('status', 'Rawat Inap')->paginate(10);
         $users = User::all();
         return view('rawatinap.rawatinap', compact('pasiens_ugd', 'users'));
     })->name('rawatinap.rawatinap');
@@ -211,6 +294,8 @@ Route::get('/dashboard', function () {
         return redirect()->route('login');
     }
     switch ($user->role) {
+        case 'admin':
+            return redirect()->route('admin.dashboard');
         case 'dokter':
             return redirect()->route('dokter.dashboard');
         case 'doktergigi':
