@@ -80,6 +80,9 @@
                                     <button class="btn btn-info btn-sm ms-1 rounded btn-hasil-analisa" data-bs-toggle="modal"
                                         data-bs-target="#modalHasilAnalisa" data-pasien="{{ json_encode($pasien) }}"
                                         data-pasien-id="{{ $pasien->pasien_id }}">Hasil Analisa</button>
+                                    <button class="btn btn-warning btn-sm ms-1 rounded btn-hasil-periksa" data-bs-toggle="modal"
+                                        data-bs-target="#modalHasilPeriksa" data-pasien-id="{{ $pasien->pasien_id }}">Hasil Periksa</button>
+                                    <button type="button" class="btn btn-danger btn-sm ms-1 rounded btn-periksa" data-bs-toggle="modal" data-bs-target="#modalPeriksa" data-pasien-id="{{ $pasien->pasien_id }}" data-nama-pasien="{{ $pasien->nama_pasien }}">Periksa</button>
                                     @else
                                     <button class="btn btn-warning btn-sm ms-1 rounded" data-bs-toggle="modal"
                                         data-bs-target="#modalAnalisa" data-pasien="{{ json_encode($pasien) }}"
@@ -100,6 +103,30 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Hasil Periksa -->
+<div class="modal fade" id="modalHasilPeriksa" tabindex="-1" aria-labelledby="modalHasilPeriksaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
+        <div class="modal-content" style="overflow-x: hidden;">
+            <div class="modal-header d-flex justify-content-between">
+                <h3 class="modal-title" id="modalHasilPeriksaLabel"><strong>Hasil Periksa Pasien</strong></h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3" style="max-height: 400px; overflow-y: auto;">
+                <div id="hasilPeriksaContent">
+                    <div class="text-center text-muted">Memuat data hasil periksa...</div>
+                </div>
+                <div id="hasilPeriksaDetail" style="display:none; margin-top: 15px;">
+                    <div id="hasilPeriksaDetailContent"></div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="button" class="btn btn-secondary rounded btn-sm" id="backToListBtn">Kembali ke Daftar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Modal Tambah Pasien -->
 <div class="modal fade" id="modalTambahPasien" tabindex="-1" aria-labelledby="modalTambahPasienLabel"
@@ -493,6 +520,76 @@
     </div>
 </div>
 
+<!-- Modal Periksa -->
+<div class="modal fade" id="modalPeriksa" tabindex="-1" aria-labelledby="modalPeriksaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
+        <div class="modal-content" style="overflow-x: hidden;">
+            <div class="modal-header d-flex justify-content-between">
+                <h3 class="modal-title" id="modalPeriksaLabel"><strong>Periksa Pasien <span id="periksa_nama_pasien_display"></span></strong></h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3" style="max-height: 400px; overflow-y: auto;">
+                <form id="formPeriksa" method="POST" action="{{ url('/rawatinap/periksa/store') }}">
+                    @csrf
+                    <input type="hidden" id="periksa_pasien_id" name="pasien_id">
+
+                    <div class="mb-3">
+                        <label for="nama_pasien" class="form-label">Nama Pasien</label>
+                        <input type="text" class="form-control" id="nama_pasien" name="nama_pasien" readonly>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <div class="col-md-6">
+                            <label for="tanggal" class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="waktu" class="form-label">Waktu</label>
+                            <input type="time" class="form-control" id="waktu" name="waktu" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="soap" class="form-label">SOAP</label>
+                        <textarea class="form-control" id="soap" name="soap" rows="4" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="intruksi_tenaga_kerja" class="form-label">Intruksi Tenaga Kerja</label>
+                        <textarea class="form-control" id="intruksi_tenaga_kerja" name="intruksi_tenaga_kerja" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="penanggung_jawab" class="form-label">Penanggung Jawab</label>
+                        <select class="form-select" id="penanggung_jawab" name="penanggung_jawab" required>
+                            <option value="" disabled selected>Pilih Penanggung Jawab</option>
+                            @foreach($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="checkboxPasienPulang" name="pasien_pulang" value="1">
+                        <label class="form-check-label" for="checkboxPasienPulang">Pasien diperbolehkan pulang</label>
+                    </div>
+                    <div class="mb-3" id="divTanggalPulang" style="display:none;">
+                        <label for="tanggal_pulang" class="form-label">Tanggal Pulang</label>
+                        <input type="date" class="form-control" id="tanggal_pulang" name="tanggal_pulang">
+                    </div>
+                    <div class="mb-3" id="divWaktuPulang" style="display:none;">
+                        <label for="waktu_pulang" class="form-label">Waktu Pulang</label>
+                        <input type="time" class="form-control" id="waktu_pulang" name="waktu_pulang">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-end mt-3">
+                <!-- <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Tutup</button> -->
+                <button type="submit" form="formPeriksa" class="btn btn-success">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Hasil Analisa -->
 <div class="modal fade" id="modalHasilAnalisa" tabindex="-1" aria-labelledby="modalHasilAnalisaLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
@@ -637,6 +734,218 @@
 @endsection
 @section('scripts')
 <script>
+    $(function() {
+        var pasienIdGlobal = null;
+
+        function showList(pasienId) {
+            var $content = $('#hasilPeriksaContent');
+            var $detail = $('#hasilPeriksaDetail');
+            $detail.hide();
+            $content.show();
+            $content.html('<div class="text-center text-muted">Memuat data hasil periksa...</div>');
+
+            $.get('/rawatinap/hasilperiksa/data/' + encodeURIComponent(pasienId), function(res) {
+                if (res.success && res.data && res.data.length > 0) {
+                    var data = res.data;
+                    var html = '<ul>';
+                    data.forEach(function(item, index) {
+                        html += '<li style="display:flex; justify-content:space-between; align-items:center; padding: 0.375rem 0;">';
+
+                        function getIndonesianDayName(dateString) {
+                            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                            const date = new Date(dateString);
+                            return days[date.getDay()] || '';
+                        }
+
+                        function formatDateToDDMMYYYY(dateString) {
+                            const date = new Date(dateString);
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const year = date.getFullYear();
+                            return day + '-' + month + '-' + year;
+                        }
+                        var dayName = getIndonesianDayName(item.tanggal);
+                        var formattedDate = formatDateToDDMMYYYY(item.tanggal);
+                        html += '<div style="text-align:left;">' + (index + 1) + '. <strong>Hari/Tanggal:</strong> ' + dayName + ', ' + formattedDate + ' <strong>Waktu:</strong> ' + item.waktu + '</div>';
+                        html += '<button class="btn btn-primary rounded btn-sm lihat-detail-btn" data-index="' + index + '">Lihat</button>';
+                        html += '</li>';
+                    });
+                    html += '</ul>';
+                    $content.html(html);
+                } else {
+                    $content.html('<div class="text-center text-muted">Tidak ada hasil periksa pasien.</div>');
+                }
+            }).fail(function() {
+                $content.html('<div class="text-danger">Tidak ada data hasil periksa pasien</div>');
+            });
+        }
+
+        function showDetail(index) {
+            var $content = $('#hasilPeriksaContent');
+            var $detail = $('#hasilPeriksaDetail');
+            $content.hide();
+            $detail.show();
+
+            $.get('/rawatinap/hasilperiksa/data/' + encodeURIComponent(pasienIdGlobal), function(res) {
+                if (res.success && res.data && res.data.length > index) {
+                    var item = res.data[index];
+
+                    function getIndonesianDayName(dateString) {
+                        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                        const date = new Date(dateString);
+                        return days[date.getDay()] || '';
+                    }
+                    var dayName = getIndonesianDayName(item.tanggal);
+
+                    function formatDateToDDMMYYYY(dateString) {
+                        const date = new Date(dateString);
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const year = date.getFullYear();
+                        return day + '-' + month + '-' + year;
+                    }
+                    var formattedDate = dayName + ', ' + formatDateToDDMMYYYY(item.tanggal);
+
+                    var html = '<table class="table table-bordered">';
+                    html += '<tr><th>Hari/Tanggal</th><td>' + formattedDate + '</td></tr>';
+                    html += '<tr><th>Waktu</th><td>' + item.waktu + '</td></tr>';
+                    html += '<tr><th>SOAP</th><td>' + (item.soap || '-') + '</td></tr>';
+                    html += '<tr><th>Intruksi Tenaga Kerja</th><td>' + (item.intruksi_tenagakerja || '-') + '</td></tr>';
+                    html += '<tr><th>Penanggung Jawab</th><td>' + (item.penanggung_jawab_nama || item.penanggung_jawab || '-') + '</td></tr>';
+                    html += '</table>';
+                    $('#hasilPeriksaDetailContent').html(html);
+                } else {
+                    $('#hasilPeriksaDetailContent').html('<div class="text-center text-muted">Tidak ada detail hasil periksa.</div>');
+                }
+            }).fail(function() {
+                $('#hasilPeriksaDetailContent').html('<div class="text-danger">Gagal mengambil detail hasil periksa.</div>');
+            });
+        }
+
+        $(document).on('click', '.btn-hasil-periksa', function() {
+            pasienIdGlobal = $(this).data('pasien-id');
+            showList(pasienIdGlobal);
+        });
+
+        $(document).on('click', '.lihat-detail-btn', function() {
+            var index = $(this).data('index');
+            showDetail(index);
+        });
+
+        $('#backToListBtn').on('click', function() {
+            if (pasienIdGlobal) {
+                showList(pasienIdGlobal);
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modalPeriksa = document.getElementById('modalPeriksa');
+        if (!modalPeriksa) {
+            console.error('modalPeriksa element not found');
+            return;
+        }
+        modalPeriksa.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+            var pasienId = button.getAttribute('data-pasien-id');
+            var namaPasien = button.getAttribute('data-nama-pasien');
+            var pasienIdInput = modalPeriksa.querySelector('#periksa_pasien_id');
+            var namaPasienInput = modalPeriksa.querySelector('#nama_pasien');
+            var namaPasienDisplay = modalPeriksa.querySelector('#periksa_nama_pasien_display');
+            if (pasienIdInput) {
+                pasienIdInput.value = pasienId || '';
+            }
+            if (namaPasienInput) {
+                namaPasienInput.value = namaPasien || '';
+            }
+            if (namaPasienDisplay) {
+                namaPasienDisplay.textContent = namaPasien || '';
+            }
+            // Clear other form fields except nama_pasien on modal show
+            var form = modalPeriksa.querySelector('#formPeriksa');
+            if (form) {
+                // Save current nama_pasien value
+                var currentNama = namaPasienInput.value;
+                form.reset();
+                // Restore nama_pasien value after reset
+                namaPasienInput.value = currentNama;
+
+                // Set tanggal dan waktu sekarang
+                var now = new Date();
+                var yyyy = now.getFullYear();
+                var mm = String(now.getMonth() + 1).padStart(2, '0');
+                var dd = String(now.getDate()).padStart(2, '0');
+                var hh = String(now.getHours()).padStart(2, '0');
+                var min = String(now.getMinutes()).padStart(2, '0');
+                var todayStr = yyyy + '-' + mm + '-' + dd;
+                var timeStr = hh + ':' + min;
+                var tanggalInput = form.querySelector('#tanggal');
+                var waktuInput = form.querySelector('#waktu');
+                if (tanggalInput) {
+                    tanggalInput.value = todayStr;
+                }
+                if (waktuInput) {
+                    waktuInput.value = timeStr;
+                }
+            }
+        });
+    });
+    
+    $(document).ready(function() {
+        $('#formPeriksa').on('submit', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var url = form.attr('action');
+            var btn = form.find('button[type="submit"]');
+            btn.prop('disabled', true).text('Menyimpan...');
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: form.serialize(),
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        toastr.success(res.message || 'Data hasil periksa berhasil disimpan.');
+                        $('#modalPeriksa').modal('hide');
+                        // Optionally reload or refresh data table here
+                        if ($.fn.DataTable && $('#pasienTable').hasClass('dataTable')) {
+                            $('#pasienTable').DataTable().ajax.reload(null, false);
+                        } else {
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1200);
+                        }
+                        form[0].reset();
+                    } else {
+                        toastr.error(res.message || 'Gagal menyimpan data hasil periksa.');
+                    }
+                },
+                error: function(xhr) {
+                    console.error('AJAX error response:', xhr);
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        var errors = xhr.responseJSON.errors;
+                        var msg = Object.values(errors).map(function(e) {
+                            return e[0];
+                        }).join('\n');
+                        toastr.error(msg);
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        toastr.error(xhr.responseJSON.message);
+                    } else {
+                        toastr.error('Terjadi kesalahan saat menyimpan data.');
+                    }
+                },
+                complete: function() {
+                    btn.prop('disabled', false).text('Simpan');
+                }
+            });
+        });
+    });
+</script>
+<script>
     document.getElementById('searchInput').addEventListener('keyup', function() {
         var filter = this.value.toLowerCase();
         var rows = document.querySelectorAll('#pasienTable tbody tr');
@@ -659,89 +968,88 @@
 
         document.querySelectorAll('.btn-hasil-analisa').forEach(function(button) {
             button.addEventListener('click', function(event) {
-                    var pasienData = button.getAttribute('data-pasien');
-                    var pasien = pasienData ? JSON.parse(pasienData) : null;
+                var pasienData = button.getAttribute('data-pasien');
+                var pasien = pasienData ? JSON.parse(pasienData) : null;
 
-                    if (!pasien) {
-                        alert('Data pasien tidak tersedia.');
-                        return;
-                    }
+                if (!pasien) {
+                    alert('Data pasien tidak tersedia.');
+                    return;
+                }
 
-                    // Fetch latest analysis data from server
-                    fetch('/rawatinap/hasilanalisa/riwayat/' + pasien.pasien_id)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
+                // Fetch latest analysis data from server
+                fetch('/rawatinap/hasilanalisa/riwayat/' + pasien.pasien_id)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success && data.data) {
+                            var analisa = data.data;
+
+                            // Show form and hide no data message
+                            var modalBody = hasilAnalisaModal.querySelector('.modal-body');
+                            var form = modalBody.querySelector('form');
+                            if (form) {
+                                form.style.display = 'block';
                             }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.success && data.data) {
-                                var analisa = data.data;
-
-                                // Show form and hide no data message
-                                var modalBody = hasilAnalisaModal.querySelector('.modal-body');
-                                var form = modalBody.querySelector('form');
-                                if (form) {
-                                    form.style.display = 'block';
-                                }
-                                var messageContainer = modalBody.querySelector('#noAnalisaMessage');
-                                if (messageContainer) {
-                                    messageContainer.style.display = 'none';
-                                }
-
-                                // Populate modal fields with fetched data
-                                document.getElementById('modalAnalisaLabel').textContent = 'Hasil Analisa ' + (pasien.nama_pasien || '');
-                                document.getElementById('modalAnalisaNoRekamMedis').value = analisa.no_rekam_medis || '';
-                                document.getElementById('modalAnalisaTekananDarah').value = analisa.tekanan_darah || '';
-                                document.getElementById('modalAnalisaFrekuensiNadi').value = analisa.frekuensi_nadi || '';
-                                document.getElementById('modalAnalisaSuhu').value = analisa.suhu || '';
-                                document.getElementById('modalAnalisaFrekuensiNafas').value = analisa.frekuensi_nafas || '';
-                                document.getElementById('modalAnalisaSkorNyeri').value = analisa.skor_nyeri || '';
-                                document.getElementById('modalAnalisaSkorJatuh').value = analisa.skor_jatuh || '';
-                                document.getElementById('modalAnalisaBeratBadan').value = analisa.berat_badan || '';
-                                document.getElementById('modalAnalisaTinggiBadan').value = analisa.tinggi_badan || '';
-                                document.getElementById('modalAnalisaLingkarKepala').value = analisa.lingkar_kepala || '';
-                                document.getElementById('modalAnalisaIMT').value = analisa.imt || '';
-                                document.getElementById('modalAnalisaAlatBantu').value = analisa.alat_bantu || '';
-                                document.getElementById('modalAnalisaProsthesa').value = analisa.prosthesa || '';
-                                document.getElementById('modalAnalisaCacatTubuh').value = analisa.cacat_tubuh || '';
-                                document.getElementById('modalAnalisaADLMandiri').value = analisa.adl_mandiri || '';
-                                document.getElementById('modalAnalisaRiwayatJatuh').value = analisa.riwayat_jatuh || '';
-                                document.getElementById('modalAnalisaStatusPsikologi').value = analisa.status_psikologi || '';
-                                document.getElementById('modalAnalisaHambatanEdukasi').value = analisa.hambatan_edukasi || '';
-                                document.getElementById('modalAnalisaAlergi').value = analisa.alergi || '';
-                                document.getElementById('modalAnalisaCatatan').value = analisa.catatan || '';
-                                document.getElementById('modalAnalisaPoliTujuan').value = analisa.ruangan && analisa.ruangan.trim() !== '' ? analisa.ruangan : 'UGD';
-                                document.getElementById('modalAnalisaPenanggungJawab').value = (analisa.penanggung_jawab_user && analisa.penanggung_jawab_user.name) || '';
-
-                                // Show the modal
-                                var modal = new bootstrap.Modal(hasilAnalisaModal);
-                                modal.show();
-                            } else {
-                                // Hide form fields and show only message
-                                var modalBody = hasilAnalisaModal.querySelector('.modal-body');
-                                var form = modalBody.querySelector('form');
-                                if (form) {
-                                    form.style.display = 'none';
-                                }
-                                // Create or show message container
-                                var messageContainer = modalBody.querySelector('#noAnalisaMessage');
-                                if (!messageContainer) {
-                                    messageContainer = document.createElement('p');
-                                    messageContainer.id = 'noAnalisaMessage';
-                                    messageContainer.className = 'text-center text-muted';
-                                    messageContainer.textContent = 'Tidak ada hasil analisa pasien.';
-                                    modalBody.appendChild(messageContainer);
-                                } else {
-                                    messageContainer.style.display = 'block';
-                                }
-                                var modal = new bootstrap.Modal(hasilAnalisaModal);
-                                modal.show();
+                            var messageContainer = modalBody.querySelector('#noAnalisaMessage');
+                            if (messageContainer) {
+                                messageContainer.style.display = 'none';
                             }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching data analisa:', error);
+
+                            // Populate modal fields with fetched data
+                            document.getElementById('modalAnalisaLabel').textContent = 'Hasil Analisa ' + (pasien.nama_pasien || '');
+                            document.getElementById('modalAnalisaNoRekamMedis').value = analisa.no_rekam_medis || '';
+                            document.getElementById('modalAnalisaTekananDarah').value = analisa.tekanan_darah || '';
+                            document.getElementById('modalAnalisaFrekuensiNadi').value = analisa.frekuensi_nadi || '';
+                            document.getElementById('modalAnalisaSuhu').value = analisa.suhu || '';
+                            document.getElementById('modalAnalisaFrekuensiNafas').value = analisa.frekuensi_nafas || '';
+                            document.getElementById('modalAnalisaSkorNyeri').value = analisa.skor_nyeri || '';
+                            document.getElementById('modalAnalisaSkorJatuh').value = analisa.skor_jatuh || '';
+                            document.getElementById('modalAnalisaBeratBadan').value = analisa.berat_badan || '';
+                            document.getElementById('modalAnalisaTinggiBadan').value = analisa.tinggi_badan || '';
+                            document.getElementById('modalAnalisaLingkarKepala').value = analisa.lingkar_kepala || '';
+                            document.getElementById('modalAnalisaIMT').value = analisa.imt || '';
+                            document.getElementById('modalAnalisaAlatBantu').value = analisa.alat_bantu || '';
+                            document.getElementById('modalAnalisaProsthesa').value = analisa.prosthesa || '';
+                            document.getElementById('modalAnalisaCacatTubuh').value = analisa.cacat_tubuh || '';
+                            document.getElementById('modalAnalisaADLMandiri').value = analisa.adl_mandiri || '';
+                            document.getElementById('modalAnalisaRiwayatJatuh').value = analisa.riwayat_jatuh || '';
+                            var statusPsikologi = analisa.status_psikologi || '';
+                            var hambatanEdukasi = analisa.hambatan_edukasi || '';
+
+                            // Try to parse JSON array strings and join elements, fallback to original string
+                            try {
+                                var parsedStatus = JSON.parse(statusPsikologi);
+                                if (Array.isArray(parsedStatus)) {
+                                    statusPsikologi = parsedStatus.join(', ');
+                                }
+                            } catch (e) {
+                                // Not a JSON array string, keep original
+                            }
+
+                            try {
+                                var parsedHambatan = JSON.parse(hambatanEdukasi);
+                                if (Array.isArray(parsedHambatan)) {
+                                    hambatanEdukasi = parsedHambatan.join(', ');
+                                }
+                            } catch (e) {
+                                // Not a JSON array string, keep original
+                            }
+
+                            document.getElementById('modalAnalisaStatusPsikologi').value = statusPsikologi;
+                            document.getElementById('modalAnalisaHambatanEdukasi').value = hambatanEdukasi;
+                            document.getElementById('modalAnalisaAlergi').value = analisa.alergi || '';
+                            document.getElementById('modalAnalisaCatatan').value = analisa.catatan || '';
+                            document.getElementById('modalAnalisaPoliTujuan').value = analisa.ruangan && analisa.ruangan.trim() !== '' ? analisa.ruangan : 'UGD';
+                            document.getElementById('modalAnalisaPenanggungJawab').value = (analisa.penanggung_jawab_user && analisa.penanggung_jawab_user.name) || '';
+
+                            // Show the modal
+                            var modal = new bootstrap.Modal(hasilAnalisaModal);
+                            modal.show();
+                        } else {
                             // Hide form fields and show only message
                             var modalBody = hasilAnalisaModal.querySelector('.modal-body');
                             var form = modalBody.querySelector('form');
@@ -761,9 +1069,32 @@
                             }
                             var modal = new bootstrap.Modal(hasilAnalisaModal);
                             modal.show();
-                        });
-                });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data analisa:', error);
+                        // Hide form fields and show only message
+                        var modalBody = hasilAnalisaModal.querySelector('.modal-body');
+                        var form = modalBody.querySelector('form');
+                        if (form) {
+                            form.style.display = 'none';
+                        }
+                        // Create or show message container
+                        var messageContainer = modalBody.querySelector('#noAnalisaMessage');
+                        if (!messageContainer) {
+                            messageContainer = document.createElement('p');
+                            messageContainer.id = 'noAnalisaMessage';
+                            messageContainer.className = 'text-center text-muted';
+                            messageContainer.textContent = 'Tidak ada hasil analisa pasien.';
+                            modalBody.appendChild(messageContainer);
+                        } else {
+                            messageContainer.style.display = 'block';
+                        }
+                        var modal = new bootstrap.Modal(hasilAnalisaModal);
+                        modal.show();
+                    });
             });
+        });
     });
 </script>
 
@@ -1082,6 +1413,39 @@
                     btn.prop('disabled', false).text('Simpan');
                 }
             });
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var checkboxPasienPulang = document.getElementById('checkboxPasienPulang');
+        var divTanggalPulang = document.getElementById('divTanggalPulang');
+        var divWaktuPulang = document.getElementById('divWaktuPulang');
+        var inputTanggalPulang = document.getElementById('tanggal_pulang');
+        var inputWaktuPulang = document.getElementById('waktu_pulang');
+
+        function setCurrentDateTime() {
+            var now = new Date();
+            var yyyy = now.getFullYear();
+            var mm = String(now.getMonth() + 1).padStart(2, '0');
+            var dd = String(now.getDate()).padStart(2, '0');
+            var hh = String(now.getHours()).padStart(2, '0');
+            var min = String(now.getMinutes()).padStart(2, '0');
+            inputTanggalPulang.value = yyyy + '-' + mm + '-' + dd;
+            inputWaktuPulang.value = hh + ':' + min;
+        }
+
+        checkboxPasienPulang.addEventListener('change', function() {
+            if (checkboxPasienPulang.checked) {
+                divTanggalPulang.style.display = 'block';
+                divWaktuPulang.style.display = 'block';
+                setCurrentDateTime();
+            } else {
+                divTanggalPulang.style.display = 'none';
+                divWaktuPulang.style.display = 'none';
+                inputTanggalPulang.value = '';
+                inputWaktuPulang.value = '';
+            }
         });
     });
 </script>

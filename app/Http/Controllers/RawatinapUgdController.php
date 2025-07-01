@@ -33,8 +33,8 @@ class RawatinapUgdController extends Controller
             $search = strtolower($request->search);
             $query->where(function ($q) use ($search) {
                 $q->whereRaw('LOWER(nama_pasien) LIKE ?', ['%' . $search . '%'])
-                  ->orWhereRaw('LOWER(no_rekam_medis) LIKE ?', ['%' . $search . '%'])
-                  ->orWhereRaw('LOWER(nik) LIKE ?', ['%' . $search . '%']);
+                    ->orWhereRaw('LOWER(no_rekam_medis) LIKE ?', ['%' . $search . '%'])
+                    ->orWhereRaw('LOWER(nik) LIKE ?', ['%' . $search . '%']);
             });
         }
 
@@ -79,8 +79,8 @@ class RawatinapUgdController extends Controller
             $search = strtolower($request->search);
             $query->where(function ($q) use ($search) {
                 $q->whereRaw('LOWER(nama_pasien) LIKE ?', ['%' . $search . '%'])
-                  ->orWhereRaw('LOWER(no_rekam_medis) LIKE ?', ['%' . $search . '%'])
-                  ->orWhereRaw('LOWER(nik) LIKE ?', ['%' . $search . '%']);
+                    ->orWhereRaw('LOWER(no_rekam_medis) LIKE ?', ['%' . $search . '%'])
+                    ->orWhereRaw('LOWER(nik) LIKE ?', ['%' . $search . '%']);
             });
         }
 
@@ -426,6 +426,9 @@ class RawatinapUgdController extends Controller
             'soap' => 'nullable|string',
             'intruksi_tenaga_kerja' => 'nullable|string',
             'penanggung_jawab' => 'nullable|string',
+            'pasien_pulang' => 'nullable|boolean',
+            'tanggal_pulang' => 'nullable|date',
+            'waktu_pulang' => 'nullable',
         ]);
 
         try {
@@ -434,17 +437,36 @@ class RawatinapUgdController extends Controller
                 'tanggal' => $validatedData['tanggal'],
                 'waktu' => $validatedData['waktu'],
                 'soap' => $validatedData['soap'],
-                'intruksi_tenagakerja' => $validatedData['intruksi_tenagakerja'],
+                'intruksi_tenagakerja' => $validatedData['intruksi_tenaga_kerja'],
                 'penanggung_jawab' => $validatedData['penanggung_jawab'],
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
+            if (!empty($validatedData['pasien_pulang']) && !empty($validatedData['tanggal_pulang']) && !empty($validatedData['waktu_pulang'])) {
+                $tanggalPulangDatetime = $validatedData['tanggal_pulang'] . ' ' . $validatedData['waktu_pulang'] . ':00';
+                \DB::table('pasiens_ugd')
+                    ->where('pasien_id', $validatedData['pasien_id'])
+                    ->update([
+                        'tanggal_pulang' => $tanggalPulangDatetime,
+                        'status' => 'Selesai',
+                    ]);
+            }
+
             \Log::info('Data hasil periksa berhasil disimpan', ['data' => $validatedData]);
+
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Data hasil periksa berhasil disimpan.']);
+            }
 
             return redirect()->route('rawatinap.rawatinap')->with('success', 'Data hasil periksa berhasil disimpan.');
         } catch (\Exception $e) {
             \Log::error('Gagal menyimpan data hasil periksa', ['error' => $e->getMessage()]);
+
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Gagal menyimpan data hasil periksa: ' . $e->getMessage()], 500);
+            }
+
             return redirect()->route('rawatinap.rawatinap')->withErrors(['error' => 'Gagal menyimpan data hasil periksa: ' . $e->getMessage()]);
         }
     }
@@ -452,9 +474,14 @@ class RawatinapUgdController extends Controller
     public function getHasilPeriksaByPasienId($pasien_id)
     {
         $hasilPeriksa = \DB::table('hasilperiksa_ugd')
-            ->where('pasien_id', $pasien_id)
-            ->orderByDesc('tanggal')
-            ->orderByDesc('waktu')
+            ->leftJoin('users', 'hasilperiksa_ugd.penanggung_jawab', '=', 'users.id')
+            ->where('hasilperiksa_ugd.pasien_id', $pasien_id)
+            ->orderByDesc('hasilperiksa_ugd.tanggal')
+            ->orderByDesc('hasilperiksa_ugd.waktu')
+            ->select(
+                'hasilperiksa_ugd.*',
+                'users.name as penanggung_jawab_nama'
+            )
             ->get();
 
         if ($hasilPeriksa->isEmpty()) {
@@ -523,7 +550,7 @@ class RawatinapUgdController extends Controller
             // Gabungkan semua tanggal, hilangkan duplikat, urutkan dari terlama ke terbaru
             $allDates = array_merge($hasilPeriksaDates, $hasilAnalisaDates, $hasilPeriksaAnakDates, $hasilPeriksaGigiDates);
             $allDates = array_filter($allDates); // hilangkan null/empty
-            $uniqueDates = array_unique(array_map(function($d) {
+            $uniqueDates = array_unique(array_map(function ($d) {
                 return date('Y-m-d', strtotime($d));
             }, $allDates));
             sort($uniqueDates); // urutkan dari terlama ke terbaru
@@ -656,20 +683,20 @@ class RawatinapUgdController extends Controller
                 'riwayat_jatuh' => $hasilAnalisa ? $hasilAnalisa->riwayat_jatuh : null,
                 'status_psikologi' => $hasilAnalisa ? (
                     $hasilAnalisa->status_psikologi
-                        ? (is_array(json_decode($hasilAnalisa->status_psikologi, true))
-                            ? implode(', ', json_decode($hasilAnalisa->status_psikologi, true))
-                            : (is_string($hasilAnalisa->status_psikologi) ? $hasilAnalisa->status_psikologi : '-')
-                        )
-                        : null
+                    ? (is_array(json_decode($hasilAnalisa->status_psikologi, true))
+                        ? implode(', ', json_decode($hasilAnalisa->status_psikologi, true))
+                        : (is_string($hasilAnalisa->status_psikologi) ? $hasilAnalisa->status_psikologi : '-')
+                    )
+                    : null
                 ) : null,
                 'penanggung_jawab_analisa' => ($hasilAnalisa && $hasilAnalisa->penanggung_jawab) ? (\App\Models\User::find($hasilAnalisa->penanggung_jawab)->name ?? '-') : null,
                 'hambatan_edukasi' => $hasilAnalisa ? (
                     $hasilAnalisa->hambatan_edukasi
-                        ? (is_array(json_decode($hasilAnalisa->hambatan_edukasi, true))
-                            ? implode(', ', json_decode($hasilAnalisa->hambatan_edukasi, true))
-                            : (is_string($hasilAnalisa->hambatan_edukasi) ? $hasilAnalisa->hambatan_edukasi : '-')
-                        )
-                        : null
+                    ? (is_array(json_decode($hasilAnalisa->hambatan_edukasi, true))
+                        ? implode(', ', json_decode($hasilAnalisa->hambatan_edukasi, true))
+                        : (is_string($hasilAnalisa->hambatan_edukasi) ? $hasilAnalisa->hambatan_edukasi : '-')
+                    )
+                    : null
                 ) : null,
                 'alergi' => $hasilAnalisa ? $hasilAnalisa->alergi : null,
                 'catatan' => $hasilAnalisa ? $hasilAnalisa->catatan : null,

@@ -15,8 +15,7 @@ use \App\Http\Controllers\BidanProfileController;
 use App\Http\Controllers\RawatinapUgdController;
 use App\Models\PasiensUgd;
 use App\Models\Pasien;
-
-
+use App\Models\User;
 
 Route::middleware(['auth', 'role:apoteker'])->group(function () {
     Route::get('/apoteker/pasien', [ApotekerDashboardController::class, 'pasien'])->name('apoteker.pasien');
@@ -160,7 +159,8 @@ Route::middleware(['auth', 'role:rawatinap'])->group(function () {
     Route::get('/rawatinap/ugd', function () {
         $pasiens_ugd = PasiensUgd::whereIn('status', ['Perlu Analisa', 'UGD'])->paginate(10);
         $pasiens = Pasien::all();
-        return view('rawatinap.ugd', compact('pasiens_ugd', 'pasiens'));
+        $users = \App\Models\User::all();
+        return view('rawatinap.ugd', compact('pasiens_ugd', 'pasiens', 'users'));
     })->name('rawatinap.ugd');
 
     Route::get('/rawatinap/pasien/riwayat-berobat/{no_rekam_medis}', [RawatinapUgdController::class, 'getRiwayatBerobatByPasienId'])->name('rawatinap.pasien.riwayatberobat');
@@ -194,7 +194,8 @@ Route::middleware(['auth', 'role:rawatinap'])->group(function () {
 
     Route::get('/rawatinap/rawatinap', function () {
         $pasiens_ugd = \App\Models\PasiensUgd::where('status', 'Rawat Inap')->get();
-        return view('rawatinap.rawatinap', compact('pasiens_ugd'));
+        $users = User::all();
+        return view('rawatinap.rawatinap', compact('pasiens_ugd', 'users'));
     })->name('rawatinap.rawatinap');
 });
 
