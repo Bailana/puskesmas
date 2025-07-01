@@ -16,9 +16,14 @@ class RoleMiddleware
      * @param  string  $role
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, string $role)
+    public function handle(Request $request, Closure $next, string $roles)
     {
-        if (!Auth::check() || Auth::user()->role !== $role) {
+        if (!Auth::check()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $roleArray = explode('|', $roles);
+        if (!in_array(Auth::user()->role, $roleArray)) {
             abort(403, 'Unauthorized');
         }
 

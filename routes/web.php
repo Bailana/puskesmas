@@ -154,7 +154,11 @@ Route::middleware(['auth', 'role:rawatinap'])->group(function () {
     Route::post('/pasienrawatinap/update/{id}', [RawatinapUgdController::class, 'update'])->name('pasienrawatinap.update');
 
     Route::get('/rawatinap', function () {
-        $pasiens_ugd = PasiensUgd::where('status', 'Perlu Analisa')->get();
+        return redirect()->route('rawatinap.ugd');
+    })->name('rawatinap');
+
+    Route::get('/rawatinap/ugd', function () {
+        $pasiens_ugd = PasiensUgd::whereIn('status', ['Perlu Analisa', 'UGD'])->paginate(10);
         $pasiens = Pasien::all();
         return view('rawatinap.ugd', compact('pasiens_ugd', 'pasiens'));
     })->name('rawatinap.ugd');
@@ -291,7 +295,9 @@ Route::middleware(['auth', 'role:resepsionis'])->group(function () {
     Route::get('/antrian', [\App\Http\Controllers\ResepsionisDashboardController::class, 'antrian'])->name('resepsionis.antrian');
     Route::post('/antrian/store', [\App\Http\Controllers\AntrianController::class, 'store'])->name('antrian.store');
 
-    Route::get('/cari-pasien/{nomorKepesertaan}', [\App\Http\Controllers\AntrianController::class, 'searchPasien']);
+    Route::middleware(['auth', 'role:rawatinap'])->group(function () {
+        Route::get('/cari-pasien/{nomorKepesertaan}', [\App\Http\Controllers\AntrianController::class, 'searchPasien']);
+    });
 
     Route::get('/pasienResepsionis', [ResepsionisDashboardController::class, 'pasien'])->name('resepsionis.pasien');
 

@@ -7,6 +7,7 @@ use App\Models\PasiensUgd;
 use App\Models\HasilanalisaRawatinap;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Exports\PasienExport;
 use App\Models\Antrian;
 use App\Models\Pasien;
@@ -15,8 +16,13 @@ class RawatinapUgdController extends Controller
 {
     public function index()
     {
-        $pasiens_ugd = PasiensUgd::with('pasien')->where('status', 'Rawat Inap')->get();
-        return view('admin.rawatinap', compact('pasiens_ugd'));
+        // Join with pasien table to get jaminan_kesehatan
+        $pasiens_ugd = PasiensUgd::select('pasiens_ugd.*', 'pasiens.jaminan_kesehatan')
+            ->join('pasiens', 'pasiens_ugd.pasien_id', '=', 'pasiens.id')
+            ->whereIn('pasiens_ugd.status', ['Rawat Inap'])
+            ->paginate(10);
+
+        return view('rawatinap.ugd', compact('pasiens_ugd'));
     }
 
     public function exportExcel(Request $request)
@@ -359,17 +365,33 @@ class RawatinapUgdController extends Controller
             $validatedData['hambatan_edukasi'] = json_encode($validatedData['hambatan_edukasi']);
         }
 
-        try {
-            $hasilAnalisa = HasilanalisaRawatinap::create($validatedData);
+        // Set default value for 'ruangan' if null or empty
+        if (empty($validatedData['ruangan'])) {
+            $validatedData['ruangan'] = '-';
+        }
 
-            // Tambahan: Jika ruangan diisi, update status pasien UGD ke 'Rawat Inap'
-            if (!empty($validatedData['ruangan'])) {
-                $pasienUgd = PasiensUgd::where('pasien_id', $validatedData['pasien_id'])->first();
-                if ($pasienUgd) {
+        // Remove penanggung_jawab from validatedData if present to avoid override
+        if (isset($validatedData['penanggung_jawab'])) {
+            unset($validatedData['penanggung_jawab']);
+        }
+
+        try {
+            // Set penanggung_jawab to current authenticated user's id before create
+            $hasilAnalisa = HasilanalisaRawatinap::create(array_merge($validatedData, [
+                'penanggung_jawab' => auth()->id(),
+            ]));
+
+            // Tambahan: Update status pasien UGD berdasarkan isi ruangan
+            $pasienUgd = PasiensUgd::where('pasien_id', $validatedData['pasien_id'])->first();
+            if ($pasienUgd) {
+                if (!empty($validatedData['ruangan']) && $validatedData['ruangan'] !== '-') {
                     $pasienUgd->status = 'Rawat Inap';
                     $pasienUgd->ruangan = $validatedData['ruangan'];
-                    $pasienUgd->save();
+                } else {
+                    $pasienUgd->status = 'UGD';
+                    $pasienUgd->ruangan = '-';
                 }
+                $pasienUgd->save();
             }
 
             return response()->json(['success' => true, 'message' => 'Data analisa berhasil disimpan.', 'data' => $hasilAnalisa]);
@@ -381,11 +403,16 @@ class RawatinapUgdController extends Controller
     // Ambil data analisa terakhir dari hasilanalisa_rawatinap untuk pasien_id tertentu
     public function getRiwayatAnalisaRawatinap($pasien_id)
     {
-        $analisa = \App\Models\HasilanalisaRawatinap::where('pasien_id', $pasien_id)->orderByDesc('created_at')->first();
-        if (!$analisa) {
-            return response()->json(['success' => false, 'message' => 'Data analisa tidak ditemukan'], 404);
+        try {
+            $analisa = \App\Models\HasilanalisaRawatinap::with('penanggungJawabUser')->where('pasien_id', $pasien_id)->orderByDesc('created_at')->first();
+            if (!$analisa) {
+                return response()->json(['success' => false, 'message' => 'Data analisa tidak ditemukan'], 404);
+            }
+            $analisa->penanggung_jawab_user = $analisa->penanggungJawabUser;
+            return response()->json(['success' => true, 'data' => $analisa]);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => 'Terjadi error pada server: ' . $e->getMessage()], 500);
         }
-        return response()->json(['success' => true, 'data' => $analisa]);
     }
 
     public function storeHasilPeriksa(Request $request)

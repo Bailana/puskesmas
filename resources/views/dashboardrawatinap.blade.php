@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
 </head>
 
 <body>
@@ -48,8 +49,8 @@
                             <span class="align-middle">Data Pasien</span>
                         </a>
                     </li>
-                    <li class="sidebar-item {{ Request::is('rawatinap') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/rawatinap') }}">
+                    <li class="sidebar-item {{ Request::is('rawatinap/ugd') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ url('/rawatinap/ugd') }}">
                             <i class="align-middle" data-feather="home"></i>
                             <span class="align-middle">UGD</span>
                         </a>
@@ -209,6 +210,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
     <script>
         feather.replace();

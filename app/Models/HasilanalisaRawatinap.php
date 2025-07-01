@@ -33,10 +33,17 @@ class HasilanalisaRawatinap extends Model
         'alergi',
         'catatan',
         'ruangan',
+        'penanggung_jawab',
     ];
 
     protected $casts = [
         'status_psikologi' => 'array',
         'hambatan_edukasi' => 'array',
     ];
+
+    // Relationship to User model for penanggung_jawab
+    public function penanggungJawabUser()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'penanggung_jawab');
+    }
 }
