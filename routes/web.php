@@ -21,14 +21,16 @@ use App\Models\Pasien;
 use App\Models\User;
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/ugd', function () {
-        $pasiens_ugd = \App\Models\PasiensUgd::with('pasien')->where('status', 'Perlu Analisa')->get();
-        return view('admin.ugd', compact('pasiens_ugd'));
-    })->name('admin.ugd');
+Route::get('/admin/ugd', function () {
+    $pasiens_ugd = \App\Models\PasiensUgd::with('pasien')->whereIn('status', ['UGD', 'Perlu Analisa'])->get();
+    return view('admin.ugd', compact('pasiens_ugd'));
+})->name('admin.ugd');
 
     Route::get('/admin/profile', function () {
         return view('admin.profile');
     })->name('admin.profile');
+
+    Route::patch('/admin/profile', [App\Http\Controllers\AdminUserController::class, 'updateProfile'])->name('admin.profile.update');
 
     Route::get('/rawatinap/ugd/detail/{no_rekam_medis}', [App\Http\Controllers\RawatinapUgdController::class, 'getUgdPatientDetail'])->name('rawatinap.ugd.detail');
 
@@ -57,6 +59,8 @@ Route::get('/admin/datapasien', function () {
     Route::put('/admin/obat/update/{id}', [AdminObatController::class, 'update'])->name('admin.obat.update');
 
     Route::delete('/admin/obat/delete/{id}', [AdminObatController::class, 'destroy'])->name('admin.obat.destroy');
+
+    Route::get('/admin/users/{id}', [AdminUserController::class, 'getUserById'])->name('admin.users.get');
 
     Route::put('/admin/users/edit/{id}', [AdminUserController::class, 'update'])->name('admin.users.update');
 

@@ -6,27 +6,28 @@
     <div class="row">
         <div class="col-12 col-lg-12 col-xxl-12 d-flex">
             <div class="card flex-fill">
-                <div class="card-header d-flex justify-content-between">
-                    <!-- Input Pencarian -->
-                    <form method="GET" action="{{ route('admin.datapasien') }}" class="d-flex align-items-center"
-                        style="gap: 10px;">
-                        <div class="input-group" style="width: 250px;">
-                            <input type="text" name="search" class="form-control" id="searchInput"
-                                placeholder="Pencarian..." aria-label="Search" value="{{ request('search') }}"
-                                autocomplete="off">
-                        </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-                            id="filterButton" title="Filter Data Pasien" data-bs-toggle="modal"
-                            data-bs-target="#filterModal">
-                            <i class="fas fa-filter"></i> Filter
-                        </button>
-                        <a href="{{ url('/admin/datapasien/export/pdf') }}" class="btn btn-danger btn-sm ms-2" title="Export PDF">
-                            <i class="fas fa-file-pdf"></i> PDF
-                        </a>
-                        <a href="{{ url('/admin/datapasien/export/csv') }}" class="btn btn-success btn-sm ms-2" title="Export CSV">
-                            <i class="fas fa-file-csv"></i> CSV
-                        </a>
-                    </form>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <!-- Input Pencarian -->
+                        <form method="GET" action="{{ route('admin.datapasien') }}" class="d-flex flex-wrap align-items-center gap-2 m-0 p-0">
+                            <div class="input-group" style="width: 250px;">
+                                <input type="text" name="search" class="form-control" id="searchInput"
+                                    placeholder="Pencarian..." aria-label="Search" value="{{ request('search') }}"
+                                    autocomplete="off">
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                                id="filterButton" title="Filter Data Pasien" data-bs-toggle="modal"
+                                data-bs-target="#filterModal">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                            <a href="{{ url('/admin/datapasien/export/pdf') }}" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1" title="Export PDF" target="_blank" style="margin-left: 5px;">
+                                <i class="fas fa-file-pdf"></i> Export PDF
+                            </a>
+                            <a href="{{ url('/admin/datapasien/export/csv') }}" class="btn btn-outline-success btn-sm d-flex align-items-center gap-1" style="margin-left: 5px;" title="Export CSV" target="_blank">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
+                        </form>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover my-0" id="dokterPasien">
@@ -50,7 +51,7 @@
                                     {{ $pasien->tempat_lahir }},
                                     {{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->format('d-m-Y') ?? 'Tanggal tidak tersedia' }}
                                 </td>
-                                
+
                                 <td style="white-space: nowrap;">{{ $pasien->jaminan_kesehatan }}</td>
                                 <td style="white-space: nowrap;">
                                     <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
@@ -79,7 +80,7 @@
                                         data-nama="{{ $pasien->nama_pasien }}">
                                         Riwayat Berobat
                                     </button>
-                                    <button type="button" class="btn btn-warning btn-sm rounded editPasienBtn" data-bs-toggle="modal" data-bs-target="#modalEditPasien"
+                                    <!-- <button type="button" class="btn btn-warning btn-sm rounded editPasienBtn" data-bs-toggle="modal" data-bs-target="#modalEditPasien"
                                         data-id="{{ $pasien->id }}"
                                         data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
                                         data-nik="{{ $pasien->nik }}"
@@ -103,13 +104,13 @@
                                         data-kepala_keluarga="{{ $pasien->kepala_keluarga }}"
                                         data-no_hp="{{ $pasien->no_hp }}">
                                         Edit
-                                    </button>
-                                    <form action="{{ url('/admin/pasien/delete/' . $pasien->id) }}" method="POST" style="display:inline;">
+                                    </button> -->
+                                    <!-- <form action="{{ url('/admin/pasien/delete/' . $pasien->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm rounded" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</button>
-                                    </form>
-                                    <a href="{{ route('cetak.surat', $pasien->id) }}" class="btn btn-primary" target="_blank">Cetak Surat</a>
+                                    </form> -->
+                                    <a href="{{ route('cetak.surat', $pasien->id) }}" class="btn btn-warning btn-sm rounded" target="_blank">Cetak Surat</a>
                                 </td>
                             </tr>
                             @endforeach
@@ -187,7 +188,7 @@
         </div>
     </div>
 </div>
-<!-- Modal Edit Pasien -->
+<!-- Modal Edit Pasien
 <div class="modal fade" id="modalEditPasien" tabindex="-1" aria-labelledby="modalEditPasienLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
         <div class="modal-content" style="overflow-x: hidden;">
@@ -325,7 +326,8 @@
             </form>
         </div>
     </div>
-</div>
+</div> -->
+
 <!-- Modal Filter -->
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel"
     aria-hidden="true">

@@ -2,11 +2,11 @@
 
 @section('admin')
 <div class="container-fluid p-0">
-    <h2 class="h3 mb-3"><strong>Profil Perawat</strong></h2>
+    <h2 class="h3 mb-3"><strong>Profil Admin</strong></h2>
 
     <div class="card">
         <div class="card-body">
-            <form id="profileForm" method="POST" action="{{ route('perawat.profile.update') }}" enctype="multipart/form-data">
+            <form id="profileForm" method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')
 
@@ -36,7 +36,7 @@
                         @if(auth()->user()->profile_photo_path)
                             <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" alt="Foto Profil" class="img-thumbnail mb-2" style="max-width: 150px;">
                         @else
-                            <img src="{{ url('resepsionisAssets/img/avatars/avatar.jpg') }}" alt="Foto Profil" class="img-thumbnail mb-2" style="max-width: 150px;">
+                            <img src="{{ url('adminAssets/img/avatars/avatar.jpg') }}" alt="Foto Profil" class="img-thumbnail mb-2" style="max-width: 150px;">
                         @endif
                         <input type="file" class="form-control @error('profile_photo') is-invalid @enderror" id="profile_photo" name="profile_photo" accept="image/*">
                         @error('profile_photo')

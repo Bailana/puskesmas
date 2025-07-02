@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Log;
 use App\Models\Pasien;
+use App\Models\Antrian;
 
 class PasienController extends Controller
 {
@@ -50,9 +51,11 @@ class PasienController extends Controller
 
         $pasiens = $pasiens->paginate($perPage);
 
+        $antrians = Antrian::paginate($perPage);
+
         \Log::info('index result count', ['count' => $pasiens->count()]);
 
-        return view('admin.rawatjalan', compact('pasiens'));
+        return view('admin.rawatjalan', compact('pasiens', 'antrians'));
     }
 
     public function rawatinapPasien(Request $request)

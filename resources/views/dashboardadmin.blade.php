@@ -225,7 +225,7 @@
                                 <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}"
                                     class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}" style="width: 40px; height: 40px; object-fit: cover;" />
                                 @else
-                                <img src="{{ url('resepsionisAssets/img/avatars/avatar.jpg') }}"
+                                <img src="{{ url('adminAssets/img/avatars/avatar.jpg') }}"
                                     class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}" style="width: 40px; height: 40px; object-fit: cover;" />
                                 @endif
                                 <span class="text-dark">{{ Auth::user()->name }}</span>
