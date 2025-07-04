@@ -42,7 +42,7 @@ Route::get('/admin/datapasien', function () {
     return view('admin.datapasien', compact('pasiens'));
 })->name('admin.datapasien');
 
-    Route::put('/admin/datapasien/{id}', [\App\Http\Controllers\PasienController::class, 'update'])->name('admin.datapasien.update');
+    Route::post('/admin/datapasien/{id}', [\App\Http\Controllers\PasienController::class, 'update'])->name('admin.datapasien.update');
 
     // New route for fetching riwayat berobat data for a pasien by pasien_id
     Route::get('/admin/datapasien/riwayat-berobat/{pasien_id}', [\App\Http\Controllers\RawatinapUgdController::class, 'getRiwayatBerobatByPasienId'])->name('admin.datapasien.riwayatberobat');
@@ -76,6 +76,7 @@ Route::get('/admin/datapasien', function () {
 
     Route::get('/admin/jadwaldokter/edit/{id}', [AdminJadwalDokterController::class, 'edit'])->name('admin.jadwaldokter.edit');
     Route::put('/admin/jadwaldokter/update/{id}', [AdminJadwalDokterController::class, 'update'])->name('admin.jadwaldokter.update');
+    Route::get('/admin/jadwaldokter/edit-group/{nama_dokter}/{poliklinik}', [AdminJadwalDokterController::class, 'editGroup'])->name('admin.jadwaldokter.editGroup');
 
     // Added route for admin rawat jalan page
     Route::get('/admin/rawatjalan', [PasienController::class, 'index'])->middleware(['auth', 'role:admin'])->name('admin.rawatjalan');
@@ -98,7 +99,9 @@ Route::get('/admin/datapasien', function () {
     Route::put('/admin/rawatjalan/{id}', [PasienController::class, 'update'])->middleware(['auth', 'role:admin'])->name('admin.rawatjalan.update');
     Route::delete('/admin/rawatjalan/{id}', [PasienController::class, 'destroy'])->middleware(['auth', 'role:admin'])->name('admin.rawatjalan.destroy');
     Route::get('/admin/rawatjalan/{id}/surat', [PasienController::class, 'surat'])->middleware(['auth', 'role:admin'])->name('admin.rawatjalan.surat');
-
+    Route::get('/admin/riwayat-berobat/{no_rekam_medis}/dates', [App\Http\Controllers\AdminUserController::class, 'getVisitDates'])->name('admin.riwayat.dates');
+    // API route to get hasil analisa and periksa data for a date
+    Route::get('/admin/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\AdminUserController::class, 'getVisitData'])->name('admin.riwayat.data');
     Route::get('/admin/datapasien/{id}/surat', [PasienController::class, 'surat'])->middleware(['auth', 'role:admin'])->name('cetak.surat');
 });
 

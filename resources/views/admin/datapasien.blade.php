@@ -56,6 +56,7 @@
                                 <td style="white-space: nowrap;">
                                     <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
                                         data-bs-target="#modalPasienDetail"
+                                        data-id="{{ $pasien->id }}"
                                         data-no_rekam_medis="{{ $pasien->no_rekam_medis }}" data-nik="{{ $pasien->nik }}"
                                         data-nama="{{ $pasien->nama_pasien }}"
                                         data-tempat_lahir="{{ $pasien->tempat_lahir }}"
@@ -74,42 +75,12 @@
                                         data-no_hp="{{ $pasien->no_hp}}">
                                         Selengkapnya
                                     </button>
-                                    <button type="button" class="btn btn-success btn-sm rounded" data-bs-toggle="modal"
-                                        data-bs-target="#modalRiwayatBerobat"
-                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
-                                        data-nama="{{ $pasien->nama_pasien }}">
+                                    <button type="button" class="btn btn-danger btn-sm rounded btn-riwayat"
+                                        data-rekam-medis="{{ $pasien->no_rekam_medis }}"
+                                        data-nama="{{ $pasien->nama_pasien }}"
+                                        data-bs-toggle="modal" data-bs-target="#modalRiwayatBerobat">
                                         Riwayat Berobat
                                     </button>
-                                    <!-- <button type="button" class="btn btn-warning btn-sm rounded editPasienBtn" data-bs-toggle="modal" data-bs-target="#modalEditPasien"
-                                        data-id="{{ $pasien->id }}"
-                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
-                                        data-nik="{{ $pasien->nik }}"
-                                        data-nama_pasien="{{ $pasien->nama_pasien }}"
-                                        data-tempat_lahir="{{ $pasien->tempat_lahir }}"
-                                        data-tanggal_lahir="{{ $pasien->tanggal_lahir }}"
-                                        data-jenis_kelamin="{{ $pasien->jenis_kelamin }}"
-                                        data-gol_darah="{{ $pasien->gol_darah }}"
-                                        data-agama="{{ $pasien->agama }}"
-                                        data-pekerjaan="{{ $pasien->pekerjaan }}"
-                                        data-status_pernikahan="{{ $pasien->status_pernikahan }}"
-                                        data-alamat_jalan="{{ $pasien->alamat_jalan }}"
-                                        data-rt="{{ $pasien->rt }}"
-                                        data-rw="{{ $pasien->rw }}"
-                                        data-kelurahan="{{ $pasien->kelurahan }}"
-                                        data-kecamatan="{{ $pasien->kecamatan }}"
-                                        data-kabupaten="{{ $pasien->kabupaten }}"
-                                        data-provinsi="{{ $pasien->provinsi }}"
-                                        data-jaminan_kesehatan="{{ $pasien->jaminan_kesehatan }}"
-                                        data-nomor_kepesertaan="{{ $pasien->nomor_kepesertaan }}"
-                                        data-kepala_keluarga="{{ $pasien->kepala_keluarga }}"
-                                        data-no_hp="{{ $pasien->no_hp }}">
-                                        Edit
-                                    </button> -->
-                                    <!-- <form action="{{ url('/admin/pasien/delete/' . $pasien->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm rounded" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</button>
-                                    </form> -->
                                     <a href="{{ route('cetak.surat', $pasien->id) }}" class="btn btn-warning btn-sm rounded" target="_blank">Cetak Surat</a>
                                 </td>
                             </tr>
@@ -188,146 +159,6 @@
         </div>
     </div>
 </div>
-<!-- Modal Edit Pasien
-<div class="modal fade" id="modalEditPasien" tabindex="-1" aria-labelledby="modalEditPasienLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
-        <div class="modal-content" style="overflow-x: hidden;">
-            <div class="modal-header d-flex justify-content-between">
-                <h3 class="modal-title" id="modalEditPasienLabel"><strong>Edit Data Pasien</strong></h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <form id="formEditPasien" method="POST" action="">
-                @csrf
-                @method('PUT')
-                <div class="modal-body p-3" style="max-height: 600px; overflow-y: auto;">
-                    <div class="container-fluid">
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="editNoRekamMedis" class="form-label">No. Rekam Medis</label>
-                                <input type="text" class="form-control form-control-sm" id="editNoRekamMedis" name="no_rekam_medis" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editNik" class="form-label">NIK</label>
-                                <input type="text" class="form-control form-control-sm" id="editNik" name="nik" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editNamaPasien" class="form-label">Nama Pasien</label>
-                                <input type="text" class="form-control form-control-sm" id="editNamaPasien" name="nama_pasien" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="editTempatLahir" class="form-label">Tempat Lahir</label>
-                                <input type="text" class="form-control form-control-sm" id="editTempatLahir" name="tempat_lahir">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editTanggalLahir" class="form-label">Tanggal Lahir</label>
-                                <input type="date" class="form-control form-control-sm" id="editTanggalLahir" name="tanggal_lahir">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editJenisKelamin" class="form-label">Jenis Kelamin</label>
-                                <select class="form-select form-select-sm" id="editJenisKelamin" name="jenis_kelamin">
-                                    <option value="">Pilih Jenis Kelamin</option>
-                                    <option value="Laki-laki">Laki-laki</option>
-                                    <option value="Perempuan">Perempuan</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="editGolDarah" class="form-label">Golongan Darah</label>
-                                <select class="form-select form-select-sm" id="editGolDarah" name="gol_darah">
-                                    <option value="">Pilih Golongan Darah</option>
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="AB">AB</option>
-                                    <option value="O">O</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editAgama" class="form-label">Agama</label>
-                                <input type="text" class="form-control form-control-sm" id="editAgama" name="agama">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editPekerjaan" class="form-label">Pekerjaan</label>
-                                <input type="text" class="form-control form-control-sm" id="editPekerjaan" name="pekerjaan">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="editStatusPernikahan" class="form-label">Status Pernikahan</label>
-                                <select class="form-select form-select-sm" id="editStatusPernikahan" name="status_pernikahan">
-                                    <option value="">Pilih Status Pernikahan</option>
-                                    <option value="Belum Menikah">Belum Menikah</option>
-                                    <option value="Menikah">Menikah</option>
-                                    <option value="Cerai">Cerai</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editAlamatJalan" class="form-label">Alamat</label>
-                                <input type="text" class="form-control form-control-sm" id="editAlamatJalan" name="alamat_jalan">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editRt" class="form-label">RT</label>
-                                <input type="text" class="form-control form-control-sm" id="editRt" name="rt">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="editRw" class="form-label">RW</label>
-                                <input type="text" class="form-control form-control-sm" id="editRw" name="rw">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editKelurahan" class="form-label">Kelurahan</label>
-                                <input type="text" class="form-control form-control-sm" id="editKelurahan" name="kelurahan">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editKecamatan" class="form-label">Kecamatan</label>
-                                <input type="text" class="form-control form-control-sm" id="editKecamatan" name="kecamatan">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="editKabupaten" class="form-label">Kabupaten</label>
-                                <input type="text" class="form-control form-control-sm" id="editKabupaten" name="kabupaten">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editProvinsi" class="form-label">Provinsi</label>
-                                <input type="text" class="form-control form-control-sm" id="editProvinsi" name="provinsi">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editJaminanKesehatan" class="form-label">Jaminan Kesehatan</label>
-                                <input type="text" class="form-control form-control-sm" id="editJaminanKesehatan" name="jaminan_kesehatan">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="editNomorKepesertaan" class="form-label">No. Kepesertaan</label>
-                                <input type="text" class="form-control form-control-sm" id="editNomorKepesertaan" name="nomor_kepesertaan">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editKepalaKeluarga" class="form-label">Kepala Keluarga</label>
-                                <input type="text" class="form-control form-control-sm" id="editKepalaKeluarga" name="kepala_keluarga">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="editNoHp" class="form-label">No. HP</label>
-                                <input type="text" class="form-control form-control-sm" id="editNoHp" name="no_hp">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer d-flex justify-content-end mt-3" style="gap: 10px;">
-                    <button type="button" class="btn btn-danger " data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div> -->
-
 <!-- Modal Filter -->
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel"
     aria-hidden="true">
@@ -437,118 +268,153 @@
             </div>
 
             <!-- Modal Body with Scroll -->
-            <div class="modal-body p-3" style="max-height: 400px; overflow-y: auto;">
-                <form>
-                    <div class="container-fluid">
-                        <!-- Personal Info -->
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="modalNoRekamMedis" class="form-label">No. Rekam Medis</label>
-                                <input type="text" class="form-control form-control-sm" id="modalNoRekamMedis" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalNikPasien" class="form-label">NIK</label>
-                                <input type="text" class="form-control form-control-sm" id="modalNikPasien" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalNamaPasien" class="form-label">Nama Pasien</label>
-                                <input type="text" class="form-control form-control-sm" id="modalNamaPasien" readonly>
-                            </div>
+            <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                <form id="formPasienDetail">
+                    <input type="hidden" id="modalPasienId" name="id" value="">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="modalNoRekamMedis" class="form-label">No. Rekam Medis</label>
+                            <input type="text" class="form-control form-control-sm" id="modalNoRekamMedis" name="no_rekam_medis" readonly>
                         </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="modalTempatLahir" class="form-label">Tempat Lahir</label>
-                                <input type="text" class="form-control form-control-sm" id="modalTempatLahir" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalTanggalLahir" class="form-label">Tanggal Lahir</label>
-                                <input type="text" class="form-control form-control-sm" id="modalTanggalLahir" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalJenisKelamin" class="form-label">Jenis Kelamin</label>
-                                <input type="text" class="form-control form-control-sm" id="modalJenisKelamin" readonly>
-                            </div>
-                        </div>
-                        <!-- Health Info -->
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="modalGolonganDarah" class="form-label">Golongan Darah</label>
-                                <input type="text" class="form-control form-control-sm" id="modalGolonganDarah"
-                                    readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalAgama" class="form-label">Agama</label>
-                                <input type="text" class="form-control form-control-sm" id="modalAgama" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalPekerjaan" class="form-label">Pekerjaan</label>
-                                <input type="text" class="form-control form-control-sm" id="modalPekerjaan" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="modalStatusPernikahan" class="form-label">Status Pernikahan</label>
-                                <input type="text" class="form-control form-control-sm" id="modalStatusPernikahan"
-                                    readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalKepalaKeluarga" class="form-label">Kepala Keluarga</label>
-                                <input type="text" class="form-control form-control-sm" id="modalKepalaKeluarga"
-                                    readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalNoHp" class="form-label">Nomor Telepon</label>
-                                <input type="text" class="form-control form-control-sm" id="modalNoHp" readonly>
-                            </div>
-                        </div>
-                        <!-- Address Info -->
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <label for="modalAlamat" class="form-label">Alamat</label>
-                                <input type="text" class="form-control form-control-sm" id="modalAlamat" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="modalRt" class="form-label">RT</label>
-                                <input type="text" class="form-control form-control-sm" id="modalRt" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalRw" class="form-label">RW</label>
-                                <input type="text" class="form-control form-control-sm" id="modalRw" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalKelurahan" class="form-label">Kelurahan</label>
-                                <input type="text" class="form-control form-control-sm" id="modalKelurahan" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="modalKecamatan" class="form-label">Kecamatan</label>
-                                <input type="text" class="form-control form-control-sm" id="modalKecamatan" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalKabupaten" class="form-label">Kabupaten</label>
-                                <input type="text" class="form-control form-control-sm" id="modalKabupaten" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="modalProvinsi" class="form-label">Provinsi</label>
-                                <input type="text" class="form-control form-control-sm" id="modalProvinsi" readonly>
-                            </div>
-                        </div>
-                        <!-- Insurance Info -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="modalJaminan" class="form-label">Jaminan Kesehatan</label>
-                                <input type="text" class="form-control form-control-sm" id="modalJaminan" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="modalNoKepesertaan" class="form-label">No. Kepesertaan</label>
-                                <input type="text" class="form-control form-control-sm" id="modalNoKepesertaan" readonly>
-                            </div>
+                        <div class="col-6">
+                            <label for="modalNikPasien" class="form-label">NIK</label>
+                            <input type="text" class="form-control form-control-sm" id="modalNikPasien" name="nik" readonly>
                         </div>
                     </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="modalNamaPasien" class="form-label">Nama Pasien</label>
+                            <input type="text" class="form-control form-control-sm" id="modalNamaPasien" name="nama_pasien" readonly>
+                        </div>
+                        <div class="col-6">
+                            <label for="modalKepalaKeluarga" class="form-label">Nama Kepala Keluarga</label>
+                            <input type="text" class="form-control form-control-sm" id="modalKepalaKeluarga" name="kepala_keluarga" readonly>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="modalTempatLahir" class="form-label">Tempat Lahir</label>
+                            <input type="text" class="form-control form-control-sm" id="modalTempatLahir" name="tempat_lahir" readonly>
+                        </div>
+                        <div class="col-6">
+                            <label for="modalNoHp" class="form-label">Nomor Telepon</label>
+                            <input type="text" class="form-control form-control-sm" id="modalNoHp" name="no_hp" readonly>
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="modalTanggalLahir" class="form-label">Tanggal Lahir</label>
+                            <input type="text" class="form-control form-control-sm" id="modalTanggalLahir" readonly>
+                        </div>
+                        <div class="col-6">
+                            <label for="modalJenisKelamin" class="form-label">Jenis Kelamin</label>
+                            <select class="form-control form-control-sm" id="modalJenisKelamin" disable>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="modalGolonganDarah" class="form-label">Golongan Darah</label>
+                            <select class="form-control form-control-sm" id="modalGolonganDarah" disabled>
+                                <option value="">Pilih Golongan Darah</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="AB">AB</option>
+                                <option value="O">O</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label for="modalAgama" class="form-label">Agama</label>
+                            <select class="form-control form-control-sm" id="modalAgama" disabled>
+                                <option value="">Pilih Agama</option>
+                                <option value="Islam">Islam</option>
+                                <option value="Kristen Protestan">Kristen Protestan</option>
+                                <option value="Katolik">Katolik</option>
+                                <option value="Hindu">Hindu</option>
+                                <option value="Buddha">Buddha</option>
+                                <option value="Konghucu">Konghucu</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="modalPekerjaan" class="form-label">Pekerjaan</label>
+                            <input type="text" class="form-control form-control-sm" id="modalPekerjaan" readonly>
+                        </div>
+                        <div class="col-6">
+                            <label for="modalStatusPernikahan" class="form-label">Status Pernikahan</label>
+                            <select class="form-control form-control-sm" id="modalStatusPernikahan" disable>
+                                <option value="Belum Menikah">Belum Menikah</option>
+                                <option value="Menikah">Menikah</option>
+                                <option value="Cerai">Cerai</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalAlamat" class="form-label">Alamat</label>
+                        <input class="form-control form-control-sm" id="modalAlamat" readonly></input>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <label for="modalRt" class="form-label">RT</label>
+                            <input type="text" class="form-control form-control-sm" id="modalRt" readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="modalRw" class="form-label">RW</label>
+                            <input type="text" class="form-control form-control-sm" id="modalRw" readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="modalKelurahan" class="form-label">Kelurahan</label>
+                            <input type="text" class="form-control form-control-sm" id="modalKelurahan" readonly>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <label for="modalKecamatan" class="form-label">Kecamatan</label>
+                            <input type="text" class="form-control form-control-sm" id="modalKecamatan" readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="modalKabupaten" class="form-label">Kabupaten</label>
+                            <input type="text" class="form-control form-control-sm" id="modalKabupaten" readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="modalProvinsi" class="form-label">Provinsi</label>
+                            <input type="text" class="form-control form-control-sm" id="modalProvinsi" readonly>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="modalJaminan" class="form-label">Jaminan Kesehatan</label>
+                            <select class="form-control form-control-sm" id="modalJaminan" disabled>
+                                <option value="Umum">Umum</option>
+                                <option value="BPJS Kesehatan">BPJS Kesehatan</option>
+                                <option value="Perusahaan">Kesehatan Perusahaan</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label for="modalNoKepesertaan" class="form-label">No. Kepesertaan</label>
+                            <input type="text" class="form-control form-control-sm" id="modalNoKepesertaan" readonly>
+                        </div>
+                    </div>
+
                 </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-end mt-3">
+                <button type="button" class="btn btn-warning ms-2" id="btnEdit">Edit</button>
+                <button type="button" class="btn btn-success ms-2" id="btnSimpan" style="display: none;">Simpan</button>
             </div>
         </div>
     </div>
@@ -559,327 +425,720 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
         <div class="modal-content" style="overflow-x: hidden;">
             <div class="modal-header d-flex justify-content-between">
-                <h3 class="modal-title" id="modalRiwayatBerobatLabel"><strong>Riwayat Berobat - <span id="riwayatNamaPasien"></span></strong></h3>
+                <h3 class="modal-title" id="modalRiwayatBerobatLabel"><strong>Riwayat Berobat Pasien</strong></h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                <div id="riwayatList">
+                    <!-- List of dates will be populated here -->
+                </div>
 
-            <!-- Modal Body with Scroll -->
-            <div class="modal-body p-3" style="max-height: 400px; overflow-y: auto;">
-                <h5>Hasil Analisa Rawat Inap</h5>
-                <form id="formHasilAnalisa">
-                    <div class="container-fluid">
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="tekanan_darah" class="form-label">Tekanan Darah</label>
-                                <input type="text" class="form-control form-control-sm" id="tekanan_darah" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="frekuensi_nadi" class="form-label">Frekuensi Nadi</label>
-                                <input type="text" class="form-control form-control-sm" id="frekuensi_nadi" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="suhu" class="form-label">Suhu</label>
-                                <input type="text" class="form-control form-control-sm" id="suhu" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="frekuensi_nafas" class="form-label">Frekuensi Nafas</label>
-                                <input type="text" class="form-control form-control-sm" id="frekuensi_nafas" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="skor_nyeri" class="form-label">Skor Nyeri</label>
-                                <input type="text" class="form-control form-control-sm" id="skor_nyeri" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="skor_jatuh" class="form-label">Skor Jatuh</label>
-                                <input type="text" class="form-control form-control-sm" id="skor_jatuh" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="berat_badan" class="form-label">Berat Badan</label>
-                                <input type="text" class="form-control form-control-sm" id="berat_badan" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="tinggi_badan" class="form-label">Tinggi Badan</label>
-                                <input type="text" class="form-control form-control-sm" id="tinggi_badan" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="lingkar_kepala" class="form-label">Lingkar Kepala</label>
-                                <input type="text" class="form-control form-control-sm" id="lingkar_kepala" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="imt" class="form-label">IMT</label>
-                                <input type="text" class="form-control form-control-sm" id="imt" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="alat_bantu" class="form-label">Alat Bantu</label>
-                                <input type="text" class="form-control form-control-sm" id="alat_bantu" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="prosthesa" class="form-label">Prosthesa</label>
-                                <input type="text" class="form-control form-control-sm" id="prosthesa" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="cacat_tubuh" class="form-label">Cacat Tubuh</label>
-                                <input type="text" class="form-control form-control-sm" id="cacat_tubuh" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="adl_mandiri" class="form-label">ADL Mandiri</label>
-                                <input type="text" class="form-control form-control-sm" id="adl_mandiri" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="riwayat_jatuh" class="form-label">Riwayat Jatuh</label>
-                                <input type="text" class="form-control form-control-sm" id="riwayat_jatuh" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="status_psikologi" class="form-label">Status Psikologi</label>
-                                <input type="text" class="form-control form-control-sm" id="status_psikologi" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="hambatan_edukasi" class="form-label">Hambatan Edukasi</label>
-                                <input type="text" class="form-control form-control-sm" id="hambatan_edukasi" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="alergi" class="form-label">Alergi</label>
-                                <input type="text" class="form-control form-control-sm" id="alergi" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="catatan" class="form-label">Catatan</label>
-                                <input type="text" class="form-control form-control-sm" id="catatan" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="ruangan" class="form-label">Ruangan</label>
-                                <input type="text" class="form-control form-control-sm" id="ruangan" readonly>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                <div id="hasilPeriksaDetail" style="display:none;">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>Tanggal Periksa</th>
+                                <td id="detailTanggal"></td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                <h5 class="mt-4">Hasil Periksa UGD</h5>
-                <form id="formHasilPeriksa">
-                    <div class="container-fluid">
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="tanggal_periksa" class="form-label">Tanggal</label>
-                                <input type="text" class="form-control form-control-sm" id="tanggal_periksa" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="waktu_periksa" class="form-label">Waktu</label>
-                                <input type="text" class="form-control form-control-sm" id="waktu_periksa" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="soap" class="form-label">SOAP</label>
-                                <input type="text" class="form-control form-control-sm" id="soap" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="instruksi_tenagakerja" class="form-label">Instruksi Tenaga Kerja</label>
-                                <input type="text" class="form-control form-control-sm" id="instruksi_tenagakerja" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="penanggung_jawab" class="form-label">Penanggung Jawab</label>
-                                <input type="text" class="form-control form-control-sm" id="penanggung_jawab" readonly>
-                            </div>
-                        </div>
+                    <h5 id="headingHasilPeriksa">Hasil Periksa</h5>
+                    <table class="table table-bordered" id="tableHasilPeriksa">
+                        <tbody>
+                            <tr>
+                                <th>Anamnesis</th>
+                                <td id="detailAnamnesis"></td>
+                            </tr>
+                            <tr>
+                                <th>Pemeriksaan Fisik</th>
+                                <td id="detailPemeriksaanFisik"></td>
+                            </tr>
+                            <tr>
+                                <th>Rencana dan Terapi</th>
+                                <td id="detailRencanaTerapi"></td>
+                            </tr>
+                            <tr>
+                                <th>Diagnosis</th>
+                                <td id="detailDiagnosis"></td>
+                            </tr>
+                            <tr>
+                                <th>Edukasi</th>
+                                <td id="detailEdukasi"></td>
+                            </tr>
+                            <tr>
+                                <th>Kode ICD</th>
+                                <td id="detailKodeICD"></td>
+                            </tr>
+                            <tr>
+                                <th>Kesan Status Gizi</th>
+                                <td id="detailStatusGizi"></td>
+                            </tr>
+                            <tr>
+                                <th>Penanggung Jawab</th>
+                                <td id="detailPenanggungJawab"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5 id="headingHasilAnalisa">Hasil Analisa</h5>
+                    <table class="table table-bordered" id="tableHasilAnalisa">
+                        <tbody>
+                            <tr>
+                                <th>Tekanan Darah (mmHg)</th>
+                                <td id="detailTekananDarah"></td>
+                            </tr>
+                            <tr>
+                                <th>Frekuensi Nadi (/menit)</th>
+                                <td id="detailFrekuensiNadi"></td>
+                            </tr>
+                            <tr>
+                                <th>Suhu (°C)</th>
+                                <td id="detailSuhu"></td>
+                            </tr>
+                            <tr>
+                                <th>Frekuensi Nafas (/menit)</th>
+                                <td id="detailFrekuensiNafas"></td>
+                            </tr>
+                            <tr>
+                                <th>Skor Nyeri</th>
+                                <td id="detailSkorNyeri"></td>
+                            </tr>
+                            <tr>
+                                <th>Skor Jatuh</th>
+                                <td id="detailSkorJatuh"></td>
+                            </tr>
+                            <tr>
+                                <th>Berat Badan</th>
+                                <td id="detailBeratBadan"></td>
+                            </tr>
+                            <tr>
+                                <th>Tinggi Badan</th>
+                                <td id="detailTinggiBadan"></td>
+                            </tr>
+                            <tr>
+                                <th>Lingkar Kepala</th>
+                                <td id="detailLingkarKepala"></td>
+                            </tr>
+                            <tr>
+                                <th>IMT</th>
+                                <td id="detailIMT"></td>
+                            </tr>
+                            <tr>
+                                <th>Alat Bantu</th>
+                                <td id="detailAlatBantu"></td>
+                            </tr>
+                            <tr>
+                                <th>Prosthesa</th>
+                                <td id="detailProsthesa"></td>
+                            </tr>
+                            <tr>
+                                <th>Cacat Tubuh</th>
+                                <td id="detailCacatTubuh"></td>
+                            </tr>
+                            <tr>
+                                <th>ADL Mandiri</th>
+                                <td id="detailADLMandiri"></td>
+                            </tr>
+                            <tr>
+                                <th>Riwayat Jatuh</th>
+                                <td id="detailRiwayatJatuh"></td>
+                            </tr>
+                            <tr>
+                                <th>Status Psikologi</th>
+                                <td id="detailStatusPsikologi"></td>
+                            </tr>
+                            <tr>
+                                <th>Hambatan Edukasi</th>
+                                <td id="detailHambatanEdukasi"></td>
+                            </tr>
+                            <tr>
+                                <th>Alergi</th>
+                                <td id="detailAlergi"></td>
+                            </tr>
+                            <tr>
+                                <th>Catatan</th>
+                                <td id="detailCatatan"></td>
+                            </tr>
+                            <tr>
+                                <th>Poli Tujuan</th>
+                                <td id="detailPoliTujuan"></td>
+                            </tr>
+                            <tr>
+                                <th>Penanggung Jawab</th>
+                                <td id="detailPenanggungJawabAnalisa"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5 id="headingHasilPeriksaAnak">Hasil Periksa Anak</h5>
+                    <table class="table table-bordered" id="hasilPeriksaAnakTable">
+                        <tbody>
+                            <!-- Data hasil periksa anak akan dimasukkan di sini -->
+                        </tbody>
+                    </table>
+
+                    <h5 id="headingHasilPeriksaGigi">Hasil Periksa Gigi</h5>
+                    <table class="table table-bordered" id="tableHasilPeriksaGigi">
+                        <tbody>
+                            <tr>
+                                <th>Odontogram</th>
+                                <td id="detailOdontogramGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Pemeriksaan Subjektif</th>
+                                <td id="detailPemeriksaanSubjektifGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Pemeriksaan Objektif</th>
+                                <td id="detailPemeriksaanObjektifGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Diagnosis Gigi</th>
+                                <td id="detailDiagnosisGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Terapi/Anjuran Gigi</th>
+                                <td id="detailTerapiAnjuranGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Catatan Gigi</th>
+                                <td id="detailCatatanGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Penanggung Jawab Gigi</th>
+                                <td id="detailPenanggungJawabGigi"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-danger btn-sm mt-2" id="btnTutupDetail">Tutup</button>
                     </div>
-                </form>
+                </div>
             </div>
+            <div class="modal-footer d-flex justify-content-end mt-3"></div>
         </div>
     </div>
 </div>
 @endsection
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var modalPasienDetail = document.getElementById('modalPasienDetail');
-        if (!modalPasienDetail) {
-            console.error('modalPasienDetail element not found');
-            return;
-        }
-        modalPasienDetail.addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget;
-            var noRekamMedis = button.getAttribute('data-no_rekam_medis');
-            var nik = button.getAttribute('data-nik');
-            var nama = button.getAttribute('data-nama');
-            var tempatLahir = button.getAttribute('data-tempat_lahir');
-            var tanggalLahir = button.getAttribute('data-tanggal_lahir');
-            var jenisKelamin = button.getAttribute('data-jenis_kelamin');
-            var golDarah = button.getAttribute('data-gol_darah');
-            var agama = button.getAttribute('data-agama');
-            var pekerjaan = button.getAttribute('data-pekerjaan');
-            var statusPernikahan = button.getAttribute('data-status_pernikahan');
-            var alamat = button.getAttribute('data-alamat');
-            var rt = button.getAttribute('data-rt');
-            var rw = button.getAttribute('data-rw');
-            var kelurahan = button.getAttribute('data-kelurahan');
-            var kecamatan = button.getAttribute('data-kecamatan');
-            var kabupaten = button.getAttribute('data-kabupaten');
-            var provinsi = button.getAttribute('data-provinsi');
-            var jaminan = button.getAttribute('data-jaminan');
-            var noKepesertaan = button.getAttribute('data-no_kepesertaan');
-            var kepalaKeluarga = button.getAttribute('data-kepala_keluarga');
-            var noHp = button.getAttribute('data-no_hp');
+    $(document).ready(function() {
+        var originalData; // Menyimpan data awal
 
-            modalPasienDetail.querySelector('#modalNoRekamMedis').value = noRekamMedis || '';
-            modalPasienDetail.querySelector('#modalNikPasien').value = nik || '';
-            modalPasienDetail.querySelector('#modalNamaPasien').value = nama || '';
-            modalPasienDetail.querySelector('#modalTempatLahir').value = tempatLahir || '';
-            modalPasienDetail.querySelector('#modalTanggalLahir').value = tanggalLahir || '';
-            modalPasienDetail.querySelector('#modalJenisKelamin').value = jenisKelamin || '';
-            modalPasienDetail.querySelector('#modalGolonganDarah').value = golDarah || '';
-            modalPasienDetail.querySelector('#modalAgama').value = agama || '';
-            modalPasienDetail.querySelector('#modalPekerjaan').value = pekerjaan || '';
-            modalPasienDetail.querySelector('#modalStatusPernikahan').value = statusPernikahan || '';
-            modalPasienDetail.querySelector('#modalAlamat').value = alamat || '';
-            modalPasienDetail.querySelector('#modalRt').value = rt || '';
-            modalPasienDetail.querySelector('#modalRw').value = rw || '';
-            modalPasienDetail.querySelector('#modalKelurahan').value = kelurahan || '';
-            modalPasienDetail.querySelector('#modalKecamatan').value = kecamatan || '';
-            modalPasienDetail.querySelector('#modalKabupaten').value = kabupaten || '';
-            modalPasienDetail.querySelector('#modalProvinsi').value = provinsi || '';
-            modalPasienDetail.querySelector('#modalJaminan').value = jaminan || '';
-            modalPasienDetail.querySelector('#modalNoKepesertaan').value = noKepesertaan || '';
-            modalPasienDetail.querySelector('#modalKepalaKeluarga').value = kepalaKeluarga || '';
-            modalPasienDetail.querySelector('#modalNoHp').value = noHp || '';
+        // Function to reset modal inputs to originalData
+        function resetModal() {
+            var modal = $('#modalPasienDetail');
+            modal.find('#modalNoRekamMedis').val(originalData.no_rekam_medis);
+            modal.find('#modalNikPasien').val(originalData.nik);
+            modal.find('#modalNamaPasien').val(originalData.nama);
+            modal.find('#modalTempatLahir').val(originalData.tempat_lahir);
+            modal.find('#modalTanggalLahir').val(originalData.tanggal_lahir);
+            modal.find('#modalJenisKelamin').val(originalData.jenis_kelamin).prop('disabled', true);
+            modal.find('#modalGolonganDarah').val(originalData.gol_darah).prop('disabled', true);
+            modal.find('#modalAgama').val(originalData.agama).prop('disabled', true);
+            modal.find('#modalPekerjaan').val(originalData.pekerjaan);
+            modal.find('#modalStatusPernikahan').val(originalData.status_pernikahan).prop('disabled', true);
+            modal.find('#modalAlamat').val(originalData.alamat);
+            modal.find('#modalRt').val(originalData.rt);
+            modal.find('#modalRw').val(originalData.rw);
+            modal.find('#modalKelurahan').val(originalData.kelurahan);
+            modal.find('#modalKecamatan').val(originalData.kecamatan);
+            modal.find('#modalKabupaten').val(originalData.kabupaten);
+            modal.find('#modalProvinsi').val(originalData.provinsi);
+            modal.find('#modalJaminan').val(originalData.jaminan).prop('disabled', true);
+            modal.find('#modalNoKepesertaan').val(originalData.no_kepesertaan);
+            modal.find('#modalKepalaKeluarga').val(originalData.kepala_keluarga);
+            modal.find('#modalNoHp').val(originalData.no_hp);
+
+            // Remove validation error classes and messages
+            modal.find('.is-invalid').removeClass('is-invalid');
+            modal.find('.invalid-feedback').remove();
+
+            // Reset readonly and disabled states to default (readonly and disabled)
+            modal.find('input').prop('readonly', true);
+            modal.find('select').prop('disabled', true);
+
+            // Hide save button, show edit button
+            $('#btnSimpan').hide();
+            $('#btnEdit').show();
+
+            // Reset close button mode
+            $('#btnTutup').data('mode', '');
+        }
+
+        // Ketika modal ditampilkan
+        $('#modalPasienDetail').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Tombol yang memicu modal
+
+            // Reset mode of close button to empty (non-edit)
+            $('#btnTutup').data('mode', '');
+
+            // Ambil data dari atribut data-*
+            var noRekamMedis = button.data('no_rekam_medis');
+            var nik = button.data('nik');
+            var nama = button.data('nama');
+            var tempatLahir = button.data('tempat_lahir');
+            var tanggalLahir = button.data('tanggal_lahir');
+            var jenisKelamin = button.data('jenis_kelamin');
+            var golDarah = button.data('gol_darah');
+            var agama = button.data('agama');
+            var pekerjaan = button.data('pekerjaan');
+            var statusPernikahan = button.data('status_pernikahan');
+            var alamat = button.data('alamat');
+            var rt = button.data('rt');
+            var rw = button.data('rw');
+            var kelurahan = button.data('kelurahan');
+            var kecamatan = button.data('kecamatan');
+            var kabupaten = button.data('kabupaten');
+            var provinsi = button.data('provinsi');
+            var jaminan = button.data('jaminan');
+            var noKepesertaan = button.data('no_kepesertaan');
+            var kepalaKeluarga = button.data('kepala_keluarga');
+            var noHp = button.data('no_hp');
+
+            // Menyimpan data awal
+            originalData = {
+                no_rekam_medis: noRekamMedis,
+                nik: nik,
+                nama: nama,
+                tempat_lahir: tempatLahir,
+                tanggal_lahir: tanggalLahir,
+                jenis_kelamin: jenisKelamin,
+                gol_darah: golDarah,
+                agama: agama,
+                pekerjaan: pekerjaan,
+                status_pernikahan: statusPernikahan,
+                alamat: alamat,
+                rt: rt,
+                rw: rw,
+                kelurahan: kelurahan,
+                kecamatan: kecamatan,
+                kabupaten: kabupaten,
+                provinsi: provinsi,
+                jaminan: jaminan,
+                no_kepesertaan: noKepesertaan,
+                kepala_keluarga: kepalaKeluarga,
+                no_hp: noHp
+            };
+
+            // Menampilkan data di dalam modal
+            var modal = $(this);
+            modal.find('#modalNoRekamMedis').val(noRekamMedis);
+            modal.find('#modalNikPasien').val(nik);
+            modal.find('#modalNamaPasien').val(nama);
+            modal.find('#modalTempatLahir').val(tempatLahir);
+            modal.find('#modalTanggalLahir').val(tanggalLahir);
+            modal.find('#modalJenisKelamin').val(jenisKelamin).prop('disabled',
+                true); // Menonaktifkan dropdown Jenis Kelamin
+            modal.find('#modalGolonganDarah').val(golDarah).prop('disabled', true);
+            modal.find('#modalAgama').val(agama).prop('disabled', true);
+            modal.find('#modalPekerjaan').val(pekerjaan);
+            modal.find('#modalStatusPernikahan').val(statusPernikahan).prop('disabled',
+                true); // Menonaktifkan dropdown Status Pernikahan
+            modal.find('#modalAlamat').val(alamat);
+            modal.find('#modalRt').val(rt);
+            modal.find('#modalRw').val(rw);
+            modal.find('#modalKelurahan').val(kelurahan);
+            modal.find('#modalKecamatan').val(kecamatan);
+            modal.find('#modalKabupaten').val(kabupaten);
+            modal.find('#modalProvinsi').val(provinsi);
+            modal.find('#modalJaminan').val(jaminan).prop('disabled',
+                true); // Menonaktifkan dropdown Jaminan Kesehatan
+            modal.find('#modalNoKepesertaan').val(noKepesertaan);
+            modal.find('#modalKepalaKeluarga').val(kepalaKeluarga);
+            modal.find('#modalNoHp').val(noHp);
+        });
+
+        // Reset modal when it is hidden (closed) to clear edit mode and validation errors
+        $('#modalPasienDetail').on('hidden.bs.modal', function() {
+            resetModal();
+        });
+
+        // Fungsi Edit
+        $('#btnEdit').on('click', function() {
+            // Aktifkan input untuk diedit, kecuali No. Rekam Medis tetap readonly
+            $('#modalNikPasien, #modalNamaPasien, #modalTempatLahir, #modalTanggalLahir, #modalGolonganDarah, #modalAgama, #modalPekerjaan, #modalAlamat, #modalNoKepesertaan, #modalRt, #modalRw, #modalKelurahan, #modalKecamatan, #modalKabupaten, #modalProvinsi, #modalKepalaKeluarga, #modalNoHp')
+                .prop('readonly', false); // Mengaktifkan input text menjadi editable
+            $('#modalJenisKelamin, #modalJaminan, #modalStatusPernikahan, #modalGolonganDarah, #modalAgama')
+                .prop('disabled',
+                    false); // Mengaktifkan dropdown
+
+            // Batasi input NIK hanya angka dan max length 16
+            $('#modalNikPasien').attr('maxlength', 16).on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16);
+            });
+
+            // Batasi input Nomor Telepon hanya angka dan max length 14
+            $('#modalNoHp').attr('maxlength', 14).on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 14);
+            });
+
+            // Batasi input No. Kepesertaan hanya angka dan max length 16
+            $('#modalNoKepesertaan').attr('maxlength', 16).on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16);
+            });
+
+            $(this).hide(); // Sembunyikan tombol Edit
+            $('#btnSimpan').show(); // Tampilkan tombol Simpan
+            $('#btnTutup').data('mode', 'edit'); // Tandai tombol Tutup dalam mode edit
+        });
+
+        // Fungsi Simpan
+        $('#btnSimpan').on('click', function() {
+            // Clear previous errors
+            $('#modalPasienDetail .is-invalid').removeClass('is-invalid');
+            $('#modalPasienDetail .invalid-feedback').remove();
+
+            // Client-side validation for required fields
+            var isValid = true;
+            var requiredFields = [
+                '#modalNikPasien',
+                '#modalNamaPasien',
+                '#modalTempatLahir',
+                '#modalTanggalLahir',
+                '#modalJenisKelamin',
+                '#modalGolonganDarah',
+                '#modalAgama',
+                '#modalPekerjaan',
+                '#modalStatusPernikahan',
+                '#modalAlamat',
+                '#modalRt',
+                '#modalRw',
+                '#modalKelurahan',
+                '#modalKecamatan',
+                '#modalKabupaten',
+                '#modalProvinsi',
+                '#modalJaminan',
+                '#modalNoKepesertaan',
+                '#modalKepalaKeluarga',
+                '#modalNoHp'
+            ];
+
+            requiredFields.forEach(function(selector) {
+                var element = $(selector);
+                var value = element.val();
+                if (!value || value.trim() === '') {
+                    isValid = false;
+                    element.addClass('is-invalid');
+                    if (element.next('.invalid-feedback').length === 0) {
+                        element.after(
+                            '<div class="invalid-feedback">Field ini wajib diisi.</div>');
+                    }
+                }
+            });
+
+            if (!isValid) {
+                return; // Stop submission if validation fails
+            }
+
+            // Ambil tanggal lahir dari input
+            var tanggalLahir = $('#modalTanggalLahir').val();
+
+            // Ubah format tanggal dari DD-MM-YYYY ke YYYY-MM-DD
+            var parts = tanggalLahir.split('-');
+            var formattedTanggalLahir = parts[2] + '-' + parts[1] + '-' + parts[0];
+
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: "Apakah Anda yakin ingin mengubah data pasien ini?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Kirim data yang diubah ke server menggunakan AJAX
+                    $.ajax({
+                        url: `/admin/datapasien/${$('#modalPasienId').val()}`,
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        data: {
+                            nik: $('#modalNikPasien').val(),
+                            nama_pasien: $('#modalNamaPasien').val(),
+                            tempat_lahir: $('#modalTempatLahir').val(),
+                            tanggal_lahir: formattedTanggalLahir,
+                            jenis_kelamin: $('#modalJenisKelamin').val(),
+                            gol_darah: $('#modalGolonganDarah').val(),
+                            agama: $('#modalAgama').val(),
+                            pekerjaan: $('#modalPekerjaan').val(),
+                            status_pernikahan: $('#modalStatusPernikahan').val(),
+                            alamat_jalan: $('#modalAlamat').val(),
+                            rt: $('#modalRt').val(),
+                            rw: $('#modalRw').val(),
+                            kelurahan: $('#modalKelurahan').val(),
+                            kecamatan: $('#modalKecamatan').val(),
+                            kabupaten: $('#modalKabupaten').val(),
+                            provinsi: $('#modalProvinsi').val(),
+                            jaminan_kesehatan: $('#modalJaminan').val(),
+                            nomor_kepesertaan: $('#modalNoKepesertaan').val(),
+                            kepala_keluarga: $('#modalKepalaKeluarga').val(),
+                            no_hp: $('#modalNoHp').val()
+                        },
+                        success: function(response) {
+                            // Tutup modal setelah berhasil simpan
+                            $('#modalPasienDetail').modal('hide');
+
+                            // Atur toastr agar menghilang dengan smooth
+                            toastr.options = {
+                                "hideMethod": "fadeOut",
+                                "hideDuration": 1000, // durasi fade out (1 detik)
+                                "timeOut": 2000 // waktu muncul toastr sebelum mulai menghilang
+                            };
+
+                            // Tampilkan toastr success
+                            toastr.success('Data pasien berhasil diperbarui!',
+                                'Sukses');
+
+                            // Tunggu hingga toastr selesai menghilang, baru reload halaman
+                            setTimeout(function() {
+                                    location.reload();
+                                },
+                                3000
+                            ); // 2000ms untuk timeout toastr + 1000ms untuk hideDuration
+                        },
+                        error: function(xhr) {
+                            if (xhr.status === 422 && xhr.responseJSON && xhr
+                                .responseJSON.errors) {
+                                var errors = xhr.responseJSON.errors;
+                                // Show errors inline
+                                $.each(errors, function(key, messages) {
+                                    var inputField = $('#modal' + key
+                                        .charAt(0).toUpperCase() + key
+                                        .slice(1));
+                                    inputField.addClass('is-invalid');
+                                    if (inputField.next('.invalid-feedback')
+                                        .length === 0) {
+                                        inputField.after(
+                                            '<div class="invalid-feedback">' +
+                                            messages[0] + '</div>');
+                                    }
+                                });
+                            } else {
+                                // Tampilkan toastr error dengan efek smooth juga
+                                toastr.options = {
+                                    "hideMethod": "fadeOut",
+                                    "hideDuration": 1000,
+                                    "timeOut": 2000
+                                };
+
+                                toastr.error(
+                                    'Terjadi kesalahan saat memperbarui data!',
+                                    'Error');
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        // Fungsi Tutup Modal
+        $('#btnTutup').on('click', function() {
+            var mode = $(this).data('mode'); // Cek mode dari tombol Tutup
+
+            if (mode === 'edit') {
+                // Jika dalam mode edit, tampilkan konfirmasi
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin membatalkan perubahan?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, batal',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Kembali ke kondisi awal
+                        resetModal(); // Reset modal ke kondisi awal
+                        $('#modalPasienDetail').modal('hide'); // Tutup modal
+                    }
+                });
+            } else {
+                // Jika tidak dalam mode edit, tutup modal tanpa konfirmasi
+                resetModal(); // Reset modal ke kondisi awal
+                $('#modalPasienDetail').modal('hide');
+            }
         });
     });
 </script>
 <script>
+    // Handle Riwayat Berobat button click in antrian view (copy dari antrian.blade.php)
     document.addEventListener('DOMContentLoaded', function() {
-        var modalRiwayatBerobat = document.getElementById('modalRiwayatBerobat');
-        if (!modalRiwayatBerobat) {
-            console.error('modalRiwayatBerobat element not found');
-            return;
-        }
-        modalRiwayatBerobat.addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget;
-            var noRekamMedis = button.getAttribute('data-no_rekam_medis');
-            var namaPasien = button.getAttribute('data-nama');
+        // Event delegation untuk .btn-riwayat
+        document.body.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-riwayat')) {
+                const button = e.target;
+                const noRekamMedis = button.getAttribute('data-rekam-medis');
+                const namaPasien = button.getAttribute('data-nama');
+                const modal = new bootstrap.Modal(document.getElementById('modalRiwayatBerobat'));
+                const riwayatList = document.getElementById('riwayatList');
+                const hasilPeriksaDetail = document.getElementById('hasilPeriksaDetail');
 
-            // Set the modal title with patient name
-            document.getElementById('riwayatNamaPasien').textContent = namaPasien || '';
+                // Clear previous content
+                riwayatList.innerHTML = '';
+                hasilPeriksaDetail.style.display = 'none';
+                riwayatList.style.display = 'block';
 
-            // Clear previous form data
-            var formHasilAnalisa = document.getElementById('formHasilAnalisa');
-            var formHasilPeriksa = document.getElementById('formHasilPeriksa');
-            formHasilAnalisa.reset();
-            formHasilPeriksa.reset();
-
-            // Fetch riwayat berobat data via AJAX
-            fetch('/admin/datapasien/riwayat-berobat/' + noRekamMedis)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        var hasilAnalisa = data.data.hasil_analisa;
-                        var hasilPeriksa = data.data.hasil_periksa;
-
-                        // Populate Hasil Analisa Rawat Inap form with latest record
-                        if (hasilAnalisa.length > 0) {
-                            var latestAnalisa = hasilAnalisa[0];
-                            formHasilAnalisa.querySelector('#tekanan_darah').value = latestAnalisa.tekanan_darah || '';
-                            formHasilAnalisa.querySelector('#frekuensi_nadi').value = latestAnalisa.frekuensi_nadi || '';
-                            formHasilAnalisa.querySelector('#suhu').value = latestAnalisa.suhu || '';
-                            formHasilAnalisa.querySelector('#frekuensi_nafas').value = latestAnalisa.frekuensi_nafas || '';
-                            formHasilAnalisa.querySelector('#skor_nyeri').value = latestAnalisa.skor_nyeri || '';
-                            formHasilAnalisa.querySelector('#skor_jatuh').value = latestAnalisa.skor_jatuh || '';
-                            formHasilAnalisa.querySelector('#berat_badan').value = latestAnalisa.berat_badan || '';
-                            formHasilAnalisa.querySelector('#tinggi_badan').value = latestAnalisa.tinggi_badan || '';
-                            formHasilAnalisa.querySelector('#lingkar_kepala').value = latestAnalisa.lingkar_kepala || '';
-                            formHasilAnalisa.querySelector('#imt').value = latestAnalisa.imt || '';
-                            formHasilAnalisa.querySelector('#alat_bantu').value = latestAnalisa.alat_bantu || '';
-                            formHasilAnalisa.querySelector('#prosthesa').value = latestAnalisa.prosthesa || '';
-                            formHasilAnalisa.querySelector('#cacat_tubuh').value = latestAnalisa.cacat_tubuh || '';
-                            formHasilAnalisa.querySelector('#adl_mandiri').value = latestAnalisa.adl_mandiri || '';
-                            formHasilAnalisa.querySelector('#riwayat_jatuh').value = latestAnalisa.riwayat_jatuh || '';
-                            // Parse JSON fields if they are strings
-                            var statusPsikologi = latestAnalisa.status_psikologi;
-                            if (typeof statusPsikologi === 'string') {
-                                try {
-                                    statusPsikologi = JSON.parse(statusPsikologi);
-                                } catch (e) {
-                                    statusPsikologi = [];
-                                }
-                            }
-                            formHasilAnalisa.querySelector('#status_psikologi').value = Array.isArray(statusPsikologi) ? statusPsikologi.join(', ') : '';
-
-                            var hambatanEdukasi = latestAnalisa.hambatan_edukasi;
-                            if (typeof hambatanEdukasi === 'string') {
-                                try {
-                                    hambatanEdukasi = JSON.parse(hambatanEdukasi);
-                                } catch (e) {
-                                    hambatanEdukasi = [];
-                                }
-                            }
-                            formHasilAnalisa.querySelector('#hambatan_edukasi').value = Array.isArray(hambatanEdukasi) ? hambatanEdukasi.join(', ') : '';
-                            formHasilAnalisa.querySelector('#alergi').value = latestAnalisa.alergi || '';
-                            formHasilAnalisa.querySelector('#catatan').value = latestAnalisa.catatan || '';
-                            formHasilAnalisa.querySelector('#ruangan').value = latestAnalisa.ruangan || '';
+                // Fetch riwayat berobat dates by pasien no_rekam_medis
+                fetch(`/admin/riwayat-berobat/${noRekamMedis}/dates`)
+                    .then(response => response.json())
+                    .then(result => {
+                        if (!result.success) {
+                            riwayatList.innerHTML = `<p>Error: ${result.message}</p>`;
+                            return;
+                        }
+                        const dates = result.data;
+                        if (dates.length === 0) {
+                            riwayatList.innerHTML = '<p>Tidak ada riwayat berobat.</p>';
                         } else {
-                            // Clear form fields if no data
-                            formHasilAnalisa.querySelector('#tekanan_darah').value = '';
-                            formHasilAnalisa.querySelector('#frekuensi_nadi').value = '';
-                            formHasilAnalisa.querySelector('#suhu').value = '';
-                            formHasilAnalisa.querySelector('#frekuensi_nafas').value = '';
-                            formHasilAnalisa.querySelector('#skor_nyeri').value = '';
-                            formHasilAnalisa.querySelector('#skor_jatuh').value = '';
-                            formHasilAnalisa.querySelector('#berat_badan').value = '';
-                            formHasilAnalisa.querySelector('#tinggi_badan').value = '';
-                            formHasilAnalisa.querySelector('#lingkar_kepala').value = '';
-                            formHasilAnalisa.querySelector('#imt').value = '';
-                            formHasilAnalisa.querySelector('#alat_bantu').value = '';
-                            formHasilAnalisa.querySelector('#prosthesa').value = '';
-                            formHasilAnalisa.querySelector('#cacat_tubuh').value = '';
-                            formHasilAnalisa.querySelector('#adl_mandiri').value = '';
-                            formHasilAnalisa.querySelector('#riwayat_jatuh').value = '';
-                            formHasilAnalisa.querySelector('#status_psikologi').value = '';
-                            formHasilAnalisa.querySelector('#hambatan_edukasi').value = '';
-                            formHasilAnalisa.querySelector('#alergi').value = '';
-                            formHasilAnalisa.querySelector('#catatan').value = '';
-                            formHasilAnalisa.querySelector('#ruangan').value = '';
+                            dates.forEach((tanggal, index) => {
+                                const dateObj = new Date(tanggal);
+                                const options = {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit'
+                                };
+                                const dateStr = dateObj.toLocaleDateString('id-ID', options);
+                                const div = document.createElement('div');
+                                div.classList.add('d-flex', 'justify-content-between', 'align-items-center');
+                                if (index < dates.length - 1) {
+                                    div.style.borderBottom = '1px solid #dee2e6';
+                                    div.style.paddingBottom = '0.5rem';
+                                    div.style.marginBottom = '0.5rem';
+                                }
+                                div.innerHTML = `
+                                <span>${dateStr}</span>
+                                <button class="btn btn-primary btn-sm btnLihat" data-tanggal="${tanggal}" data-norm="${noRekamMedis}">Lihat</button>
+                            `;
+                                riwayatList.appendChild(div);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        riwayatList.innerHTML = `<p>Error: ${error.message}</p>`;
+                    });
+
+                modal.show();
+            }
+        });
+
+        // Event delegation untuk btnLihat di #riwayatList
+        document.getElementById('riwayatList').addEventListener('click', function(ev) {
+            if (ev.target.classList.contains('btnLihat')) {
+                const tanggal = ev.target.getAttribute('data-tanggal');
+                const noRekamMedis = ev.target.getAttribute('data-norm');
+                const hasilPeriksaDetail = document.getElementById('hasilPeriksaDetail');
+                const riwayatList = document.getElementById('riwayatList');
+                fetch(`/admin/riwayat-berobat/${noRekamMedis}/${tanggal}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Data hasil periksa tidak ditemukan');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        hasilPeriksaDetail.style.display = 'block';
+                        riwayatList.style.display = 'none';
+                        const d = data.data || {};
+                        const dateObj = new Date(d.tanggal_periksa);
+                        const options = {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        };
+                        document.getElementById('detailTanggal').textContent = dateObj.toLocaleDateString('id-ID', options);
+
+                        // Cek apakah ada data pada hasil periksa
+                        const hasHasilPeriksa = d.anamnesis || d.pemeriksaan_fisik || d.rencana_dan_terapi || d.diagnosis || d.edukasi || d.kode_icd || d.status_gizi;
+                        document.getElementById('headingHasilPeriksa').style.display = hasHasilPeriksa ? 'block' : 'none';
+                        document.getElementById('tableHasilPeriksa').style.display = hasHasilPeriksa ? 'table' : 'none';
+                        if (hasHasilPeriksa) {
+                            document.getElementById('detailAnamnesis').textContent = d.anamnesis || '-';
+                            document.getElementById('detailPemeriksaanFisik').textContent = d.pemeriksaan_fisik || '-';
+                            document.getElementById('detailRencanaTerapi').textContent = d.rencana_dan_terapi || '-';
+                            document.getElementById('detailDiagnosis').textContent = d.diagnosis || '-';
+                            document.getElementById('detailEdukasi').textContent = d.edukasi || '-';
+                            document.getElementById('detailKodeICD').textContent = d.kode_icd || '-';
+                            document.getElementById('detailStatusGizi').textContent = d.status_gizi || '-';
+                            if (document.getElementById('detailPenanggungJawab')) {
+                                document.getElementById('detailPenanggungJawab').textContent = d.penanggung_jawab_periksa || '-';
+                            }
                         }
 
-                        // Populate Hasil Periksa UGD form with latest record
-                        if (hasilPeriksa.length > 0) {
-                            var latestPeriksa = hasilPeriksa[0];
-                            formHasilPeriksa.querySelector('#tanggal_periksa').value = latestPeriksa.tanggal || '';
-                            formHasilPeriksa.querySelector('#waktu_periksa').value = latestPeriksa.waktu || '';
-                            formHasilPeriksa.querySelector('#soap').value = latestPeriksa.soap || '';
-                            formHasilPeriksa.querySelector('#instruksi_tenagakerja').value = latestPeriksa.intruksi_tenagakerja || '';
-                            formHasilPeriksa.querySelector('#penanggung_jawab').value = latestPeriksa.penanggung_jawab || '';
-                        } else {
-                            // Clear form fields if no data
-                            formHasilPeriksa.querySelector('#tanggal_periksa').value = '';
-                            formHasilPeriksa.querySelector('#waktu_periksa').value = '';
-                            formHasilPeriksa.querySelector('#soap').value = '';
-                            formHasilPeriksa.querySelector('#instruksi_tenagakerja').value = '';
-                            formHasilPeriksa.querySelector('#penanggung_jawab').value = '';
+                        // Cek hasil analisa
+                        const hasHasilAnalisa = d.tekanan_darah || d.frekuensi_nadi || d.suhu || d.frekuensi_nafas || d.skor_nyeri || d.skor_jatuh || d.berat_badan || d.tinggi_badan || d.lingkar_kepala || d.imt || d.alat_bantu || d.prosthesa || d.cacat_tubuh || d.adl_mandiri || d.riwayat_jatuh || d.status_psikologi || d.hambatan_edukasi || d.alergi || d.catatan || d.poli_tujuan || d.penanggung_jawab_nama;
+                        document.getElementById('headingHasilAnalisa').style.display = hasHasilAnalisa ? 'block' : 'none';
+                        document.getElementById('tableHasilAnalisa').style.display = hasHasilAnalisa ? 'table' : 'none';
+                        if (hasHasilAnalisa) {
+                            document.getElementById('detailTekananDarah').textContent = d.tekanan_darah || '-';
+                            document.getElementById('detailFrekuensiNadi').textContent = d.frekuensi_nadi || '-';
+                            document.getElementById('detailSuhu').textContent = d.suhu || '-';
+                            document.getElementById('detailFrekuensiNafas').textContent = d.frekuensi_nafas || '-';
+                            document.getElementById('detailSkorNyeri').textContent = d.skor_nyeri || '-';
+                            document.getElementById('detailSkorJatuh').textContent = d.skor_jatuh || '-';
+                            document.getElementById('detailBeratBadan').textContent = d.berat_badan || '-';
+                            document.getElementById('detailTinggiBadan').textContent = d.tinggi_badan || '-';
+                            document.getElementById('detailLingkarKepala').textContent = d.lingkar_kepala || '-';
+                            document.getElementById('detailIMT').textContent = d.imt || '-';
+                            document.getElementById('detailAlatBantu').textContent = d.alat_bantu || '-';
+                            document.getElementById('detailProsthesa').textContent = d.prosthesa || '-';
+                            document.getElementById('detailCacatTubuh').textContent = d.cacat_tubuh || '-';
+                            document.getElementById('detailADLMandiri').textContent = d.adl_mandiri || '-';
+                            document.getElementById('detailRiwayatJatuh').textContent = d.riwayat_jatuh || '-';
+                            document.getElementById('detailStatusPsikologi').textContent = d.status_psikologi || '-';
+                            document.getElementById('detailHambatanEdukasi').textContent = d.hambatan_edukasi || '-';
+                            document.getElementById('detailAlergi').textContent = d.alergi || '-';
+                            document.getElementById('detailCatatan').textContent = d.catatan || '-';
+                            document.getElementById('detailPoliTujuan').textContent = d.poli_tujuan || '-';
+                            document.getElementById('detailPenanggungJawabAnalisa').textContent = d.penanggung_jawab_analisa || '-';
                         }
-                    } else {
-                        console.error('Data riwayat berobat tidak ditemukan');
-                        // Clear all form fields
-                        formHasilAnalisa.reset();
-                        formHasilPeriksa.reset();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching riwayat berobat data:', error);
-                    // Clear all form fields
-                    formHasilAnalisa.reset();
-                    formHasilPeriksa.reset();
-                });
+
+                        // Cek hasil periksa anak
+                        const hasHasilPeriksaAnak = d.berat_badan_anak || d.makanan_anak || d.gejala_anak || d.nasehat_anak || d.pegobatan_anak;
+                        document.getElementById('headingHasilPeriksaAnak').style.display = hasHasilPeriksaAnak ? 'block' : 'none';
+                        document.getElementById('hasilPeriksaAnakTable').style.display = hasHasilPeriksaAnak ? 'table' : 'none';
+                        if (hasHasilPeriksaAnak) {
+                            const tbodyAnak = document.querySelector('#hasilPeriksaAnakTable tbody');
+                            tbodyAnak.innerHTML = `
+                            <tr><th>Berat Badan Anak</th><td>${d.berat_badan_anak || '-'}</td></tr>
+                            <tr><th>Makanan Anak</th><td>${d.makanan_anak || '-'}</td></tr>
+                            <tr><th>Gejala Anak</th><td>${d.gejala_anak || '-'}</td></tr>
+                            <tr><th>Nasehat Anak</th><td>${d.nasehat_anak || '-'}</td></tr>
+                            <tr><th>Pengobatan Anak</th><td>${d.pegobatan_anak || '-'}</td></tr>
+                            <tr><th>Penanggung Jawab Anak</th><td>${d.penanggung_jawab_anak || '-'}</td></tr>
+                        `;
+                        } else {
+                            document.querySelector('#hasilPeriksaAnakTable tbody').innerHTML = '';
+                        }
+
+                        // Cek hasil periksa gigi
+                        const hasHasilPeriksaGigi = d.odontogram || d.pemeriksaan_subjektif || d.pemeriksaan_objektif || d.diagnosa_gigi || d.terapi_anjuran_gigi || d.catatan_gigi;
+                        document.getElementById('headingHasilPeriksaGigi').style.display = hasHasilPeriksaGigi ? 'block' : 'none';
+                        document.getElementById('tableHasilPeriksaGigi').style.display = hasHasilPeriksaGigi ? 'table' : 'none';
+                        if (hasHasilPeriksaGigi) {
+                            document.getElementById('detailOdontogramGigi').textContent = d.odontogram || '-';
+                            document.getElementById('detailPemeriksaanSubjektifGigi').textContent = d.pemeriksaan_subjektif || '-';
+                            document.getElementById('detailPemeriksaanObjektifGigi').textContent = d.pemeriksaan_objektif || '-';
+                            document.getElementById('detailDiagnosisGigi').textContent = d.diagnosa_gigi || '-';
+                            document.getElementById('detailTerapiAnjuranGigi').textContent = d.terapi_anjuran_gigi || '-';
+                            document.getElementById('detailCatatanGigi').textContent = d.catatan_gigi || '-';
+                            document.getElementById('detailPenanggungJawabGigi').textContent = d.penanggung_jawab_gigi || '-';
+                        }
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+            }
+        });
+
+        // Event listener tombol Tutup di detail view
+        document.getElementById('btnTutupDetail').addEventListener('click', function() {
+            document.getElementById('hasilPeriksaDetail').style.display = 'none';
+            document.getElementById('riwayatList').style.display = 'block';
         });
     });
 </script>
@@ -939,6 +1198,157 @@
             modalEditPasien.querySelector('#editNomorKepesertaan').value = nomorKepesertaan || '';
             modalEditPasien.querySelector('#editKepalaKeluarga').value = kepalaKeluarga || '';
             modalEditPasien.querySelector('#editNoHp').value = noHp || '';
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var modalPasienDetail = document.getElementById('modalPasienDetail');
+        if (!modalPasienDetail) {
+            console.error('modalPasienDetail element not found');
+            return;
+        }
+        modalPasienDetail.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var noRekamMedis = button.getAttribute('data-no_rekam_medis');
+            var nik = button.getAttribute('data-nik');
+            var nama = button.getAttribute('data-nama');
+            var tempatLahir = button.getAttribute('data-tempat_lahir');
+            var tanggalLahir = button.getAttribute('data-tanggal_lahir');
+            var jenisKelamin = button.getAttribute('data-jenis_kelamin');
+            var golDarah = button.getAttribute('data-gol_darah');
+            var agama = button.getAttribute('data-agama');
+            var pekerjaan = button.getAttribute('data-pekerjaan');
+            var statusPernikahan = button.getAttribute('data-status_pernikahan');
+            var alamat = button.getAttribute('data-alamat');
+            var rt = button.getAttribute('data-rt');
+            var rw = button.getAttribute('data-rw');
+            var kelurahan = button.getAttribute('data-kelurahan');
+            var kecamatan = button.getAttribute('data-kecamatan');
+            var kabupaten = button.getAttribute('data-kabupaten');
+            var provinsi = button.getAttribute('data-provinsi');
+            var jaminan = button.getAttribute('data-jaminan');
+            var noKepesertaan = button.getAttribute('data-no_kepesertaan');
+            var kepalaKeluarga = button.getAttribute('data-kepala_keluarga');
+            var noHp = button.getAttribute('data-no_hp');
+
+            modalPasienDetail.querySelector('#modalPasienId').value = id || '';
+            modalPasienDetail.querySelector('#modalNoRekamMedis').value = noRekamMedis || '';
+            modalPasienDetail.querySelector('#modalNikPasien').value = nik || '';
+            modalPasienDetail.querySelector('#modalNamaPasien').value = nama || '';
+            modalPasienDetail.querySelector('#modalTempatLahir').value = tempatLahir || '';
+            modalPasienDetail.querySelector('#modalTanggalLahir').value = tanggalLahir || '';
+            modalPasienDetail.querySelector('#modalJenisKelamin').value = jenisKelamin || '';
+            modalPasienDetail.querySelector('#modalGolonganDarah').value = golDarah || '';
+            modalPasienDetail.querySelector('#modalAgama').value = agama || '';
+            modalPasienDetail.querySelector('#modalPekerjaan').value = pekerjaan || '';
+            modalPasienDetail.querySelector('#modalStatusPernikahan').value = statusPernikahan || '';
+            modalPasienDetail.querySelector('#modalAlamat').value = alamat || '';
+            modalPasienDetail.querySelector('#modalRt').value = rt || '';
+            modalPasienDetail.querySelector('#modalRw').value = rw || '';
+            modalPasienDetail.querySelector('#modalKelurahan').value = kelurahan || '';
+            modalPasienDetail.querySelector('#modalKecamatan').value = kecamatan || '';
+            modalPasienDetail.querySelector('#modalKabupaten').value = kabupaten || '';
+            modalPasienDetail.querySelector('#modalProvinsi').value = provinsi || '';
+            modalPasienDetail.querySelector('#modalJaminan').value = jaminan || '';
+            modalPasienDetail.querySelector('#modalNoKepesertaan').value = noKepesertaan || '';
+            modalPasienDetail.querySelector('#modalKepalaKeluarga').value = kepalaKeluarga || '';
+            modalPasienDetail.querySelector('#modalNoHp').value = noHp || '';
+        });
+
+        // Reset modal inputs to readonly and hide save button
+        function resetModal() {
+            var modal = document.getElementById('modalPasienDetail');
+            var inputs = modal.querySelectorAll('input');
+            inputs.forEach(function(input) {
+                input.readOnly = true;
+            });
+            document.getElementById('btnSimpan').style.display = 'none';
+            document.getElementById('btnEdit').style.display = 'inline-block';
+        }
+
+        // Edit button click handler
+        document.getElementById('btnEdit').addEventListener('click', function() {
+            var modal = document.getElementById('modalPasienDetail');
+            var inputs = modal.querySelectorAll('input, select');
+            inputs.forEach(function(input) {
+                if (input.id !== 'modalNoRekamMedis') { // Keep No Rekam Medis readonly
+                    input.readOnly = false;
+                    input.disabled = false;
+                }
+            });
+            // Also enable all selects explicitly (some browsers may not respect disabled=false on select)
+            var selects = modal.querySelectorAll('select');
+            selects.forEach(function(select) {
+                select.disabled = false;
+            });
+            this.style.display = 'none';
+            document.getElementById('btnSimpan').style.display = 'inline-block';
+        });
+
+        // Save button click handler
+        document.getElementById('btnSimpan').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: "Apakah Anda yakin ingin mengubah data pasien ini?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var modal = document.getElementById('modalPasienDetail');
+                    var form = modal.querySelector('#formPasienDetail');
+                    var formData = new FormData(form);
+                    var pasienId = modal.querySelector('#modalPasienId').value;
+                    console.log('DEBUG pasienId:', pasienId);
+
+                    // Debug: log formData keys and values
+                    for (var pair of formData.entries()) {
+                        console.log(pair[0] + ': ' + pair[1]);
+                    }
+
+                    // Send AJAX request to update patient data
+                    fetch('/admin/datapasien/' + pasienId, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData
+                        })
+                        .then(async response => {
+                            const data = await response.json();
+                            if (!response.ok) {
+                                let errorMessage = 'Terjadi kesalahan';
+                                if (data.errors) {
+                                    errorMessage = Object.values(data.errors).flat().join('\\n');
+                                } else if (data.message) {
+                                    errorMessage = data.message;
+                                }
+                                throw new Error(errorMessage);
+                            }
+                            return data;
+                        })
+                        .then(data => {
+                            alert('Data pasien berhasil diperbarui');
+                            resetModal();
+                            var modalInstance = bootstrap.Modal.getInstance(modal);
+                            modalInstance.hide();
+                            location.reload();
+                        })
+                        .catch(error => {
+                            alert('Terjadi kesalahan: ' + error.message);
+                        });
+                }
+            });
+        });
+
+        // Reset modal when hidden
+        var modalElement = document.getElementById('modalPasienDetail');
+        modalElement.addEventListener('hidden.bs.modal', function() {
+            resetModal();
         });
     });
 </script>

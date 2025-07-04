@@ -98,10 +98,9 @@
             <input type="password" class="form-control" id="password{{ $user->id }}" name="password">
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary">Simpan</button>
-        </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Simpan</button>
+          </div>
       </div>
     </form>
   </div>
@@ -112,9 +111,9 @@
     <form id="addUserForm" action="{{ url('/admin/users/create') }}" method="POST">
       @csrf
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addUserModalLabel">Tambah Data User</h5>
-          <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header d-flex align-items-center justify-content-between">
+          <h3 class="modal-title" id="addUserModalLabel"><strong>Data User</strong></h3>
+          <button type="button" class="btn btn-close mb-2" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
@@ -144,8 +143,7 @@
             <input type="password" class="form-control" id="password" name="password" required>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <div class="modal-footer d-flex justify-content-end">
           <button type="submit" class="btn btn-primary">Simpan</button>
         </div>
       </div>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Log;
+use Illuminate\Support\Facades\Log;
 use App\Models\Pasien;
 use App\Models\Antrian;
 
@@ -198,6 +198,10 @@ class PasienController extends Controller
 
         $pasien = Pasien::findOrFail($id);
         $pasien->update($validatedData);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Data pasien berhasil diperbarui']);
+        }
 
         return redirect()->route('admin.rawatjalan')->with('success', 'Data pasien berhasil diperbarui.');
     }
