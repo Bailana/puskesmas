@@ -62,7 +62,7 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-item {{ Request::is('bidan/jadwaldokter') ? 'active' : '' }}">
+                    <li class="sidebar-item {{ Request::is('bidan/jadwal') ? 'active' : '' }}">
                         <a class="sidebar-link" href="{{ route('bidan.jadwaldokter') }}">
                             <i class="align-middle" data-feather="clipboard"></i>
                             <span class="align-middle">Jadwal Dokter</span>
@@ -179,7 +179,9 @@
                                 </a>
                                 <form method="POST" action="{{ route('logout') }}" id="logout-form">
                                     @csrf
-                                    <button type="button" class="dropdown-item" onclick="logoutConfirmation()">Log out</button>
+                                    <button type="button" class="dropdown-item" onclick="logoutConfirmation()">
+                                        <i class="align-middle me-1" data-feather="log-out"></i> Log out
+                                    </button>
                                 </form>
                             </div>
                         </li>
@@ -234,6 +236,40 @@
                 });
             });
         });
+    </script>
+
+    <script>
+        feather.replace();
+
+        function updateTime() {
+            const timeElement = document.getElementById('live-time');
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+
+            timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        function logoutConfirmation() {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Anda akan keluar dari sistem!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, keluar!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            })
+        }
     </script>
 
     <script>
@@ -334,27 +370,6 @@
                 }
             });
         });
-    </script>
-
-    <script>
-        function updateTime() {
-            const timeElement = document.getElementById('live-time');
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-
-            timeElement.textContent = $ {
-                hours
-            }: $ {
-                minutes
-            }: $ {
-                seconds
-            };
-        }
-
-        setInterval(updateTime, 1000); // Perbarui setiap detik
-        updateTime(); // Panggil sekali saat halaman dimuat
     </script>
 
     <script>

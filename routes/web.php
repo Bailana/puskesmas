@@ -188,10 +188,8 @@ Route::middleware(['auth', 'role:bidan'])->group(function () {
 
     Route::post('/bidan/hasilperiksa-anak/store', [\App\Http\Controllers\BidanProfileController::class, 'storeHasilPeriksaAnak'])->name('bidan.hasilperiksa.anak.store');
 
-    Route::get('/bidan/jadwaldokter', function () {
-        $jadwalDokters = \App\Models\JadwalDokter::all();
-        return view('bidan.jadwaldokter', compact('jadwalDokters'));
-    })->name('bidan.jadwaldokter');
+    Route::get('/bidan/jadwal', [BidanProfileController::class, 'jadwal'])->name('bidan.jadwaldokter');
+
 
     Route::get('/jadwal', function () {
         $jadwalDokters = JadwalDokter::all();
@@ -239,6 +237,8 @@ Route::middleware(['auth', 'role:rawatinap'])->group(function () {
     Route::get('/pasienRawatinap/export-pdf', [RawatinapUgdController::class, 'exportPdf'])->name('rawatinap.pasien.exportPdf');
 
     Route::get('/pasienRawatinap/export-excel', [RawatinapUgdController::class, 'exportExcel'])->name('rawatinap.pasien.exportExcel');
+
+    Route::get('/rawatinap/jadwal', [RawatinapUgdController::class, 'jadwal'])->name('rawatinap.jadwaldokter');
 
     Route::post('/pasienRawatinap/tambah', [RawatinapUgdController::class, 'store'])->name('rawatinap.pasien.tambah');
 
@@ -399,6 +399,10 @@ Route::middleware(['auth', 'role:resepsionis'])->group(function () {
     Route::post('/antrian/store', [\App\Http\Controllers\AntrianController::class, 'store'])->name('antrian.store');
 
     Route::middleware(['auth', 'role:rawatinap'])->group(function () {
+        Route::get('/cari-pasien/{nomorKepesertaan}', [\App\Http\Controllers\AntrianController::class, 'searchPasien']);
+    });
+
+    Route::middleware(['auth', 'role:resepsionis'])->group(function () {
         Route::get('/cari-pasien/{nomorKepesertaan}', [\App\Http\Controllers\AntrianController::class, 'searchPasien']);
     });
 

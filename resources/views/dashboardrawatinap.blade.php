@@ -62,6 +62,13 @@
                             <span class="align-middle">Rawat Inap</span>
                         </a>
                     </li>
+
+                    <li class="sidebar-item {{ Request::is('rawatinap/jadwal') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('rawatinap.jadwaldokter') }}">
+                            <i class="align-middle" data-feather="clipboard"></i>
+                            <span class="align-middle">Jadwal Dokter</span>
+                        </a>
+                    </li>
                 </ul>
 
             </div>
