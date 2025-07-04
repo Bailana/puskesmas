@@ -22,10 +22,10 @@ use App\Models\User;
 use App\Models\JadwalDokter;
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-Route::get('/admin/ugd', function () {
-    $pasiens_ugd = \App\Models\PasiensUgd::with('pasien')->whereIn('status', ['UGD', 'Perlu Analisa'])->get();
-    return view('admin.ugd', compact('pasiens_ugd'));
-})->name('admin.ugd');
+    Route::get('/admin/ugd', function () {
+        $pasiens_ugd = \App\Models\PasiensUgd::with('pasien')->whereIn('status', ['UGD', 'Perlu Analisa'])->get();
+        return view('admin.ugd', compact('pasiens_ugd'));
+    })->name('admin.ugd');
 
     Route::get('/admin/profile', function () {
         return view('admin.profile');
@@ -37,11 +37,11 @@ Route::get('/admin/ugd', function () {
 
     // Route::get('/admin/rawatinap', [\App\Http\Controllers\RawatinapUgdController::class, 'adminRawatinap'])->name('admin.rawatinap');
 
-Route::get('/admin/datapasien', function () {
-    $pasiens = \App\Models\Pasien::paginate(10);
+    Route::get('/admin/datapasien', function () {
+        $pasiens = \App\Models\Pasien::paginate(10);
 
-    return view('admin.datapasien', compact('pasiens'));
-})->name('admin.datapasien');
+        return view('admin.datapasien', compact('pasiens'));
+    })->name('admin.datapasien');
 
     Route::post('/admin/datapasien/{id}', [\App\Http\Controllers\PasienController::class, 'update'])->name('admin.datapasien.update');
 
@@ -125,6 +125,7 @@ Route::middleware(['auth', 'role:apoteker'])->group(function () {
 
     // Add route for apoteker getTagihanApoteker
     Route::get('/apoteker/tagihan/{pasienId}', [ApotekerDashboardController::class, 'getTagihanApoteker'])->name('apoteker.tagihan');
+    Route::get('/apoteker/jadwal', [ApotekerDashboardController::class, 'jadwal'])->name('apoteker.jadwaldokter');
 });
 
 Route::middleware(['auth', 'role:dokter'])->group(function () {
@@ -136,6 +137,7 @@ Route::middleware(['auth', 'role:dokter'])->group(function () {
     Route::get('/dokter/hasil-analisa/{no_rekam_medis}', [\App\Http\Controllers\DokterDashboardController::class, 'hasilAnalisaAjax'])->name('dokter.hasilanalisa.ajax');
     // New route for medicine search API
     Route::get('/dokter/search-obat', [DokterDashboardController::class, 'searchObat'])->name('dokter.searchObat');
+    Route::get('/dokter/jadwal', [DokterDashboardController::class, 'jadwal'])->name('dokter.jadwaldokter');
 });
 
 Route::middleware(['auth', 'role:resepsionis'])->group(function () {
@@ -151,28 +153,29 @@ Route::middleware(['auth', 'role:resepsionis'])->group(function () {
 Route::middleware(['auth', 'role:doktergigi'])->group(function () {
     Route::get('/gigi/riwayat-berobat/{no_rekam_medis}', [\App\Http\Controllers\GigiDashboardController::class, 'getRiwayatBerobat'])->name('gigi.riwayat.berobat');
     Route::get('/gigi/hasil-periksa-detail/{no_rekam_medis}/{tanggal}', [\App\Http\Controllers\GigiDashboardController::class, 'getHasilPeriksaDetail'])->name('gigi.hasil.periksa.detail');
+    Route::get('/gigi/jadwal', [GigiDashboardController::class, 'jadwal'])->name('gigi.jadwaldokter');
 });
 
-    Route::middleware(['auth', 'role:perawat'])->group(function () {
-        Route::get('/perawat/dashboard', function () {
-            return view('perawat.dashboard');
-        })->name('perawat.dashboard');
+Route::middleware(['auth', 'role:perawat'])->group(function () {
+    Route::get('/perawat/dashboard', function () {
+        return view('perawat.dashboard');
+    })->name('perawat.dashboard');
 
-        // Hapus route antrian duplikat, gunakan controller agar konsisten
-        Route::get('/perawat/antrian', [PerawatDashboardController::class, 'antrian'])->name('perawat.antrian');
+    // Hapus route antrian duplikat, gunakan controller agar konsisten
+    Route::get('/perawat/antrian', [PerawatDashboardController::class, 'antrian'])->name('perawat.antrian');
 
-        Route::get('/perawat/pasien', [PerawatDashboardController::class, 'pasien'])->name('perawat.pasien');
-        Route::get('/perawat/pasien/detail/{no_rekam_medis}', [PerawatDashboardController::class, 'getPatientDetail'])->name('perawat.pasien.detail');
-        Route::get('/perawat/pasien/detail-by-id/{pasien_id}', [PerawatDashboardController::class, 'getPatientDetailById'])->name('perawat.pasien.detailbyid');
+    Route::get('/perawat/pasien', [PerawatDashboardController::class, 'pasien'])->name('perawat.pasien');
+    Route::get('/perawat/pasien/detail/{no_rekam_medis}', [PerawatDashboardController::class, 'getPatientDetail'])->name('perawat.pasien.detail');
+    Route::get('/perawat/pasien/detail-by-id/{pasien_id}', [PerawatDashboardController::class, 'getPatientDetailById'])->name('perawat.pasien.detailbyid');
 
-        // Pastikan hanya satu route store hasil analisa
-        Route::post('/perawat/hasilanalisa/store', [PerawatHasilAnalisaController::class, 'store'])->name('perawat.hasilanalisa.store');
+    // Pastikan hanya satu route store hasil analisa
+    Route::post('/perawat/hasilanalisa/store', [PerawatHasilAnalisaController::class, 'store'])->name('perawat.hasilanalisa.store');
 
-        Route::get('/perawat/profile', [PerawatProfileController::class, 'show'])->name('perawat.profile');
-        Route::patch('/perawat/profile', [PerawatProfileController::class, 'update'])->name('perawat.profile.update');
+    Route::get('/perawat/profile', [PerawatProfileController::class, 'show'])->name('perawat.profile');
+    Route::patch('/perawat/profile', [PerawatProfileController::class, 'update'])->name('perawat.profile.update');
 
-        Route::get('/perawat/jadwal', [PerawatDashboardController::class, 'jadwal'])->name('perawat.jadwaldokter');
-    });
+    Route::get('/perawat/jadwal', [PerawatDashboardController::class, 'jadwal'])->name('perawat.jadwaldokter');
+});
 
 Route::middleware(['auth', 'role:bidan'])->group(function () {
     Route::get('/bidan/dashboard', function () {
@@ -376,6 +379,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/dana', [KasirDashboardController::class, 'dana'])->name('kasir.dana');
         Route::get('/kasir/dana/export-pdf', [KasirDashboardController::class, 'exportPdf'])->name('kasir.dana.exportPdf');
         Route::get('/kasir/dana/export-excel', [KasirDashboardController::class, 'exportExcel'])->name('kasir.dana.exportExcel');
+        Route::get('/kasir/jadwal', [KasirDashboardController::class, 'jadwal'])->name('kasir.jadwaldokter');
     });
 });
 
@@ -413,5 +417,4 @@ Route::middleware(['auth', 'role:resepsionis'])->group(function () {
     Route::get('/pasienResepsionis/detail/{no_rekam_medis}', [ResepsionisDashboardController::class, 'getPasienDetail'])->name('resepsionis.pasien.detail');
 
     Route::get('/jadwal', [ResepsionisDashboardController::class, 'jadwal'])->name('resepsionis.jadwaldokter');
-
 });

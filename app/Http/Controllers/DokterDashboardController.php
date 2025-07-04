@@ -9,8 +9,8 @@ use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Antrian;
 use App\Models\Pasien;
-use App\Models\HasilPeriksa;
 use App\Models\Hasilanalisa;
+use App\Models\jadwalDokter;
 
 class DokterDashboardController extends Controller
 {
@@ -135,65 +135,54 @@ class DokterDashboardController extends Controller
         return view('dokter.antrian', compact('antrians', 'obats'));
     }
 
-    // public function storeHasilAnalisa(Request $request)
-    // {
-    //     $validatedData = $request->validate([
-    //         'no_rekam_medis' => 'required|string',
-    //         'tekanan_darah' => 'nullable|string',
-    //         'frekuensi_nadi' => 'nullable|string',
-    //         'suhu' => 'nullable|string',
-    //         'frekuensi_nafas' => 'nullable|string',
-    //         'skor_nyeri' => 'nullable|string',
-    //         'skor_jatuh' => 'nullable|string',
-    //         'berat_badan' => 'nullable|string',
-    //         'tinggi_badan' => 'nullable|string',
-    //         'lingkar_kepala' => 'nullable|string',
-    //         'imt' => 'nullable|string',
-    //         'alat_bantu' => 'nullable|string',
-    //         'prosthesa' => 'nullable|string',
-    //         'cacat_tubuh' => 'nullable|string',
-    //         'adl_mandiri' => 'nullable|string',
-    //         'riwayat_jatuh' => 'nullable|string',
-    //         'status_psikologi' => 'nullable|array',
-    //         'hambatan_edukasi' => 'nullable|array',
-    //         'alergi' => 'nullable|string',
-    //         'catatan' => 'nullable|string',
-    //         'poli_tujuan' => 'required|string',
-    //         'nama_user' => 'nullable|string',
-    //     ]);
+    public function jadwal()
+    {
+        $jadwalDoktersRaw = JadwalDokter::all();
+        $users = User::whereIn('role', ['dokter', 'doktergigi', 'bidan'])->get();
 
-    //     $hasilAnalisa = new Hasilanalisa();
-    //     $hasilAnalisa->no_rekam_medis = $validatedData['no_rekam_medis'];
-    //     $hasilAnalisa->tekanan_darah = $validatedData['tekanan_darah'] ?? null;
-    //     $hasilAnalisa->frekuensi_nadi = $validatedData['frekuensi_nadi'] ?? null;
-    //     $hasilAnalisa->suhu = $validatedData['suhu'] ?? null;
-    //     $hasilAnalisa->frekuensi_nafas = $validatedData['frekuensi_nafas'] ?? null;
-    //     $hasilAnalisa->skor_nyeri = $validatedData['skor_nyeri'] ?? null;
-    //     $hasilAnalisa->skor_jatuh = $validatedData['skor_jatuh'] ?? null;
-    //     $hasilAnalisa->berat_badan = $validatedData['berat_badan'] ?? null;
-    //     $hasilAnalisa->tinggi_badan = $validatedData['tinggi_badan'] ?? null;
-    //     $hasilAnalisa->lingkar_kepala = $validatedData['lingkar_kepala'] ?? null;
-    //     $hasilAnalisa->imt = $validatedData['imt'] ?? null;
-    //     $hasilAnalisa->alat_bantu = $validatedData['alat_bantu'] ?? null;
-    //     $hasilAnalisa->prosthesa = $validatedData['prosthesa'] ?? null;
-    //     $hasilAnalisa->cacat_tubuh = $validatedData['cacat_tubuh'] ?? null;
-    //     $hasilAnalisa->adl_mandiri = $validatedData['adl_mandiri'] ?? null;
-    //     $hasilAnalisa->riwayat_jatuh = $validatedData['riwayat_jatuh'] ?? null;
-    //     $hasilAnalisa->status_psikologi = isset($validatedData['status_psikologi']) ? json_encode($validatedData['status_psikologi']) : null;
-    //     $hasilAnalisa->hambatan_edukasi = isset($validatedData['hambatan_edukasi']) ? json_encode($validatedData['hambatan_edukasi']) : null;
-    //     $hasilAnalisa->alergi = $validatedData['alergi'] ?? null;
-    //     $hasilAnalisa->catatan = $validatedData['catatan'] ?? null;
-    //     $hasilAnalisa->poli_tujuan = $validatedData['poli_tujuan'];
-    //     $hasilAnalisa->nama_user = $validatedData['nama_user'] ?? null;
+        // Group jadwalDokters by nama_dokter and poliklinik
+        $jadwalGrouped = [];
 
-    //     $hasilAnalisa->save();
+        foreach ($jadwalDoktersRaw as $jadwal) {
+            $key = $jadwal->nama_dokter . '|' . $jadwal->poliklinik;
+            if (!isset($jadwalGrouped[$key])) {
+                $jadwalGrouped[$key] = [
+                    'nama_dokter' => $jadwal->nama_dokter,
+                    'poliklinik' => $jadwal->poliklinik,
+                    'senin' => '',
+                    'selasa' => '',
+                    'rabu' => '',
+                    'kamis' => '',
+                    'jumat' => '',
+                    'sabtu' => '',
+                    'minggu' => '',
+                    'ids' => [], // store ids for delete/edit if needed
+                ];
+            }
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Data analisa berhasil disimpan.',
-    //     ]);
-    // }
-    // New method for medicine search API
+            $hariArray = is_array($jadwal->hari) ? $jadwal->hari : [$jadwal->hari];
+            $jamMasukArray = is_array($jadwal->jam_masuk) ? $jadwal->jam_masuk : [$jadwal->jam_masuk];
+            $jamKeluarArray = is_array($jadwal->jam_keluar) ? $jadwal->jam_keluar : [$jadwal->jam_keluar];
+
+            foreach ($hariArray as $index => $hari) {
+                $hariLower = strtolower($hari);
+                if (array_key_exists($hariLower, $jadwalGrouped[$key])) {
+                    $jamMasuk = $jamMasukArray[$index] ?? '';
+                    $jamKeluar = $jamKeluarArray[$index] ?? '';
+                    $timeRange = $jamMasuk && $jamKeluar ? $jamMasuk . ' - ' . $jamKeluar : '';
+                    $jadwalGrouped[$key][$hariLower] = $timeRange;
+                }
+            }
+
+            $jadwalGrouped[$key]['ids'][] = $jadwal->id;
+        }
+
+        // Convert to collection
+        $jadwalDokters = collect(array_values($jadwalGrouped));
+
+        return view('dokter.jadwal', compact('jadwalDokters', 'users'));
+    }
+
     public function searchObat(Request $request)
     {
         $query = \App\Models\Obat::query();

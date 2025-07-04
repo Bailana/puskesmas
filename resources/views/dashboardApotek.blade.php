@@ -78,8 +78,8 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-item {{ Request::is('jadwal') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/jadwal') }}">
+                    <li class="sidebar-item {{ Request::is('apoteker/jadwal') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ url('apoteker/jadwal') }}">
                             <i class="align-middle" data-feather="clipboard"></i>
                             <span class="align-middle">Jadwal Dokter</span>
                         </a>

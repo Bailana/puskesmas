@@ -56,8 +56,8 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-item {{ Request::is('mapspasien') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/mapspasien') }}">
+                    <li class="sidebar-item {{ Request::is('gigi/jadwal') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ url('gigi/jadwal') }}">
                             <i class="align-middle" data-feather="clipboard"></i>
                             <span class="align-middle">Jadwal Dokter</span>
                         </a>
