@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\JadwalDokter;
 
 class ResepsionisDashboardController extends Controller
 {
@@ -36,6 +37,54 @@ class ResepsionisDashboardController extends Controller
             ->paginate(5);
 
         return view('resepsionis.dashboard', compact('totalAntrianCount', 'antrianSelesaiCount', 'antrians'));
+    }
+
+    public function jadwal()
+    {
+        $jadwalDoktersRaw = JadwalDokter::all();
+        $users = User::whereIn('role', ['dokter', 'doktergigi', 'bidan'])->get();
+
+        // Group jadwalDokters by nama_dokter and poliklinik
+        $jadwalGrouped = [];
+
+        foreach ($jadwalDoktersRaw as $jadwal) {
+            $key = $jadwal->nama_dokter . '|' . $jadwal->poliklinik;
+            if (!isset($jadwalGrouped[$key])) {
+                $jadwalGrouped[$key] = [
+                    'nama_dokter' => $jadwal->nama_dokter,
+                    'poliklinik' => $jadwal->poliklinik,
+                    'senin' => '',
+                    'selasa' => '',
+                    'rabu' => '',
+                    'kamis' => '',
+                    'jumat' => '',
+                    'sabtu' => '',
+                    'minggu' => '',
+                    'ids' => [], // store ids for delete/edit if needed
+                ];
+            }
+
+            $hariArray = is_array($jadwal->hari) ? $jadwal->hari : [$jadwal->hari];
+            $jamMasukArray = is_array($jadwal->jam_masuk) ? $jadwal->jam_masuk : [$jadwal->jam_masuk];
+            $jamKeluarArray = is_array($jadwal->jam_keluar) ? $jadwal->jam_keluar : [$jadwal->jam_keluar];
+
+            foreach ($hariArray as $index => $hari) {
+                $hariLower = strtolower($hari);
+                if (array_key_exists($hariLower, $jadwalGrouped[$key])) {
+                    $jamMasuk = $jamMasukArray[$index] ?? '';
+                    $jamKeluar = $jamKeluarArray[$index] ?? '';
+                    $timeRange = $jamMasuk && $jamKeluar ? $jamMasuk . ' - ' . $jamKeluar : '';
+                    $jadwalGrouped[$key][$hariLower] = $timeRange;
+                }
+            }
+
+            $jadwalGrouped[$key]['ids'][] = $jadwal->id;
+        }
+
+        // Convert to collection
+        $jadwalDokters = collect(array_values($jadwalGrouped));
+
+        return view('resepsionis.jadwal', compact('jadwalDokters', 'users'));
     }
 
     public function exportExcel(Request $request)

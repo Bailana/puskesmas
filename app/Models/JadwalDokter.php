@@ -25,4 +25,10 @@ class JadwalDokter extends Model
         'sabtu',
         'minggu',
     ];
+
+    protected $casts = [
+        'hari' => 'array',
+        'jam_masuk' => 'array',
+        'jam_keluar' => 'array',
+    ];
 }

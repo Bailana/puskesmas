@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Antrian;
 use Illuminate\Support\Facades\Log;
+use App\Models\JadwalDokter;
+use App\Models\User;
 
 class PerawatDashboardController extends Controller
 {
@@ -29,17 +31,17 @@ class PerawatDashboardController extends Controller
         $query = $request->input('search');
         $antrians = \App\Models\Antrian::with('pasien')->where('status', 'Perlu Analisa');
         if ($query) {
-            $antrians->whereHas('pasien', function($q) use ($query) {
+            $antrians->whereHas('pasien', function ($q) use ($query) {
                 $q->where('nama_pasien', 'like', "%$query%")
-                  ->orWhere('no_rekam_medis', 'like', "%$query%")
-                  ->orWhere('nik', 'like', "%$query%")
-                  ;
+                    ->orWhere('no_rekam_medis', 'like', "%$query%")
+                    ->orWhere('nik', 'like', "%$query%")
+                ;
             });
         }
         $antrians = $antrians->orderBy('id', 'asc')->paginate(5);
         if ($request->ajax()) {
             // Kirim data dengan relasi pasien secara eksplisit
-            $antrians->getCollection()->transform(function($antrian) {
+            $antrians->getCollection()->transform(function ($antrian) {
                 $antrianArr = $antrian->toArray();
                 $antrianArr['pasien'] = $antrian->pasien ? $antrian->pasien->toArray() : null;
                 return $antrianArr;
@@ -86,7 +88,7 @@ class PerawatDashboardController extends Controller
         if ($query) {
             $pasiens = $pasiens->where(function ($q) use ($query) {
                 $q->where('nama_pasien', 'like', '%' . $query . '%')
-                  ->orWhere('no_rekam_medis', 'like', '%' . $query . '%');
+                    ->orWhere('no_rekam_medis', 'like', '%' . $query . '%');
             });
         }
 
@@ -136,5 +138,53 @@ class PerawatDashboardController extends Controller
     {
         $jadwalDokters = \App\Models\JadwalDokter::all();
         return view('perawat.jadwaldokter', compact('jadwalDokters'));
+    }
+
+    public function jadwal()
+    {
+        $jadwalDoktersRaw = JadwalDokter::all();
+        $users = User::whereIn('role', ['dokter', 'doktergigi', 'bidan'])->get();
+
+        // Group jadwalDokters by nama_dokter and poliklinik
+        $jadwalGrouped = [];
+
+        foreach ($jadwalDoktersRaw as $jadwal) {
+            $key = $jadwal->nama_dokter . '|' . $jadwal->poliklinik;
+            if (!isset($jadwalGrouped[$key])) {
+                $jadwalGrouped[$key] = [
+                    'nama_dokter' => $jadwal->nama_dokter,
+                    'poliklinik' => $jadwal->poliklinik,
+                    'senin' => '',
+                    'selasa' => '',
+                    'rabu' => '',
+                    'kamis' => '',
+                    'jumat' => '',
+                    'sabtu' => '',
+                    'minggu' => '',
+                    'ids' => [], // store ids for delete/edit if needed
+                ];
+            }
+
+            $hariArray = is_array($jadwal->hari) ? $jadwal->hari : [$jadwal->hari];
+            $jamMasukArray = is_array($jadwal->jam_masuk) ? $jadwal->jam_masuk : [$jadwal->jam_masuk];
+            $jamKeluarArray = is_array($jadwal->jam_keluar) ? $jadwal->jam_keluar : [$jadwal->jam_keluar];
+
+            foreach ($hariArray as $index => $hari) {
+                $hariLower = strtolower($hari);
+                if (array_key_exists($hariLower, $jadwalGrouped[$key])) {
+                    $jamMasuk = $jamMasukArray[$index] ?? '';
+                    $jamKeluar = $jamKeluarArray[$index] ?? '';
+                    $timeRange = $jamMasuk && $jamKeluar ? $jamMasuk . ' - ' . $jamKeluar : '';
+                    $jadwalGrouped[$key][$hariLower] = $timeRange;
+                }
+            }
+
+            $jadwalGrouped[$key]['ids'][] = $jadwal->id;
+        }
+
+        // Convert to collection
+        $jadwalDokters = collect(array_values($jadwalGrouped));
+
+        return view('perawat.jadwal', compact('jadwalDokters', 'users'));
     }
 }
