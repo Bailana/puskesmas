@@ -98,9 +98,9 @@
                             <span class="align-middle">Jadwal Dokter</span>
                         </a>
                     </li>
-                    <li class="sidebar-item {{ Request::is('admin/aktifitas') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/admin/jadwaldokter') }}">
-                            <i class="align-middle" data-feather="activity"></i>
+                    <li class="sidebar-item {{ Request::is('admin/log') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('admin.log') }}">
+                            <i class="align-middle" data-feather="file-text"></i>
                             <span class="align-middle">Log Aktifitas</span>
                         </a>
                     </li>

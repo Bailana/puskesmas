@@ -20,6 +20,7 @@ use App\Models\PasiensUgd;
 use App\Models\Pasien;
 use App\Models\User;
 use App\Models\JadwalDokter;
+use App\Http\Controllers\AdminLogController;
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/ugd', function () {
@@ -104,6 +105,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // API route to get hasil analisa and periksa data for a date
     Route::get('/admin/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\AdminUserController::class, 'getVisitData'])->name('admin.riwayat.data');
     Route::get('/admin/datapasien/{id}/surat', [PasienController::class, 'surat'])->middleware(['auth', 'role:admin'])->name('cetak.surat');
+
+    Route::get('/admin/log', [AdminLogController::class, 'index'])->name('admin.log');
 });
 
 Route::middleware(['auth', 'role:apoteker'])->group(function () {
