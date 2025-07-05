@@ -198,14 +198,11 @@
                     <div class="row text-muted">
                         <div class="col-6 text-start">
                             <p class="mb-0">
-                                <a class="text-muted" href="https://adminkit.io/"
-                                    target="_blank"><strong>AdminKit</strong></a> - <a class="text-muted"
-                                    href="https://adminkit.io/" target="_blank"><strong>© 2025 UPT Puskesmas Pujud. All Rights Reserved</strong></a> &copy;
+                                <a class="text-muted"><strong>R.B-Dev</strong></a>&copy;
                             </p>
                         </div>
-                        <div class="col-6 text-end">
-                        </div>
                     </div>
+                </div>
             </footer>
         </div>
     </div>

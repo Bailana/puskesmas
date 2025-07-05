@@ -173,13 +173,13 @@
 
                             <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#"
                                 data-bs-toggle="dropdown" role="button">
-                            @if(auth()->user()->profile_photo_path)
+                                @if(auth()->user()->profile_photo_path)
                                 <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}"
                                     class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}" style="width: 40px; height: 40px; object-fit: cover;" />
-                            @else
+                                @else
                                 <img src="{{ url('resepsionisAssets/img/avatars/avatar.jpg') }}"
                                     class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}" style="width: 40px; height: 40px; object-fit: cover;" />
-                            @endif
+                                @endif
                                 <span class="text-dark">{{ Auth::user()->name }}</span>
 
                             </a>
@@ -208,27 +208,8 @@
                     <div class="row text-muted">
                         <div class="col-6 text-start">
                             <p class="mb-0">
-                                <a class="text-muted" href="https://adminkit.io/"
-                                    target="_blank"><strong>AdminKit</strong></a> - <a class="text-muted"
-                                    href="https://adminkit.io/" target="_blank"><strong>Bootstrap Admin
-                                        Template</strong></a> &copy;
+                                <a class="text-muted"><strong>R.B-Dev</strong></a>&copy;
                             </p>
-                        </div>
-                        <div class="col-6 text-end">
-                            <ul class="list-inline">
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Support</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Help Center</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Privacy</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Terms</a>
-                                </li>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -249,7 +230,7 @@
 
     @if(session('status'))
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             toastr.options = {
                 "positionClass": "toast-top-right",
                 "timeOut": "3000",
@@ -260,22 +241,21 @@
         });
     </script>
     @endif
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Initialize all dropdowns
             var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-            dropdownElementList.map(function (dropdownToggleEl) {
+            dropdownElementList.map(function(dropdownToggleEl) {
                 return new bootstrap.Dropdown(dropdownToggleEl);
             });
         });
-
     </script>
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             // Fungsi Pencarian
-            $("#searchInput").on("keyup", function () {
+            $("#searchInput").on("keyup", function() {
                 var value = $(this).val().toLowerCase(); // Ambil input pencarian
                 /*
                 $("#antrianTable tbody tr").filter(function () {
@@ -284,18 +264,17 @@
                     );
                 });
                 */
-                $("#dataPasienTabel tbody tr").filter(function () {
+                $("#dataPasienTabel tbody tr").filter(function() {
                     $(this).toggle(
                         $(this).text().toLowerCase().indexOf(value) > -1
                     );
                 });
             });
         });
-
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             // Doughnut chart
             new Chart(document.getElementById("chartjs-doughnut"), {
                 type: "doughnut",
@@ -324,11 +303,10 @@
                 }
             });
         });
-
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             // Line chart
             new Chart(document.getElementById("chartjs-line"), {
                 type: "line",
@@ -393,7 +371,6 @@
                 }
             });
         });
-
     </script>
 
     <script>
@@ -409,7 +386,6 @@
 
         setInterval(updateTime, 1000); // Perbarui setiap detik
         updateTime(); // Panggil sekali saat halaman dimuat
-
     </script>
 
     <script>
@@ -430,17 +406,15 @@
                 }
             })
         }
-
     </script>
 
-    
+
     <script>
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-
     </script>
 
 

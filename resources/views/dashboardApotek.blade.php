@@ -111,18 +111,18 @@
                                 <i class="align-middle" data-feather="settings"></i>
                             </a>
 
-<button class="nav-link dropdown-toggle d-none d-sm-inline-block" type="button" aria-expanded="false" data-bs-toggle="dropdown" role="button" style="background: none; border: none; padding: 0;">
-    @if(Auth::user()->profile_photo_path)
-    <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
-        class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}"
-        style="width: 40px; height: 40px; object-fit: cover;" />
-    @else
-    <img src="{{ url('dokterAssets/img/avatars/avatar.jpg') }}"
-        class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}"
-        style="width: 40px; height: 40px; object-fit: cover;" />
-    @endif
-    <span class="text-dark">{{ Auth::user()->name }}</span>
-</button>
+                            <button class="nav-link dropdown-toggle d-none d-sm-inline-block" type="button" aria-expanded="false" data-bs-toggle="dropdown" role="button" style="background: none; border: none; padding: 0;">
+                                @if(Auth::user()->profile_photo_path)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
+                                    class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}"
+                                    style="width: 40px; height: 40px; object-fit: cover;" />
+                                @else
+                                <img src="{{ url('dokterAssets/img/avatars/avatar.jpg') }}"
+                                    class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}"
+                                    style="width: 40px; height: 40px; object-fit: cover;" />
+                                @endif
+                                <span class="text-dark">{{ Auth::user()->name }}</span>
+                            </button>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <a class="dropdown-item" href="{{ route('profileapoteker') }}">
                                     <i class="align-middle me-1" data-feather="user"></i> Profile
@@ -148,27 +148,8 @@
                     <div class="row text-muted">
                         <div class="col-6 text-start">
                             <p class="mb-0">
-                                <a class="text-muted" href="https://adminkit.io/"
-                                    target="_blank"><strong>AdminKit</strong></a> - <a class="text-muted"
-                                    href="https://adminkit.io/" target="_blank"><strong>Bootstrap Admin
-                                        Template</strong></a> &copy;
+                                <a class="text-muted"><strong>R.B-Dev</strong></a>&copy;
                             </p>
-                        </div>
-                        <div class="col-6 text-end">
-                            <ul class="list-inline">
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Support</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Help Center</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Privacy</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Terms</a>
-                                </li>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -186,7 +167,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             // Doughnut chart
             new Chart(document.getElementById("chartjs-doughnut"), {
                 type: "doughnut",
@@ -216,7 +197,7 @@
             });
         });
 
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             // Line chart
             new Chart(document.getElementById("chartjs-line"), {
                 type: "line",
@@ -281,7 +262,6 @@
                 }
             });
         });
-
     </script>
 
     <script>
@@ -315,7 +295,6 @@
 
         setInterval(updateTime, 1000); // Perbarui setiap detik
         updateTime(); // Panggil sekali saat halaman dimuat
-
     </script>
     @yield('scripts')
 </body>

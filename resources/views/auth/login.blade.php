@@ -20,34 +20,35 @@
     <link rel="icon" type="image/png" href="{{ url('template/images/LogoRohil.png') }}">
 </head>
 
-<body class="img js-fullheight" style="background-image: url('{{ asset('template/images/klinik-asesment.jpg') }}')">
+<body class="img js-fullheight" style="background-image: url('{{ asset('template/images/bag-pujud.jpg') }}')">
     <section class="ftco-section">
         <div class="container">
-            <div class="row justify-content-start pt-4">
-                <div class="col-md-6 col-lg-6 p-5 mt-3"
+            <div class="row justify-content-center pt-4">
+                <div class="col-md-6 col-lg-6 p-3 mt-3"
                     style="background-color: rgba(0, 0, 0, 0.4); border-radius: 20px">
                     <div class="login-wrap p-0">
                         <div class="row justify-content-center align-items-center">
                             <div class="col-6 text-center">
                                 <img src="{{ url('template/images/LogoRohil.png') }}" alt=""
-                                    style="max-width: 40%; height: auto;">
+                                    style="max-width: 30%; height: auto;">
                             </div>
                         </div>
                         <h3 class="mb-4 text-center">Masukkan Akun Anda!</h3>
-                        @if ($errors->has('loginError'))
-                        <div class="alert alert-danger">
+                        {{-- Removed inline error messages to use toastr instead --}}
+                        {{-- @if ($errors->has('loginError'))
+                        <div class="alert alert-danger custom-error-message">
                             {{ $errors->first('loginError') }}
                         </div>
                         @endif
                         @if ($errors->any() && !$errors->has('loginError'))
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger custom-error-message">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
                         </div>
-                        @endif
+                        @endif --}}
                         <form action="{{ route('login') }}" method="POST" class="signin-form" autocomplete="off"
                             novalidate>
                             @csrf
@@ -83,7 +84,7 @@
                             </div>
                         </form>
                         <script>
-                            document.addEventListener('DOMContentLoaded', function () {
+                            document.addEventListener('DOMContentLoaded', function() {
                                 const checkbox = document.getElementById('remember-checkbox');
                                 const emailInput = document.querySelector('input[name="email"]');
                                 const passwordInput = document.querySelector('input[name="password"]');
@@ -113,7 +114,7 @@
                                 }
 
                                 // Update storage on checkbox change
-                                checkbox.addEventListener('change', function () {
+                                checkbox.addEventListener('change', function() {
                                     if (!checkbox.checked) {
                                         emailInput.value = '';
                                         passwordInput.value = '';
@@ -122,18 +123,17 @@
                                 });
 
                                 // Update storage on input change
-                                emailInput.addEventListener('input', function () {
+                                emailInput.addEventListener('input', function() {
                                     if (checkbox.checked) {
                                         localStorage.setItem('email', emailInput.value);
                                     }
                                 });
-                                passwordInput.addEventListener('input', function () {
+                                passwordInput.addEventListener('input', function() {
                                     if (checkbox.checked) {
                                         localStorage.setItem('password', passwordInput.value);
                                     }
                                 });
                             });
-
                         </script>
                         <p class="w-100 text-center">&mdash; Atau Masuk Menggunakan &mdash;</p>
                         <div class="social d-flex text-center">
@@ -179,6 +179,18 @@
             "progressBar": true
         };
         toastr.success("{{ session('status') }}");
+    </script>
+    @endif
+
+    @if($errors->any())
+    <script>
+        toastr.options = {
+            "positionClass": "toast-top-right",
+            "timeOut": "5000",
+            "closeButton": true,
+            "progressBar": true
+        };
+        toastr.error("{{ $errors->all()[0] }}");
     </script>
     @endif
 
