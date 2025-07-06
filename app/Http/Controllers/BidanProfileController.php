@@ -11,6 +11,8 @@ use App\Models\Hasilanalisa;
 use App\Models\Pasien;
 use App\Models\JadwalDokter;
 use App\Models\User;
+use App\Models\Antrian;
+use Carbon\Carbon;
 
 class BidanProfileController extends Controller
 {
@@ -111,6 +113,27 @@ class BidanProfileController extends Controller
         $jadwalDokters = collect(array_values($jadwalGrouped));
 
         return view('bidan.jadwal', compact('jadwalDokters', 'users'));
+    }
+
+    public function dashboard()
+    {
+        $today = Carbon::today()->toDateString();
+
+        $totalAntrianKIA = Antrian::whereHas('poli', function ($query) {
+            $query->where('nama_poli', 'KIA');
+        })
+        ->where('status', '!=', 'Selesai')
+        ->whereDate('created_at', $today)
+        ->count();
+
+        $totalAntrianSelesai = Antrian::whereHas('poli', function ($query) {
+            $query->where('nama_poli', 'KIA');
+        })
+        ->where('status', 'Selesai')
+        ->whereDate('created_at', $today)
+        ->count();
+
+        return view('bidan.dashboard', compact('totalAntrianKIA', 'totalAntrianSelesai'));
     }
 
     public function storeHasilAnalisa(Request $request)

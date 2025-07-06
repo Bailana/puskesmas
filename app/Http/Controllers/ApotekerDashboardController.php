@@ -25,7 +25,20 @@ class ApotekerDashboardController extends Controller
             ->where('status', 'Farmasi')
             ->paginate(5);
 
-        return view('apoteker.dashboard', compact('antrians'));
+        // Count obat with stok not zero
+        $totalObatTersedia = \App\Models\Obat::where('stok', '!=', 0)->count();
+
+        // Count obat that are expired (tanggal_kadaluarsa before today)
+        $today = date('Y-m-d');
+        $totalObatKadaluarsa = \App\Models\Obat::whereDate('tanggal_kadaluarsa', '<', $today)->count();
+
+        // Count obat with stok less than 10
+        $totalObatStokMenipis = \App\Models\Obat::where('stok', '<', 10)->count();
+
+        // Count obat with stok 0
+        $totalObatStokHabis = \App\Models\Obat::where('stok', 0)->count();
+
+        return view('apoteker.dashboard', compact('antrians', 'totalObatTersedia', 'totalObatKadaluarsa', 'totalObatStokMenipis', 'totalObatStokHabis'));
     }
 
     public function jadwal()

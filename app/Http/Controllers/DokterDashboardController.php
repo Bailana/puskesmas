@@ -16,13 +16,28 @@ class DokterDashboardController extends Controller
 {
     public function index()
     {
+        $today = \Carbon\Carbon::today()->toDateString();
+
         $antrians = Antrian::where('poli_id', 1)
             ->where('status', 'Pemeriksaan')
             ->paginate(5);
 
+        // Count total antrian for today with status 'Pemeriksaan' and poli_id 1 (Umum)
+        $totalAntrianCount = Antrian::whereDate('tanggal_berobat', $today)
+            ->where('status', 'Pemeriksaan')
+            ->where('poli_id', 1)
+            ->count();
+
         $obats = \App\Models\Obat::select('id', 'nama_obat', 'bentuk_obat', 'stok')->get();
 
-        return view('dokter.dashboard', compact('antrians', 'obats'));
+        // Count total antrian selesai for today with poli_id 1 (Umum)
+        $today = \Carbon\Carbon::today()->toDateString();
+        $totalAntrianSelesaiCount = Antrian::whereDate('tanggal_berobat', $today)
+            ->where('status', 'Selesai')
+            ->where('poli_id', 1)
+            ->count();
+
+        return view('dokter.dashboard', compact('antrians', 'obats', 'totalAntrianCount', 'totalAntrianSelesaiCount'));
     }
 
     public function hasilAnalisaAjax($no_rekam_medis)

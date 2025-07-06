@@ -31,25 +31,31 @@
                                 <th style="font-weight: 600; font-size: 0.875rem;">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody style="font-size: 0.875rem;">
-                            @foreach ($antrians as $index => $antrian)
-                            <tr>
-                                <td style="white-space: nowrap;">{{ $index + 1 }}</td>
-                                <td style="white-space: nowrap;">{{ $antrian->no_rekam_medis }}</td>
-                                <td style="white-space: nowrap;">{{ $antrian->pasien->nama_pasien }}</td>
-                                <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
-                                <td style="white-space: nowrap;">{{ $antrian->pasien->jaminan_kesehatan }}</td>
-                                <td style="white-space: nowrap;">{{ $antrian->poli ? $antrian->poli->nama_poli : 'Tidak ada' }}</td>
-                                <td style="white-space: nowrap;"><span class="badge bg-danger">{{ $antrian->status }}</span></td>
-                                <td style="white-space: nowrap;">
-                                    <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-bs-toggle="modal"
-                                        data-bs-target="#modalHasilPeriksa" data-pasien-id="{{ $antrian->pasien->id }}">Hasil Periksa</button>
-                                    <button type="button" class="btn btn-primary btn-sm rounded btnRacikObat"
-                                        data-pasien-id="{{ $antrian->pasien->id }}">Racik Obat</button>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
+                            <tbody style="font-size: 0.875rem;">
+                                @if ($antrians->isEmpty())
+                                <tr>
+                                    <td colspan="8" class="text-center">Antrian pasien tidak tersedia</td>
+                                </tr>
+                                @else
+                                @foreach ($antrians as $index => $antrian)
+                                <tr>
+                                    <td style="white-space: nowrap;">{{ $index + 1 }}</td>
+                                    <td style="white-space: nowrap;">{{ $antrian->no_rekam_medis }}</td>
+                                    <td style="white-space: nowrap;">{{ $antrian->pasien->nama_pasien }}</td>
+                                    <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
+                                    <td style="white-space: nowrap;">{{ $antrian->pasien->jaminan_kesehatan }}</td>
+                                    <td style="white-space: nowrap;">{{ $antrian->poli ? $antrian->poli->nama_poli : 'Tidak ada' }}</td>
+                                    <td style="white-space: nowrap;"><span class="badge bg-danger">{{ $antrian->status }}</span></td>
+                                    <td style="white-space: nowrap;">
+                                        <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-bs-toggle="modal"
+                                            data-bs-target="#modalHasilPeriksa" data-pasien-id="{{ $antrian->pasien->id }}">Hasil Periksa</button>
+                                        <button type="button" class="btn btn-primary btn-sm rounded btnRacikObat"
+                                            data-pasien-id="{{ $antrian->pasien->id }}">Racik Obat</button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                                @endif
+                            </tbody>
                     </table>
                 </div>
                 <div class="mt-3 mb-2">

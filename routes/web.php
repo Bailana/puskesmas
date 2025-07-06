@@ -21,6 +21,7 @@ use App\Models\Pasien;
 use App\Models\User;
 use App\Models\JadwalDokter;
 use App\Http\Controllers\AdminLogController;
+use Illuminate\Support\Facades\DB;
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/ugd', function () {
@@ -50,7 +51,19 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/datapasien/riwayat-berobat/{pasien_id}', [\App\Http\Controllers\RawatinapUgdController::class, 'getRiwayatBerobatByPasienId'])->name('admin.datapasien.riwayatberobat');
 
     Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
+        $totalUsers = User::count();
+        $totalPasiens = Pasien::count();
+
+        $sessionLifetime = config('session.lifetime') * 60; // in seconds
+        $activeUsers = DB::table('sessions')
+            ->where('last_activity', '>=', time() - $sessionLifetime)
+            ->whereNotNull('user_id')
+            ->distinct('user_id')
+            ->count('user_id');
+
+        $inactiveUsers = $totalUsers - $activeUsers;
+
+        return view('admin.dashboard', compact('totalUsers', 'totalPasiens', 'activeUsers', 'inactiveUsers'));
     })->name('admin.dashboard');
 
     Route::get('/admin/datauser', [AdminUserController::class, 'index'])->name('admin.datauser');
@@ -160,9 +173,7 @@ Route::middleware(['auth', 'role:doktergigi'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:perawat'])->group(function () {
-    Route::get('/perawat/dashboard', function () {
-        return view('perawat.dashboard');
-    })->name('perawat.dashboard');
+    Route::get('/perawat/dashboard', [\App\Http\Controllers\PerawatDashboardController::class, 'index'])->name('perawat.dashboard');
 
     // Hapus route antrian duplikat, gunakan controller agar konsisten
     Route::get('/perawat/antrian', [PerawatDashboardController::class, 'antrian'])->name('perawat.antrian');
@@ -181,9 +192,8 @@ Route::middleware(['auth', 'role:perawat'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:bidan'])->group(function () {
-    Route::get('/bidan/dashboard', function () {
-        return view('bidan.dashboard');
-    })->name('bidan.dashboard');
+
+    Route::get('/bidan/dashboard', [\App\Http\Controllers\BidanProfileController::class, 'dashboard'])->name('bidan.dashboard');
 
     Route::get('/bidan/antrian', [\App\Http\Controllers\BidanProfileController::class, 'antrian'])->name('bidan.antrian');
 
@@ -232,7 +242,46 @@ Route::middleware(['auth', 'role:rawatinap'])->group(function () {
     Route::get('/rawatinap/dashboard', function () {
         $ugd_pasien = PasiensUgd::whereIn('status', ['Perlu Analisa', 'UGD'])->get();
         $rawatinap_pasien = PasiensUgd::where('status', 'Rawat Inap')->get();
-        return view('rawatinap.dashboard', compact('ugd_pasien', 'rawatinap_pasien'));
+
+        $totalPasienUGD = PasiensUgd::where('status', 'UGD')->count();
+        $totalPasienRawatInap = PasiensUgd::where('status', 'Rawat Inap')->count();
+        $totalPasienPerluAnalisa = PasiensUgd::where('status', 'Perlu Analisa')->count();
+
+        // Query to get count of pasiens_ugd with status 'Rawat Inap' grouped by month of tanggal_masuk
+        $monthlyRawatInapData = PasiensUgd::selectRaw('MONTH(tanggal_masuk) as month, COUNT(*) as count')
+            ->where('status', 'Rawat Inap')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->pluck('count', 'month')
+            ->toArray();
+
+        // Prepare array with 12 months, fill 0 if no data for month
+        $monthlyRawatInapDataFull = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthlyRawatInapDataFull[$m] = $monthlyRawatInapData[$m] ?? 0;
+        }
+
+        // Fetch poli labels and data for doughnut chart
+        $poliLabels = \App\Models\Poli::pluck('nama_poli')->toArray();
+
+        // Count patients per poli for rawat inap status
+        $poliData = [];
+        foreach ($poliLabels as $label) {
+            $count = PasiensUgd::where('status', 'Rawat Inap')->where('ruangan', $label)->count();
+            $poliData[] = $count;
+        }
+        
+
+        // New: Prepare room names and patient counts for line chart
+        $roomNames = ['Matahari', 'Mawar', 'Melur', 'Melati'];
+        $roomPatientCounts = [];
+        foreach ($roomNames as $room) {
+            $count = PasiensUgd::where('status', 'Rawat Inap')->where('ruangan', $room)->count();
+            $roomPatientCounts[] = $count;
+        }
+
+        return view('rawatinap.dashboard', compact('ugd_pasien', 'rawatinap_pasien', 'totalPasienUGD', 'totalPasienRawatInap', 'totalPasienPerluAnalisa', 'monthlyRawatInapDataFull', 'poliLabels', 'poliData', 'roomNames', 'roomPatientCounts'));
     })->name('rawatinap.dashboard');
 
     Route::patch('/rawatinap/profile', [App\Http\Controllers\RawatinapUgdController::class, 'updateProfile'])->name('rawatinap.profile.update');

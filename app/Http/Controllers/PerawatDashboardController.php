@@ -17,8 +17,17 @@ class PerawatDashboardController extends Controller
      */
     public function index()
     {
-        // You can customize this method to fetch data needed for the perawat dashboard
-        return view('perawat.dashboard');
+        $today = \Carbon\Carbon::today()->toDateString();
+
+        $totalAntrianPerluAnalisa = \App\Models\Antrian::where('status', 'Perlu Analisa')
+            ->whereDate('created_at', $today)
+            ->count();
+
+        $totalAntrianSelesai = \App\Models\Antrian::where('status', 'Selesai')
+            ->whereDate('created_at', $today)
+            ->count();
+
+        return view('perawat.dashboard', compact('totalAntrianPerluAnalisa', 'totalAntrianSelesai'));
     }
 
     /**

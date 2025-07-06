@@ -30,6 +30,11 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @if ($antrians->count() == 0)
+                            <tr>
+                                <td colspan="8" class="text-center">Antrian pasien tidak tersedia</td>
+                            </tr>
+                            @else
                             @foreach ($antrians as $index => $antrian)
                             <tr>
                                 <td class="nowrap">{{ $antrians->firstItem() + $index }}</td>
@@ -49,6 +54,7 @@
                                 </td>
                             </tr>
                             @endforeach
+                            @endif
                         </tbody>
                     </table>
                 </div>

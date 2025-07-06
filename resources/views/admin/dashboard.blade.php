@@ -14,7 +14,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col mt-0">
-                                        <h5 class="card-title">Total Antrian</h5>
+                                        <h5 class="card-title">Total Pengguna</h5>
                                     </div>
                                     <div class="col-auto">
                                         <div class="stat text-primary">
@@ -22,9 +22,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">20</h1>
+                                <h1 class="mt-1 mb-3">{{ $totalUsers }}</h1>
                                 <div class="mb-0">
-                                    <span class="text-muted">Antrian</span>
+                                    <span class="text-muted">Pengguna</span>
                                 </div>
                             </div>
                         </div>
@@ -34,7 +34,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col mt-0">
-                                        <h5 class="card-title">Perlu Diperiksa</h5>
+                                        <h5 class="card-title">Total Data Pasien</h5>
                                     </div>
                                     <div class="col-auto">
                                         <div class="stat text-primary">
@@ -42,27 +42,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">5</h1>
-                                <div class="mb-0">
-                                    <span class="text-muted">Pasien</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col mt-0">
-                                        <h5 class="card-title">Rawat Inap</h5>
-                                    </div>
-                                    <div class="col-auto">
-                                        <div class="stat text-primary">
-                                            <i class="align-middle" data-feather="dollar-sign"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h1 class="mt-1 mb-3">4</h1>
+                                <h1 class="mt-1 mb-3">{{ $totalPasiens }}</h1>
                                 <div class="mb-0">
                                     <span class="text-muted">Pasien</span>
                                 </div>
@@ -74,7 +54,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col mt-0">
-                                        <h5 class="card-title">Rawat Jalan</h5>
+                                        <h5 class="card-title">Pengguna Aktif</h5>
                                     </div>
                                     <div class="col-auto">
                                         <div class="stat text-primary">
@@ -82,7 +62,27 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">10</h1>
+                                <h1 class="mt-1 mb-3">{{ $activeUsers }}</h1>
+                                <div class="mb-0">
+                                    <span class="text-muted">Pengguna</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col mt-0">
+                                        <h5 class="card-title">Pengguna Nonaktif</h5>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="stat text-primary">
+                                            <i class="align-middle" data-feather="dollar-sign"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h1 class="mt-1 mb-3">{{ $inactiveUsers }}</h1>
                                 <div class="mb-0">
                                     <span class="text-muted">Pasien</span>
                                 </div>

@@ -28,17 +28,17 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col mt-0">
-                                        <h5 class="card-title">Poli Umum</h5>
+                                        <h5 class="card-title">Tersedia</h5>
                                     </div>
                                     <div class="col-auto">
                                         <div class="stat text-primary">
-                                            <i class="align-middle" data-feather="truck"></i>
+                                            <i class="align-middle" data-feather="check"></i>
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">20</h1>
+                                <h1 class="mt-1 mb-3">{{ $totalObatTersedia }}</h1>
                                 <div class="mb-0">
-                                    <span class="text-muted">Pasien Telah Diperiksa</span>
+                                    <span class="text-muted">Jenis Obat</span>
                                 </div>
                             </div>
                         </div>
@@ -48,17 +48,17 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col mt-0">
-                                        <h5 class="card-title">Poli Gigi</h5>
+                                        <h5 class="card-title">Kadaluarsa</h5>
                                     </div>
                                     <div class="col-auto">
                                         <div class="stat text-primary">
-                                            <i class="align-middle" data-feather="dollar-sign"></i>
+                                            <i class="align-middle" data-feather="alert-circle"></i>
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">5</h1>
+                                <h1 class="mt-1 mb-3">{{ $totalObatKadaluarsa }}</h1>
                                 <div class="mb-0">
-                                    <span class="text-muted">Pasien Telah Diperiksa</span>
+                                    <span class="text-muted">Jenis Obat</span>
                                 </div>
                             </div>
                         </div>
@@ -68,17 +68,17 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col mt-0">
-                                        <h5 class="card-title">Rawat Inap</h5>
+                                        <h5 class="card-title">Stok Menipis</h5>
                                     </div>
                                     <div class="col-auto">
                                         <div class="stat text-primary">
-                                            <i class="align-middle" data-feather="dollar-sign"></i>
+                                            <i class="align-middle" data-feather="rotate-cw"></i>
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">4</h1>
+                                <h1 class="mt-1 mb-3">{{ $totalObatStokMenipis }}</h1>
                                 <div class="mb-0">
-                                    <span class="text-muted">Pasien</span>
+                                    <span class="text-muted">Jenis Obat</span>
                                 </div>
                             </div>
                         </div>
@@ -88,17 +88,17 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col mt-0">
-                                        <h5 class="card-title">Rawat Jalan</h5>
+                                        <h5 class="card-title">Stok Habis</h5>
                                     </div>
                                     <div class="col-auto">
                                         <div class="stat text-primary">
-                                            <i class="align-middle" data-feather="dollar-sign"></i>
+                                            <i class="align-middle" data-feather="alert-triangle"></i>
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">10</h1>
+                                <h1 class="mt-1 mb-3">{{ $totalObatStokHabis }}</h1>
                                 <div class="mb-0">
-                                    <span class="text-muted">Pasien</span>
+                                    <span class="text-muted">Jenis Obat</span>
                                 </div>
                             </div>
                         </div>
@@ -128,6 +128,11 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @if ($antrians->isEmpty())
+                                <tr>
+                                    <td colspan="8" class="text-center">Antrian pasien tidak tersedia</td>
+                                </tr>
+                                @else
                                 @foreach ($antrians as $index => $antrian)
                                 @if ($antrian->status == 'Selesai')
                                 @continue
@@ -151,6 +156,7 @@
                                     </td>
                                 </tr>
                                 @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>

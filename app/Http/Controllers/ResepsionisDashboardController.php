@@ -26,17 +26,73 @@ use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\JadwalDokter;
 
+use Carbon\Carbon;
+use App\Models\PasiensUgd;
+
 class ResepsionisDashboardController extends Controller
 {
     public function index()
     {
-        $totalAntrianCount = \App\Models\Antrian::where('status', '!=', 'selesai')->count();
-        $antrianSelesaiCount = \App\Models\Antrian::where('status', 'selesai')->count();
-        $antrians = \App\Models\Antrian::with(['pasien', 'poli'])
+        $today = Carbon::today()->toDateString();
+
+        $antrians = \App\Models\Antrian::select('id', 'no_rekam_medis', 'tanggal_berobat', 'status', 'poli_id', 'pasien_id')
+            ->with(['pasien:id,nama_pasien,tanggal_lahir,jaminan_kesehatan', 'poli:id,nama_poli'])
             ->where('status', '!=', 'selesai')
             ->paginate(5);
 
-        return view('resepsionis.dashboard', compact('totalAntrianCount', 'antrianSelesaiCount', 'antrians'));
+        // Count total antrian for today excluding status 'selesai'
+        $totalAntrianCount = \App\Models\Antrian::whereDate('tanggal_berobat', $today)
+            ->where('status', '!=', 'selesai')
+            ->count();
+
+        // Count total antrian selesai for today
+        $totalAntrianSelesaiCount = \App\Models\Antrian::whereDate('tanggal_berobat', $today)
+            ->where('status', 'selesai')
+            ->count();
+
+        // Count total rawat inap patients from pasiens_ugd with status 'Rawat Inap'
+        $totalRawatInapCount = PasiensUgd::where('status', 'Rawat Inap')->count();
+
+        // Count total UGD patients from pasiens_ugd with status 'UGD' or 'Perlu Analisa'
+        $totalUgdCount = PasiensUgd::whereIn('status', ['UGD', 'Perlu Analisa'])->count();
+
+        // Query to get count of 'selesai' status grouped by poli (Umum, 'Gigi', 'KIA')
+        $poliLabels = ['Umum', 'Gigi', 'KIA'];
+        $poliCountsRaw = \App\Models\Antrian::selectRaw('poli_id, COUNT(*) as count')
+            ->where('status', 'selesai')
+            ->whereHas('poli', function ($query) use ($poliLabels) {
+                $query->whereIn('nama_poli', $poliLabels);
+            })
+            ->groupBy('poli_id')
+            ->pluck('count', 'poli_id')
+            ->toArray();
+
+        // Map poli_id to poli name for the labels
+        $poliMap = \App\Models\Poli::whereIn('nama_poli', $poliLabels)->pluck('nama_poli', 'id')->toArray();
+
+        // Prepare counts array in order of $poliLabels
+        $poliData = [];
+        foreach ($poliLabels as $label) {
+            $poliId = array_search($label, $poliMap);
+            $poliData[] = $poliCountsRaw[$poliId] ?? 0;
+        }
+
+        // Generate monthly data for patients with status 'selesai' in current year
+        $currentYear = Carbon::now()->year;
+        $monthlyDataRaw = \App\Models\Antrian::selectRaw('MONTH(tanggal_berobat) as month, COUNT(*) as count')
+            ->whereYear('tanggal_berobat', $currentYear)
+            ->where('status', 'selesai')
+            ->groupBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        // Initialize monthlyData with 0 for each month
+        $monthlyData = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthlyData[$m] = $monthlyDataRaw[$m] ?? 0;
+        }
+
+        return view('resepsionis.dashboard', compact('totalAntrianCount', 'totalAntrianSelesaiCount', 'totalRawatInapCount', 'totalUgdCount', 'antrians', 'monthlyData', 'poliLabels', 'poliData'));
     }
 
     public function jadwal()
@@ -268,10 +324,11 @@ class ResepsionisDashboardController extends Controller
 
         $antrians = $query->paginate(5);
         $polis = \App\Models\Poli::all();
+        $poliLabels = ['Umum', 'Gigi', 'KIA'];
         if ($request->ajax()) {
             return response()->json($antrians);
         }
-        return view('resepsionis.antrian', compact('antrians', 'polis'));
+        return view('resepsionis.antrian', compact('antrians', 'polis', 'poliLabels'));
     }
 
     public function pasien(Request $request)

@@ -9,7 +9,7 @@
         <div class="col-xl-12 col-xxl-12 d-flex">
             <div class="w-100">
                 <div class="row">
-                    <div class="col-sm-3">
+                    <div class="col-sm-6">
                         <div class="card">
                             <div class="card-body">
                                 <div class="row">
@@ -18,18 +18,18 @@
                                     </div>
                                     <div class="col-auto">
                                         <div class="stat text-primary">
-                                            <i class="align-middle" data-feather="truck"></i>
+                                            <i class="align-middle" data-feather="user-check"></i>
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">20</h1>
+                                <h1 class="mt-1 mb-3">{{ $totalAntrianCount }}</h1>
                                 <div class="mb-0">
                                     <span class="text-muted">Antrian</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-6">
                         <div class="card">
                             <div class="card-body">
                                 <div class="row">
@@ -38,53 +38,13 @@
                                     </div>
                                     <div class="col-auto">
                                         <div class="stat text-primary">
-                                            <i class="align-middle" data-feather="dollar-sign"></i>
+                                            <i class="align-middle" data-feather="check"></i>
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">5</h1>
+                                <h1 class="mt-1 mb-3">{{ $totalAntrianSelesaiCount }}</h1>
                                 <div class="mb-0">
                                     <span class="text-muted">Antrian</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col mt-0">
-                                        <h5 class="card-title">Rawat Inap</h5>
-                                    </div>
-                                    <div class="col-auto">
-                                        <div class="stat text-primary">
-                                            <i class="align-middle" data-feather="dollar-sign"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h1 class="mt-1 mb-3">4</h1>
-                                <div class="mb-0">
-                                    <span class="text-muted">Pasien</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col mt-0">
-                                        <h5 class="card-title">Rawat Jalan</h5>
-                                    </div>
-                                    <div class="col-auto">
-                                        <div class="stat text-primary">
-                                            <i class="align-middle" data-feather="dollar-sign"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h1 class="mt-1 mb-3">10</h1>
-                                <div class="mb-0">
-                                    <span class="text-muted">Pasien</span>
                                 </div>
                             </div>
                         </div>
@@ -306,7 +266,7 @@
                                 <label for="jumlahObat" class="form-label">Jumlah Obat <small class="text-muted" style="font-weight: normal;" name="stok_obat_display">Stok: -</small></label>
                                 <input type="number" class="form-control" name="jumlah_obat[]" min="1" value="" required>
                             </div>
-                            
+
                             <div class="btn-remove-container d-flex align-items-end" style="margin-bottom: 2px;">
                                 <button type="button" class="btn btn-danger btn-sm btnRemoveResep" title="Hapus Resep Obat" style="height: 28px; width: 28px; padding: 0; font-size: 1.2rem; line-height: 1;">&times;</button>
                             </div>
