@@ -18,9 +18,9 @@ class AdminUserController extends Controller
             $users = User::where('name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")
                 ->orWhere('role', 'like', "%{$search}%")
-                ->get();
+                ->paginate(5);
         } else {
-            $users = User::all();
+            $users = User::paginate(5);
         }
 
         return view('admin.datauser', compact('users'));

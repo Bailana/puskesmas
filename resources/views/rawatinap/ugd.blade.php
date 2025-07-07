@@ -565,7 +565,13 @@
                                 <label class="form-check-label" for="checkboxRawatInap">Rawat Inap</label>
                             </div>
                             <h5>Ruangan</h5>
-                            <input type="text" class="form-control" id="selectPoli" name="ruangan" placeholder="Masukkan Ruangan" disabled>
+                            <select class="form-select" id="selectPoli" name="ruangan" disabled>
+                                <option value="" selected disabled>Pilih Ruangan</option>
+                                <option value="Matahari">Matahari</option>
+                                <option value="Mawar">Mawar</option>
+                                <option value="Melur">Melur</option>
+                                <option value="Melati">Melati</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer d-flex justify-content-end mt-3">
@@ -1301,40 +1307,17 @@
                 headers: {
                     'X-CSRF-TOKEN': $('input[name="_token"]').val()
                 },
-                success: function(res) {
-                    console.log('AJAX success response:', res);
-                    if (res.success && res.data) {
-                        // Tambahkan baris baru ke tabel
-                        var data = res.data;
-                        var rowCount = $('#pasienTable tbody tr').length;
-                        var newRow = '<tr>' +
-                            '<td>' + (rowCount + 1) + '</td>' +
-                            '<td>' + (data.tanggal_masuk || '') + '</td>' +
-                            '<td>' + (data.nama_pasien || '') + '</td>' +
-                            '<td>' + (data.umur || '') + '</td>' +
-                            '<td>' + (data.status || '') + '</td>' +
-                            '<td>' +
-                            '<button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetailPasien" data-pasien="' +
-                            encodeURIComponent(data.pasien_json) + '">Selengkapnya</button> ' +
-                            '<button class="btn btn-warning btn-sm ms-1" data-bs-toggle="modal" data-bs-target="#modalAnalisa" data-pasien="' +
-                            encodeURIComponent(data.pasien_json) + '">Analisa</button>' +
-                            '</td>' +
-                            '</tr>';
-                        $('#pasienTable tbody').append(newRow);
-                        // Reset dan tutup modal
-                        $('#modalTambahPasien').modal('hide');
-                        form.reset();
-                        $('#hasilCariPasien').hide();
-                        $('#formFieldUgd').hide();
-                        $('#btnTambahPasienUgd').hide();
-                        $('#btnCariPasien').show();
-                        $('#nomor_kepesertaan_cari').prop('readonly', false);
-                        // Optional: scroll ke baris baru
-                        // toastr.success('Pasien UGD berhasil ditambahkan!');
-                    } else {
-                        alert(res.message || 'Gagal menambah pasien UGD.');
-                    }
-                },
+success: function(res) {
+    console.log('AJAX success response:', res);
+    if (res.success && res.data) {
+        // Simpan pesan sukses ke sessionStorage untuk ditampilkan setelah reload
+        sessionStorage.setItem('toastrSuccessMessage', res.message || 'Pasien UGD berhasil ditambahkan.');
+        // Refresh halaman setelah pasien berhasil ditambahkan
+        location.reload();
+    } else {
+        alert(res.message || 'Gagal menambah pasien UGD.');
+    }
+},
                 error: function(xhr) {
                     if (xhr.responseJSON && xhr.responseJSON.errors) {
                         var errors = xhr.responseJSON.errors;

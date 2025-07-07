@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Pasien;
 use App\Models\Antrian;
 
+
 class PasienController extends Controller
 {
     public function index(Request $request)
@@ -53,14 +54,14 @@ class PasienController extends Controller
 
         $antrians = Antrian::paginate($perPage);
 
-        \Log::info('index result count', ['count' => $pasiens->count()]);
+        // \Log::info('index result count', ['count' => $pasiens->count()]);
 
         return view('admin.rawatjalan', compact('pasiens', 'antrians'));
     }
 
     public function rawatinapPasien(Request $request)
     {
-        \Log::info('rawatinapPasien called', ['search' => $request->input('search'), 'per_page' => $request->input('per_page'), 'ajax' => $request->ajax(), 'get_new_no_rm' => $request->has('get_new_no_rm')]);
+        // \Log::info('rawatinapPasien called', ['search' => $request->input('search'), 'per_page' => $request->input('per_page'), 'ajax' => $request->ajax(), 'get_new_no_rm' => $request->has('get_new_no_rm')]);
 
         $query = $request->input('search');
         $perPage = $request->input('per_page', 10);
@@ -102,7 +103,7 @@ class PasienController extends Controller
 
         $pasiens = $pasiens->paginate($perPage);
 
-        \Log::info('rawatinapPasien result count', ['count' => $pasiens->count()]);
+        // \Log::info('rawatinapPasien result count', ['count' => $pasiens->count()]);
 
         // Generate newNoRekamMedis logic (selalu ambil increment dari database, format RM-xxxxxx)
         $lastPasien = Pasien::orderByRaw("CAST(SUBSTRING(no_rekam_medis, 4) AS UNSIGNED) DESC")->first();
@@ -126,7 +127,7 @@ class PasienController extends Controller
             } else {
                 $newNoRekamMedis = 'RM-000001';
             }
-            \Log::info('rawatinapPasien AJAX get_new_no_rm response', ['newNoRekamMedis' => $newNoRekamMedis]);
+            // \Log::info('rawatinapPasien AJAX get_new_no_rm response', ['newNoRekamMedis' => $newNoRekamMedis]);
             return response()->json(['newNoRekamMedis' => $newNoRekamMedis]);
         }
 
@@ -138,13 +139,13 @@ class PasienController extends Controller
      */
     public function getPatientDetail($no_rekam_medis)
     {
-        \Log::info('getPatientDetail called', ['no_rekam_medis' => $no_rekam_medis]);
+        // \Log::info('getPatientDetail called', ['no_rekam_medis' => $no_rekam_medis]);
         $pasien = Pasien::where('no_rekam_medis', $no_rekam_medis)->first();
         if (!$pasien) {
-            \Log::warning('Pasien tidak ditemukan', ['no_rekam_medis' => $no_rekam_medis]);
+            // \Log::warning('Pasien tidak ditemukan', ['no_rekam_medis' => $no_rekam_medis]);
             return response()->json(['error' => 'Pasien tidak ditemukan'], 404);
         }
-        \Log::info('Pasien ditemukan', ['pasien' => $pasien]);
+        // \Log::info('Pasien ditemukan', ['pasien' => $pasien]);
         return response()->json($pasien);
     }
 
@@ -153,13 +154,13 @@ class PasienController extends Controller
      */
     public function getPatientDetailById($pasien_id)
     {
-        \Log::info('getPatientDetailById called', ['pasien_id' => $pasien_id]);
+        // \Log::info('getPatientDetailById called', ['pasien_id' => $pasien_id]);
         $pasien = Pasien::find($pasien_id);
         if (!$pasien) {
-            \Log::warning('Pasien tidak ditemukan', ['pasien_id' => $pasien_id]);
+            // \Log::warning('Pasien tidak ditemukan', ['pasien_id' => $pasien_id]);
             return response()->json(['error' => 'Pasien tidak ditemukan'], 404);
         }
-        \Log::info('Pasien ditemukan', ['pasien' => $pasien]);
+        // \Log::info('Pasien ditemukan', ['pasien' => $pasien]);
         return response()->json($pasien);
     }
 
@@ -171,6 +172,8 @@ class PasienController extends Controller
 
     public function update(Request $request, $id)
     {
+        \Log::info('Update method called', ['id' => $id, 'user_id' => auth()->id()]);
+
         $validatedData = $request->validate([
             'no_rekam_medis' => 'nullable|string|unique:pasiens,no_rekam_medis,' . $id,
             'nik' => 'required|string',
@@ -199,6 +202,19 @@ class PasienController extends Controller
         $pasien = Pasien::findOrFail($id);
         $pasien->update($validatedData);
 
+        // Log update activity
+        $userId = auth()->id();
+        \Log::info('Logging update activity', ['user_id' => $userId, 'pasien_id' => $pasien->id]);
+        try {
+            \App\Models\ActivityLog::create([
+                'user_id' => $userId,
+                'action' => 'ubah',
+                'description' => 'Updated pasien data: ' . $pasien->nama_pasien . ' (ID: ' . $pasien->id . ')',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to log update activity: ' . $e->getMessage());
+        }
+
         if ($request->ajax()) {
             return response()->json(['success' => true, 'message' => 'Data pasien berhasil diperbarui']);
         }
@@ -210,6 +226,19 @@ class PasienController extends Controller
     {
         $pasien = Pasien::findOrFail($id);
         $pasien->delete();
+
+        // Log delete activity
+        $userId = auth()->id();
+        \Log::info('Logging delete activity', ['user_id' => $userId, 'pasien_id' => $pasien->id]);
+        try {
+            \App\Models\ActivityLog::create([
+                'user_id' => $userId,
+                'action' => 'hapus',
+                'description' => 'Deleted pasien data: ' . $pasien->nama_pasien . ' (ID: ' . $pasien->id . ')',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to log delete activity: ' . $e->getMessage());
+        }
 
         return redirect()->route('admin.rawatjalan')->with('success', 'Data pasien berhasil dihapus.');
     }
@@ -224,7 +253,7 @@ class PasienController extends Controller
 
     public function store(Request $request)
     {
-        \Log::info('store method called', ['request' => $request->all()]);
+        // \Log::info('store method called', ['request' => $request->all()]);
 
         $validatedData = $request->validate([
             'no_rekam_medis' => 'required|string|unique:pasiens,no_rekam_medis',
@@ -252,7 +281,20 @@ class PasienController extends Controller
 
         $pasien = Pasien::create($validatedData);
 
-        \Log::info('pasien created', ['pasien' => $pasien]);
+        // Log create activity
+        $userId = auth()->id();
+        \Log::info('Logging create activity', ['user_id' => $userId, 'pasien_id' => $pasien->id]);
+        try {
+            \App\Models\ActivityLog::create([
+                'user_id' => $userId,
+                'action' => 'tambah',
+                'description' => 'Created pasien data: ' . $pasien->nama_pasien . ' (ID: ' . $pasien->id . ')',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to log create activity: ' . $e->getMessage());
+        }
+
+        // \Log::info('pasien created', ['pasien' => $pasien]);
 
         // Ambil nomor rekam medis terakhir setelah insert
         $lastPasien = Pasien::orderBy('no_rekam_medis', 'desc')->first();

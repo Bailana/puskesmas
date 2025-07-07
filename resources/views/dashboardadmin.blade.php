@@ -314,37 +314,6 @@
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Doughnut chart
-            new Chart(document.getElementById("chartjs-doughnut"), {
-                type: "doughnut",
-                data: {
-                    labels: ["Umum", "Gigi", "KIA", "Lansia", "KB", "Anak", "Physiotheraphy"],
-                    datasets: [{
-                        data: [260, 125, 54, 146, 23, 234, 123],
-                        backgroundColor: [
-                            window.theme.primary,
-                            window.theme.success,
-                            window.theme.warning,
-                            window.theme.danger,
-                            window.theme.info,
-                            window.theme.secondary,
-                            "#8E3E63"
-                        ],
-                        borderColor: "transparent"
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    legend: {
-                        display: false
-                    }
-                }
-            });
-        });
-    </script>
-
-    <script>
         function updateTime() {
             const timeElement = document.getElementById('live-time');
             const now = new Date();

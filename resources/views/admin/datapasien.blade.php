@@ -44,7 +44,7 @@
                         <tbody>
                             @foreach ($pasiens as $index => $pasien)
                             <tr>
-                                <td style="white-space: nowrap;">{{ $index + 1 }}</td>
+                                <td style="white-space: nowrap;">{{ $pasiens->firstItem() + $index }}</td>
                                 <td style="white-space: nowrap;">{{ $pasien->no_rekam_medis }}</td>
                                 <td style="white-space: nowrap;">{{ $pasien->nama_pasien}}</td>
                                 <td style="white-space: nowrap;">

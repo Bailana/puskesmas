@@ -18,56 +18,56 @@
                 <div class="table-responsive">
                     <table class="table table-hover my-0" id="pasienTable" style="font-size: 14px;">
                         <thead>
-                                <tr>
-                                    <th>No.</th>
-                                    <th>Hari/Tanggal Masuk</th>
-                                    <th>No.Rekam Medis</th>
-                                    <th>Nama Pasien</th>
-                                    <th>Umur</th>
-                                    <th>JamKes</th>
-                                    <th>Status</th>
-                                </tr>
+                            <tr>
+                                <th>No.</th>
+                                <th>Hari/Tanggal Masuk</th>
+                                <th>No.Rekam Medis</th>
+                                <th>Nama Pasien</th>
+                                <th>Umur</th>
+                                <th>JamKes</th>
+                                <th>Status</th>
+                            </tr>
                         </thead>
                         <tbody>
                             @if(count($pasiens_ugd) > 0)
                             @foreach ($pasiens_ugd as $index => $pasien)
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            @php
-                                            \Carbon\Carbon::setLocale('id');
-                                            $tanggalMasuk = \Carbon\Carbon::parse($pasien->tanggal_masuk)->translatedFormat('l, d F Y');
-                                            @endphp
-                                            <td>{{ $tanggalMasuk }}</td>
-                                            <td>{{ $pasien->pasien ? $pasien->pasien->no_rekam_medis : '-' }}</td>
-                                            <td>{{ $pasien->nama_pasien }}</td>
-                                            <td>
-                                                @php
-                                                    $umur = null;
-                                                    if ($pasien->pasien_id) {
-                                                        $pasienDb = \App\Models\Pasien::find($pasien->pasien_id);
-                                                        if ($pasienDb && $pasienDb->tanggal_lahir) {
-                                                            $umur = \Carbon\Carbon::parse($pasienDb->tanggal_lahir)->age;
-                                                        }
-                                                    }
-                                                @endphp
-                                                {{ $umur !== null ? $umur . ' tahun' : '-' }}
-                                            </td>
-                                            <td>{{ $pasien->pasien ? $pasien->pasien->jaminan_kesehatan : '-' }}</td>
-                                            <td>
-                                                @php
-                                                    $status = $pasien->status ?: 'Rawat Inap';
-                                                    $badgeClass = 'bg-secondary';
-                                                    if (strtolower($status) === 'perlu analisa') {
-                                                        $badgeClass = 'bg-warning text-dark';
-                                                    } elseif (strtolower($status) === 'rawat inap') {
-                                                        $badgeClass = 'bg-primary';
-                                                    } elseif (strtolower($status) === 'rawat jalan') {
-                                                        $badgeClass = 'bg-success';
-                                                    }
-                                                @endphp
-                                                <span class="badge {{ $badgeClass }}">{{ $status }}</span>
-                                            </td>
-                                        </tr>
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                @php
+                                \Carbon\Carbon::setLocale('id');
+                                $tanggalMasuk = \Carbon\Carbon::parse($pasien->tanggal_masuk)->translatedFormat('l, d F Y');
+                                @endphp
+                                <td>{{ $tanggalMasuk }}</td>
+                                <td>{{ $pasien->pasien ? $pasien->pasien->no_rekam_medis : '-' }}</td>
+                                <td>{{ $pasien->nama_pasien }}</td>
+                                <td>
+                                    @php
+                                    $umur = null;
+                                    if ($pasien->pasien_id) {
+                                    $pasienDb = \App\Models\Pasien::find($pasien->pasien_id);
+                                    if ($pasienDb && $pasienDb->tanggal_lahir) {
+                                    $umur = \Carbon\Carbon::parse($pasienDb->tanggal_lahir)->age;
+                                    }
+                                    }
+                                    @endphp
+                                    {{ $umur !== null ? $umur . ' tahun' : '-' }}
+                                </td>
+                                <td>{{ $pasien->pasien ? $pasien->pasien->jaminan_kesehatan : '-' }}</td>
+                                <td>
+                                    @php
+                                    $status = $pasien->status ?: 'Rawat Inap';
+                                    $badgeClass = 'bg-secondary';
+                                    if (strtolower($status) === 'perlu analisa') {
+                                    $badgeClass = 'bg-warning text-dark';
+                                    } elseif (strtolower($status) === 'rawat inap') {
+                                    $badgeClass = 'bg-primary';
+                                    } elseif (strtolower($status) === 'rawat jalan') {
+                                    $badgeClass = 'bg-success';
+                                    }
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }}">{{ $status }}</span>
+                                </td>
+                            </tr>
                             @endforeach
                             @else
                             <tr>
@@ -76,6 +76,73 @@
                             @endif
                         </tbody>
                     </table>
+                </div>
+                <div class="mt-3 mb-2">
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <div class="small text-muted mb-2 text-start ps-3 pagination-info-text">
+                            Showing {{ $pasiens_ugd->firstItem() }} to {{ $pasiens_ugd->lastItem() }} of
+                            {{ $pasiens_ugd->total() }} results
+                        </div>
+                        <nav class="d-flex justify-content-center">
+                            <ul class="pagination d-flex flex-row flex-wrap gap-2"
+                                style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
+                                {{-- Previous Page Link --}}
+                                @if ($pasiens_ugd->onFirstPage())
+                                <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
+                                    <span class="page-link" aria-hidden="true">&laquo;</span>
+                                </li>
+                                @else
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ $pasiens_ugd->previousPageUrl() }}" rel="prev"
+                                        aria-label="Previous">&laquo;</a>
+                                </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @php
+                                $totalPages = $pasiens_ugd->lastPage();
+                                $currentPage = $pasiens_ugd->currentPage();
+                                $maxButtons = 3;
+
+                                if ($totalPages <= $maxButtons) {
+                                    $start=1;
+                                    $end=$totalPages;
+                                    } else {
+                                    if ($currentPage==1) {
+                                    $start=1;
+                                    $end=3;
+                                    } elseif ($currentPage==$totalPages) {
+                                    $start=$totalPages - 2;
+                                    $end=$totalPages;
+                                    } else {
+                                    $start=$currentPage - 1;
+                                    $end=$currentPage + 1;
+                                    }
+                                    }
+                                    @endphp
+
+                                    @for ($page=$start; $page <=$end; $page++)
+                                    @if ($page==$currentPage)
+                                    <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+                                    @else
+                                    <li class="page-item"><a class="page-link" href="{{ $pasiens_ugd->url($page) }}">{{ $page }}</a></li>
+                                    @endif
+                                    @endfor
+
+                                    {{-- Next Page Link --}}
+                                    @if ($pasiens_ugd->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $pasiens_ugd->nextPageUrl() }}" rel="next"
+                                            aria-label="Next">&raquo;</a>
+                                    </li>
+                                    @else
+                                    <li class="page-item disabled" aria-disabled="true" aria-label="Next">
+                                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                                    </li>
+                                    @endif
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </div>

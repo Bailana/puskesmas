@@ -586,8 +586,10 @@ class RawatinapUgdController extends Controller
     public function getVisitDates($no_rekam_medis, Request $request)
     {
         try {
+            \Log::info('getVisitDates called', ['no_rekam_medis' => $no_rekam_medis]);
             $pasien = \App\Models\Pasien::where('no_rekam_medis', $no_rekam_medis)->first();
             if (!$pasien) {
+                \Log::warning('Pasien tidak ditemukan', ['no_rekam_medis' => $no_rekam_medis]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Pasien tidak ditemukan.'
@@ -597,20 +599,121 @@ class RawatinapUgdController extends Controller
             $type = $request->query('type', 'rawatjalan');
 
             if ($type === 'rawatinap') {
-                // Fetch dates from hasilperiksa_ugd table for rawat inap
+                // Ambil tanggal dari hasilperiksa_ugd dan hasilanalisa_rawatinap
                 $hasilPeriksaUgdDates = \DB::table('hasilperiksa_ugd')
                     ->where('pasien_id', $pasien->id)
                     ->pluck('tanggal')
                     ->toArray();
 
-                $uniqueDates = array_unique(array_map(function ($d) {
-                    return date('Y-m-d', strtotime($d));
-                }, $hasilPeriksaUgdDates));
-                sort($uniqueDates);
+                $hasilAnalisaRawatinapDates = \DB::table('hasilanalisa_rawatinap')
+                    ->where('pasien_id', $pasien->id)
+                    ->pluck('created_at')
+                    ->toArray();
+
+                // Hilangkan duplikat dan urutkan tanggal rawatinap
+                $rawatinapDatesWithSource = [];
+
+                foreach ($hasilPeriksaUgdDates as $date) {
+                    $rawatinapDatesWithSource[] = [
+                        'date' => date('Y-m-d', strtotime($date)),
+                        'source' => 'hasilperiksa_ugd',
+                    ];
+                }
+
+                foreach ($hasilAnalisaRawatinapDates as $date) {
+                    $rawatinapDatesWithSource[] = [
+                        'date' => date('Y-m-d', strtotime($date)),
+                        'source' => 'hasilanalisa_rawatinap',
+                    ];
+                }
+
+                $uniqueRawatinapDates = [];
+                $seenRawatinap = [];
+                foreach ($rawatinapDatesWithSource as $item) {
+                    $key = $item['date'] . '_' . $item['source'];
+                    if (!isset($seenRawatinap[$key])) {
+                        $uniqueRawatinapDates[] = $item;
+                        $seenRawatinap[$key] = true;
+                    }
+                }
+
+                usort($uniqueRawatinapDates, function ($a, $b) {
+                    return strcmp($a['date'], $b['date']);
+                });
+
+                // Ambil tanggal dari hasilperiksa, hasilanalisa, hasilperiksagigi, hasilperiksa_anak
+                $hasilPeriksaDates = \App\Models\HasilPeriksa::where('pasien_id', $pasien->id)
+                    ->pluck('tanggal_periksa')
+                    ->toArray();
+
+                $hasilAnalisaDates = \App\Models\Hasilanalisa::where('pasien_id', $pasien->id)
+                    ->pluck('tanggal_analisa')
+                    ->toArray();
+
+                $hasilPeriksaAnakDates = \App\Models\HasilperiksaAnak::where('pasien_id', $pasien->id)
+                    ->pluck('created_at')
+                    ->toArray();
+
+                $hasilPeriksaGigiDates = \App\Models\HasilPeriksagigi::where('pasien_id', $pasien->id)
+                    ->pluck('tanggal_periksa')
+                    ->toArray();
+
+                // Hilangkan duplikat dan urutkan tanggal rawatjalan
+                $rawatjalanDatesWithSource = [];
+
+                foreach ($hasilPeriksaDates as $date) {
+                    $rawatjalanDatesWithSource[] = [
+                        'date' => date('Y-m-d', strtotime($date)),
+                        'source' => 'hasilperiksa',
+                    ];
+                }
+
+                foreach ($hasilAnalisaDates as $date) {
+                    $rawatjalanDatesWithSource[] = [
+                        'date' => date('Y-m-d', strtotime($date)),
+                        'source' => 'hasilanalisa',
+                    ];
+                }
+
+                foreach ($hasilPeriksaAnakDates as $date) {
+                    $rawatjalanDatesWithSource[] = [
+                        'date' => date('Y-m-d', strtotime($date)),
+                        'source' => 'hasilperiksa_anak',
+                    ];
+                }
+
+                foreach ($hasilPeriksaGigiDates as $date) {
+                    $rawatjalanDatesWithSource[] = [
+                        'date' => date('Y-m-d', strtotime($date)),
+                        'source' => 'hasilperiksagigi',
+                    ];
+                }
+
+                $uniqueRawatjalanDates = [];
+                $seenRawatjalan = [];
+                foreach ($rawatjalanDatesWithSource as $item) {
+                    $key = $item['date'] . '_' . $item['source'];
+                    if (!isset($seenRawatjalan[$key])) {
+                        $uniqueRawatjalanDates[] = $item;
+                        $seenRawatjalan[$key] = true;
+                    }
+                }
+
+                usort($uniqueRawatjalanDates, function ($a, $b) {
+                    return strcmp($a['date'], $b['date']);
+                });
+
+                \Log::info('getVisitDates returning separated data', [
+                    'rawatinap' => $uniqueRawatinapDates,
+                    'rawatjalan' => $uniqueRawatjalanDates,
+                ]);
 
                 return response()->json([
                     'success' => true,
-                    'data' => array_values($uniqueDates),
+                    'data' => [
+                        'rawatinap' => $uniqueRawatinapDates,
+                        'rawatjalan' => $uniqueRawatjalanDates,
+                    ],
                 ]);
             } else {
                 // Ambil semua tanggal dari hasil_periksa, hasil_analisa, hasil_periksa_anak, hasil_periksa_gigi
@@ -635,12 +738,15 @@ class RawatinapUgdController extends Controller
                 }, $allDates));
                 sort($uniqueDates); // urutkan dari terlama ke terbaru
 
+                \Log::info('getVisitDates returning', ['data' => $uniqueDates]);
+
                 return response()->json([
                     'success' => true,
                     'data' => array_values($uniqueDates),
                 ]);
             }
         } catch (\Throwable $e) {
+            \Log::error('Error in getVisitDates', ['exception' => $e]);
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi error: ' . $e->getMessage(),
@@ -686,7 +792,20 @@ class RawatinapUgdController extends Controller
                 ->latest()
                 ->first();
 
-            if (!$hasilAnalisa && !$hasilPeriksa && !$hasilPeriksaAnak && !$hasilPeriksaGigi) {
+            // Query HasilPeriksaUgd for the patient and date
+            $hasilPeriksaUgd = \DB::table('hasilperiksa_ugd')
+                ->where('pasien_id', $pasien->id)
+                ->whereDate('tanggal', $date)
+                ->latest('tanggal')
+                ->first();
+
+            // Query HasilanalisaRawatinap for the patient and date
+            $hasilAnalisaRawatinap = \App\Models\HasilanalisaRawatinap::where('pasien_id', $pasien->id)
+                ->whereDate('created_at', $date)
+                ->latest()
+                ->first();
+
+            if (!$hasilAnalisa && !$hasilPeriksa && !$hasilPeriksaAnak && !$hasilPeriksaGigi && !$hasilPeriksaUgd && !$hasilAnalisaRawatinap) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Tidak ada data hasil analisa atau hasil periksa untuk tanggal ' . $date . ' dan nomor rekam medis ' . $no_rekam_medis . '.',
@@ -716,6 +835,10 @@ class RawatinapUgdController extends Controller
                 $tanggalPeriksa = \Carbon\Carbon::parse($hasilPeriksaAnak->created_at)->toISOString();
             } elseif ($hasilPeriksaGigi && $hasilPeriksaGigi->tanggal_periksa) {
                 $tanggalPeriksa = \Carbon\Carbon::parse($hasilPeriksaGigi->tanggal_periksa)->toISOString();
+            } elseif ($hasilPeriksaUgd && $hasilPeriksaUgd->tanggal) {
+                $tanggalPeriksa = \Carbon\Carbon::parse($hasilPeriksaUgd->tanggal)->toISOString();
+            } elseif ($hasilAnalisaRawatinap && $hasilAnalisaRawatinap->created_at) {
+                $tanggalPeriksa = \Carbon\Carbon::parse($hasilAnalisaRawatinap->created_at)->toISOString();
             } else {
                 $tanggalPeriksa = "-";
             }
@@ -764,20 +887,20 @@ class RawatinapUgdController extends Controller
                 'riwayat_jatuh' => $hasilAnalisa ? $hasilAnalisa->riwayat_jatuh : null,
                 'status_psikologi' => $hasilAnalisa ? (
                     $hasilAnalisa->status_psikologi
-                    ? (is_array(json_decode($hasilAnalisa->status_psikologi, true))
-                        ? implode(', ', json_decode($hasilAnalisa->status_psikologi, true))
-                        : (is_string($hasilAnalisa->status_psikologi) ? $hasilAnalisa->status_psikologi : '-')
-                    )
-                    : null
+                        ? (is_array(json_decode($hasilAnalisa->status_psikologi, true))
+                            ? implode(', ', json_decode($hasilAnalisa->status_psikologi, true))
+                            : (is_string($hasilAnalisa->status_psikologi) ? $hasilAnalisa->status_psikologi : '-')
+                        )
+                        : null
                 ) : null,
                 'penanggung_jawab_analisa' => ($hasilAnalisa && $hasilAnalisa->penanggung_jawab) ? (\App\Models\User::find($hasilAnalisa->penanggung_jawab)->name ?? '-') : null,
                 'hambatan_edukasi' => $hasilAnalisa ? (
                     $hasilAnalisa->hambatan_edukasi
-                    ? (is_array(json_decode($hasilAnalisa->hambatan_edukasi, true))
-                        ? implode(', ', json_decode($hasilAnalisa->hambatan_edukasi, true))
-                        : (is_string($hasilAnalisa->hambatan_edukasi) ? $hasilAnalisa->hambatan_edukasi : '-')
-                    )
-                    : null
+                        ? (is_array(json_decode($hasilAnalisa->hambatan_edukasi, true))
+                            ? implode(', ', json_decode($hasilAnalisa->hambatan_edukasi, true))
+                            : (is_string($hasilAnalisa->hambatan_edukasi) ? $hasilAnalisa->hambatan_edukasi : '-')
+                        )
+                        : null
                 ) : null,
                 'alergi' => $hasilAnalisa ? $hasilAnalisa->alergi : null,
                 'catatan' => $hasilAnalisa ? $hasilAnalisa->catatan : null,
@@ -790,6 +913,47 @@ class RawatinapUgdController extends Controller
                 'nasehat_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->nasehat : null,
                 'pegobatan_anak' => $hasilPeriksaAnak ? $hasilPeriksaAnak->pegobatan : null,
                 'penanggung_jawab_anak' => ($hasilPeriksaAnak && $hasilPeriksaAnak->penanggung_jawab) ? (\App\Models\User::find($hasilPeriksaAnak->penanggung_jawab)->name ?? '-') : null,
+                // Hasil Periksa UGD fields
+                'tanggal_periksa_ugd' => $hasilPeriksaUgd ? $hasilPeriksaUgd->tanggal : null,
+                'waktu_ugd' => $hasilPeriksaUgd ? $hasilPeriksaUgd->waktu : null,
+                'soap_ugd' => $hasilPeriksaUgd ? $hasilPeriksaUgd->soap : null,
+                'intruksi_tenaga_kerja_ugd' => $hasilPeriksaUgd ? $hasilPeriksaUgd->intruksi_tenagakerja : null,
+                'penanggung_jawab_ugd' => $hasilPeriksaUgd ? (\App\Models\User::find($hasilPeriksaUgd->penanggung_jawab)->name ?? null) : null,
+                // Hasil Analisa Rawatinap fields
+                'tekanan_darah_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->tekanan_darah : null,
+                'frekuensi_nadi_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->frekuensi_nadi : null,
+                'suhu_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->suhu : null,
+                'frekuensi_nafas_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->frekuensi_nafas : null,
+                'skor_nyeri_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->skor_nyeri : null,
+                'skor_jatuh_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->skor_jatuh : null,
+                'berat_badan_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->berat_badan : null,
+                'tinggi_badan_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->tinggi_badan : null,
+                'lingkar_kepala_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->lingkar_kepala : null,
+                'imt_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->imt : null,
+                'alat_bantu_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->alat_bantu : null,
+                'prosthesa_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->prosthesa : null,
+                'cacat_tubuh_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->cacat_tubuh : null,
+                'adl_mandiri_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->adl_mandiri : null,
+                'riwayat_jatuh_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->riwayat_jatuh : null,
+                'status_psikologi_rawatinap' => $hasilAnalisaRawatinap ? (
+                    $hasilAnalisaRawatinap->status_psikologi
+                        ? (is_array(json_decode($hasilAnalisaRawatinap->status_psikologi, true))
+                            ? implode(', ', json_decode($hasilAnalisaRawatinap->status_psikologi, true))
+                            : (is_string($hasilAnalisaRawatinap->status_psikologi) ? $hasilAnalisaRawatinap->status_psikologi : '-')
+                        )
+                        : null
+                ) : null,
+                'hambatan_edukasi_rawatinap' => $hasilAnalisaRawatinap ? (
+                    $hasilAnalisaRawatinap->hambatan_edukasi
+                        ? (is_array(json_decode($hasilAnalisaRawatinap->hambatan_edukasi, true))
+                            ? implode(', ', json_decode($hasilAnalisaRawatinap->hambatan_edukasi, true))
+                            : (is_string($hasilAnalisaRawatinap->hambatan_edukasi) ? $hasilAnalisaRawatinap->hambatan_edukasi : '-')
+                        )
+                        : null
+                ) : null,
+                'alergi_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->alergi : null,
+                'catatan_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->catatan : null,
+                'penanggung_jawab_rawatinap' => ($hasilAnalisaRawatinap && $hasilAnalisaRawatinap->penanggung_jawab) ? (\App\Models\User::find($hasilAnalisaRawatinap->penanggung_jawab)->name ?? '-') : null,
             ];
 
             return response()->json([

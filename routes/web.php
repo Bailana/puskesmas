@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\DB;
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/ugd', function () {
-        $pasiens_ugd = \App\Models\PasiensUgd::with('pasien')->whereIn('status', ['UGD', 'Perlu Analisa'])->get();
+        $pasiens_ugd = \App\Models\PasiensUgd::with('pasien')->whereIn('status', ['UGD', 'Perlu Analisa'])->paginate(10);
         return view('admin.ugd', compact('pasiens_ugd'));
     })->name('admin.ugd');
 
@@ -63,7 +63,28 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
         $inactiveUsers = $totalUsers - $activeUsers;
 
-        return view('admin.dashboard', compact('totalUsers', 'totalPasiens', 'activeUsers', 'inactiveUsers'));
+        // Get user counts grouped by role
+        $userCountsByRole = User::select('role', DB::raw('count(*) as count'))
+            ->groupBy('role')
+            ->pluck('count', 'role')
+            ->toArray();
+
+        $roles = array_keys($userCountsByRole);
+        $counts = array_values($userCountsByRole);
+
+        // Get patient counts grouped by month (format: YYYY-MM)
+        $patientMonthlyData = Pasien::select(
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
+            DB::raw('count(*) as count')
+        )
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
+
+        $months = $patientMonthlyData->pluck('month')->toArray();
+        $patientCounts = $patientMonthlyData->pluck('count')->toArray();
+
+        return view('admin.dashboard', compact('totalUsers', 'totalPasiens', 'activeUsers', 'inactiveUsers', 'roles', 'counts', 'months', 'patientCounts'));
     })->name('admin.dashboard');
 
     Route::get('/admin/datauser', [AdminUserController::class, 'index'])->name('admin.datauser');

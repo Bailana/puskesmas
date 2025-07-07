@@ -12,7 +12,15 @@ class AdminLogController extends Controller
      */
     public function index()
     {
-        $logs = ActivityLog::with('user')->orderBy('created_at', 'desc')->paginate(20);
+        $logs = ActivityLog::with('user')
+            ->where(function ($query) {
+                $query->where('action', 'like', '%login%')
+                      ->orWhere('action', 'like', '%tambah%')
+                      ->orWhere('action', 'like', '%ubah%')
+                      ->orWhere('action', 'like', '%hapus%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
         return view('admin.log', compact('logs'));
     }

@@ -348,7 +348,6 @@
                             <option value="1">Poli Umum</option>
                             <option value="2">Poli Gigi</option>
                             <option value="3">Poli KIA</option>
-                            <option value="4">Poli Lansia</option>
                         </select>
                     </div>
                     <div class="modal-footer modal-analisa-footer-fixed">

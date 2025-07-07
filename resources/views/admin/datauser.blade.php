@@ -34,7 +34,7 @@
             <tbody id="usersTableBody">
               @foreach ($users as $index => $user)
               <tr>
-                <td class="nowrap">{{ $index + 1 }}</td>
+                <td class="nowrap">{{ $users->firstItem() + $index }}</td>
                 <td class="nowrap">{{ ucfirst($user->role) }}</td>
                 <td class="nowrap">{{ $user->name }}</td>
                 <td class="nowrap">{{ $user->email }}</td>
@@ -55,6 +55,73 @@
               @endforeach
             </tbody>
           </table>
+        </div>
+        <div class="mt-3 mb-2">
+          <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="small text-muted mb-2 text-start ps-3 pagination-info-text">
+          Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of
+          {{ $users->total() }} results
+        </div>
+        <nav class="d-flex justify-content-center">
+          <ul class="pagination d-flex flex-row flex-wrap gap-2"
+            style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
+            {{-- Previous Page Link --}}
+            @if ($users->onFirstPage())
+            <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
+              <span class="page-link" aria-hidden="true">&laquo;</span>
+            </li>
+            @else
+            <li class="page-item">
+              <a class="page-link" href="{{ $users->previousPageUrl() }}" rel="prev"
+                aria-label="Previous">&laquo;</a>
+            </li>
+            @endif
+
+            {{-- Pagination Elements --}}
+            @php
+            $totalPages = $users->lastPage();
+            $currentPage = $users->currentPage();
+            $maxButtons = 3;
+
+            if ($totalPages <= $maxButtons) {
+              $start=1;
+              $end=$totalPages;
+              } else {
+              if ($currentPage==1) {
+              $start=1;
+              $end=3;
+              } elseif ($currentPage==$totalPages) {
+              $start=$totalPages - 2;
+              $end=$totalPages;
+              } else {
+              $start=$currentPage - 1;
+              $end=$currentPage + 1;
+              }
+              }
+              @endphp
+
+              @for ($page=$start; $page <=$end; $page++)
+              @if ($page==$currentPage)
+              <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+              @else
+              <li class="page-item"><a class="page-link" href="{{ $users->url($page) }}">{{ $page }}</a></li>
+              @endif
+              @endfor
+
+              {{-- Next Page Link --}}
+              @if ($users->hasMorePages())
+              <li class="page-item">
+                <a class="page-link" href="{{ $users->nextPageUrl() }}" rel="next"
+                  aria-label="Next">&raquo;</a>
+              </li>
+              @else
+              <li class="page-item disabled" aria-disabled="true" aria-label="Next">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+              </li>
+              @endif
+          </ul>
+        </nav>
+          </div>
         </div>
       </div>
     </div>
@@ -98,9 +165,9 @@
             <input type="password" class="form-control" id="password{{ $user->id }}" name="password">
           </div>
         </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Simpan</button>
-          </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
       </div>
     </form>
   </div>
@@ -215,7 +282,7 @@
 </div>
 @endsection
 @section('scripts')
-  <script>
+<script>
   document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const tableBody = document.getElementById('usersTableBody');
@@ -262,7 +329,12 @@
             userDetailModal.querySelector('#detailUserRoleSelect').value = user.role || '';
             userDetailModal.querySelector('#detailUserNameInput').value = user.name || '';
             userDetailModal.querySelector('#detailUserEmailInput').value = user.email || '';
-            userDetailModal.querySelector('#detailUserCreatedInput').value = new Date(user.created_at).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit' }) || '';
+            userDetailModal.querySelector('#detailUserCreatedInput').value = new Date(user.created_at).toLocaleDateString('id-ID', {
+              weekday: 'long',
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit'
+            }) || '';
 
             if (user.profile_photo_url) {
               detailUserPhoto.src = user.profile_photo_url;
@@ -330,14 +402,14 @@
         }
 
         fetch(`/admin/users/edit/${userId}`, {
-          method: 'POST',
-          headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'X-HTTP-Method-Override': 'PUT',
-            'X-Requested-With': 'XMLHttpRequest'
-          },
-          body: formData
-        })
+            method: 'POST',
+            headers: {
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+              'X-HTTP-Method-Override': 'PUT',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+          })
           .then(async response => {
             const contentType = response.headers.get('content-type');
             if (!response.ok) {
