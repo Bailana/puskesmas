@@ -94,7 +94,7 @@
         </div>
     </div>
 
-    <div class="container-fluid p-0">
+    <!-- <div class="container-fluid p-0">
         <h1 class="h3 mb-3"><strong>Antrian Pasien</strong></h1>
         <div class="row">
             <div class="col-12 col-lg-12 col-xxl-12 d-flex">
@@ -211,7 +211,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <div class="row">
         <div class="col-12 col-lg-6">

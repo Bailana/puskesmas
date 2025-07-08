@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    <div class="container-fluid p-0">
+    <!-- <div class="container-fluid p-0">
         <h1 class="h3 mb-3"><strong>Antrian Pasien</strong></h1>
         <div class="row">
             <div class="col-12 col-lg-12 col-xxl-12 d-flex">
@@ -209,32 +209,18 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <div class="row">
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-12">
             <div class="card flex-fill w-100">
                 <div class="card-header">
-                    <h5 class="card-title">Line Chart</h5>
+                    <h5 class="card-title">Jumlah Obat Masuk & Keluar / Bulan</h5>
                     <!-- <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6> -->
                 </div>
                 <div class="card-body">
                     <div class="chart chart-sm">
                         <canvas id="chartjs-line"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-lg-6">
-            <div class="card ">
-                <div class="card-header">
-                    <h5 class="card-title">Pasien Poli</h5>
-                    <!-- <h6 class="card-subtitle text-muted">Doughnut charts are excellent at showing the relational proportions
-                    between data.</h6> -->
-                </div>
-                <div class="card-body">
-                    <div class="chart chart-sm">
-                        <canvas id="chartjs-doughnut"></canvas>
                     </div>
                 </div>
             </div>
@@ -346,6 +332,74 @@
 @endsection
 @section('scripts')
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Line chart
+        new Chart(document.getElementById("chartjs-line"), {
+            type: "line",
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+                    "Nov", "Dec"
+                ],
+                datasets: [{
+                    label: "Obat Masuk",
+                    fill: true,
+                    backgroundColor: "transparent",
+                    borderColor: window.theme.primary,
+                    data: [2115, 1562, 1584, 1892, 1487, 2223, 2966, 2448, 2905, 3838, 2917,
+                        3327
+                    ]
+                }, {
+                    label: "Obat Keluar",
+                    fill: true,
+                    backgroundColor: "transparent",
+                    borderColor: window.theme.danger,
+                    // borderDash: [4, 4],
+                    data: [958, 724, 629, 883, 915, 1214, 1476, 1212, 1554, 2128, 1466,
+                        1827
+                    ]
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    intersect: false
+                },
+                hover: {
+                    intersect: true
+                },
+                plugins: {
+                    filler: {
+                        propagate: false
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        reverse: true,
+                        gridLines: {
+                            color: "rgba(0,0,0,0.05)"
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            stepSize: 500
+                        },
+                        display: true,
+                        borderDash: [5, 5],
+                        gridLines: {
+                            color: "rgba(0,0,0,0)",
+                            fontColor: "#fff"
+                        }
+                    }]
+                }
+            }
+        });
+    });
+</script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         const modalHasilPeriksa = new bootstrap.Modal(document.getElementById('modalHasilPeriksa'));
 
@@ -452,33 +506,33 @@
             }
 
             fetch(`/apoteker/antrian/update-status/${currentPasienId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({})
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(errData => {
-                        throw new Error(errData.message || 'Gagal memperbarui status antrian.');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert(data.message || 'Status antrian berhasil diperbarui.');
-                // Close modal
-                const modalRacikObat = bootstrap.Modal.getInstance(document.getElementById('modalRacikObat'));
-                modalRacikObat.hide();
-                // Optionally reload page or update UI
-                location.reload();
-            })
-            .catch(error => {
-                alert(error.message);
-            });
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errData => {
+                            throw new Error(errData.message || 'Gagal memperbarui status antrian.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message || 'Status antrian berhasil diperbarui.');
+                    // Close modal
+                    const modalRacikObat = bootstrap.Modal.getInstance(document.getElementById('modalRacikObat'));
+                    modalRacikObat.hide();
+                    // Optionally reload page or update UI
+                    location.reload();
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
         });
     });
 </script>

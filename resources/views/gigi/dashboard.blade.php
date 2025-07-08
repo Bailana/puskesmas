@@ -321,7 +321,8 @@
         });
     });
 </script>
-<script>
+@endsection
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         var periksaButtons = document.querySelectorAll('.btn-periksa');
         var modalElement = document.getElementById('modalPeriksaPasien');
@@ -465,5 +466,4 @@
                 });
         });
     });
-</script>
-@endsection
+</script> -->

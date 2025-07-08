@@ -179,7 +179,9 @@
                                 </a>
                                 <form method="POST" action="{{ route('logout') }}" id="logout-form">
                                     @csrf
-                                    <button type="button" class="dropdown-item" onclick="logoutConfirmation()">Log out</button>
+                                    <button type="button" class="dropdown-item" onclick="logoutConfirmation()">
+                                        <i class="align-middle me-1" data-feather="log-out"></i> Log out
+                                    </button>
                                 </form>
                             </div>
                         </li>
