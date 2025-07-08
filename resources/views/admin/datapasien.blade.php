@@ -81,7 +81,7 @@
                                         data-bs-toggle="modal" data-bs-target="#modalRiwayatBerobat">
                                         Riwayat Berobat
                                     </button>
-                                    <a href="{{ route('cetak.surat', $pasien->id) }}" class="btn btn-warning btn-sm rounded" target="_blank">Cetak Surat</a>
+                                    <button type="button" class="btn btn-warning btn-sm rounded btn-cetak-surat" data-id="{{ $pasien->id }}" data-nama="{{ $pasien->nama_pasien }}" data-bs-toggle="modal" data-bs-target="#modalCetakSurat">Cetak Surat</button>
                                 </td>
                             </tr>
                             @endforeach
@@ -618,6 +618,30 @@
                 </div>
             </div>
             <div class="modal-footer d-flex justify-content-end mt-3"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cetak Surat -->
+<div class="modal fade" id="modalCetakSurat" tabindex="-1" aria-labelledby="modalCetakSuratLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between">
+                <h3 class="modal-title" id="modalCetakSuratLabel"><strong>Cetak Surat</strong></h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="keperluan" class="form-label">Keperluan Surat</label>
+                    <input type="text" class="form-control" id="keperluan" name="keperluan" required>
+                </div>
+                <div id="suratPreview" style="display:none; border: 1px solid #ccc; padding: 15px; max-height: 400px; overflow-y: auto;">
+                    <!-- Surat content preview will be rendered here -->
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-end">
+                <button type="button" class="btn btn-primary" id="btnGeneratePdf">Buat PDF</button>
+            </div>
         </div>
     </div>
 </div>

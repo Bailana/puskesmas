@@ -77,9 +77,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
             DB::raw('count(*) as count')
         )
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
 
         $months = $patientMonthlyData->pluck('month')->toArray();
         $patientCounts = $patientMonthlyData->pluck('count')->toArray();
@@ -139,6 +139,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // API route to get hasil analisa and periksa data for a date
     Route::get('/admin/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\AdminUserController::class, 'getVisitData'])->name('admin.riwayat.data');
     Route::get('/admin/datapasien/{id}/surat', [PasienController::class, 'surat'])->middleware(['auth', 'role:admin'])->name('cetak.surat');
+    Route::post('/admin/datapasien/{id}/surat', [PasienController::class, 'generateSuratPdf'])->middleware(['auth', 'role:admin'])->name('generate.surat.pdf');
 
     Route::get('/admin/log', [AdminLogController::class, 'index'])->name('admin.log');
 });
@@ -292,7 +293,7 @@ Route::middleware(['auth', 'role:rawatinap'])->group(function () {
             $count = PasiensUgd::where('status', 'Rawat Inap')->where('ruangan', $label)->count();
             $poliData[] = $count;
         }
-        
+
 
         // New: Prepare room names and patient counts for line chart
         $roomNames = ['Matahari', 'Mawar', 'Melur', 'Melati'];

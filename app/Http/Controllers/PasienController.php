@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Pasien;
 use App\Models\Antrian;
+use PDF;
 
 
 class PasienController extends Controller
@@ -249,6 +250,23 @@ class PasienController extends Controller
         // Logika untuk membuat atau menampilkan surat terkait pasien
         // Misalnya, return view('admin.surat', compact('pasien'));
         return view('admin.surat', compact('pasien'));
+    }
+
+    public function generateSuratPdf(Request $request, $id)
+    {
+        $request->validate([
+            'keperluan' => 'required|string|max:255',
+        ]);
+
+        $pasien = Pasien::findOrFail($id);
+        $keperluan = $request->input('keperluan');
+
+        // Generate PDF using Dompdf or similar package
+        $pdf = \PDF::loadView('admin.surat_pdf', compact('pasien', 'keperluan'));
+
+        $filename = 'surat_' . $pasien->id . '_' . date('YmdHis') . '.pdf';
+
+        return $pdf->download($filename);
     }
 
     public function store(Request $request)
