@@ -249,138 +249,135 @@
 
         </div>
     </div>
+</div>
+<!-- Modal Data Pasien -->
+<div class="modal fade" id="modalPasienDetail" tabindex="-1" aria-labelledby="modalPasienDetailLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
+        <div class="modal-content" style="overflow-x: hidden;">
+            <div class="modal-header d-flex justify-content-between">
+                <h3 class="modal-title" id="modalPasienDetailLabel"><strong>Detail Pasien</strong></h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
 
-    <!-- Modal Data Pasien -->
-    <div class="modal fade" id="modalPasienDetail" tabindex="-1" aria-labelledby="modalPasienDetailLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
-            <div class="modal-content" style="overflow-x: hidden;">
-                <div class="modal-header d-flex justify-content-between">
-                    <h3 class="modal-title" id="modalPasienDetailLabel"><strong>Detail Pasien</strong></h3>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <!-- Modal Body with Scroll -->
-                <div class="modal-body p-3" style="max-height: 400px; overflow-y: auto;">
-                    <form>
-                        <div class="container-fluid">
-                            <!-- Personal Info -->
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="modalNoRekamMedis" class="form-label">No. Rekam Medis</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalNoRekamMedis" readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalNikPasien" class="form-label">NIK</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalNikPasien" readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalNamaPasien" class="form-label">Nama Pasien</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalNamaPasien" readonly>
-                                </div>
+            <!-- Modal Body with Scroll -->
+            <div class="modal-body p-3" style="max-height: 400px; overflow-y: auto;">
+                <form>
+                    <div class="container-fluid">
+                        <!-- Personal Info -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="modalNoRekamMedis" class="form-label">No. Rekam Medis</label>
+                                <input type="text" class="form-control form-control-sm" id="modalNoRekamMedis" readonly>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="modalTempatLahir" class="form-label">Tempat Lahir</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalTempatLahir" readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalTanggalLahir" class="form-label">Tanggal Lahir</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalTanggalLahir" readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalJenisKelamin" class="form-label">Jenis Kelamin</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalJenisKelamin" readonly>
-                                </div>
+                            <div class="col-md-4">
+                                <label for="modalNikPasien" class="form-label">NIK</label>
+                                <input type="text" class="form-control form-control-sm" id="modalNikPasien" readonly>
                             </div>
-                            <!-- Health Info -->
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="modalGolonganDarah" class="form-label">Golongan Darah</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalGolonganDarah"
-                                        readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalAgama" class="form-label">Agama</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalAgama" readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalPekerjaan" class="form-label">Pekerjaan</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalPekerjaan" readonly>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="modalStatusPernikahan" class="form-label">Status Pernikahan</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalStatusPernikahan"
-                                        readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalKepalaKeluarga" class="form-label">Kepala Keluarga</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalKepalaKeluarga"
-                                        readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalNoHp" class="form-label">Nomor Telepon</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalNoHp" readonly>
-                                </div>
-                            </div>
-                            <!-- Address Info -->
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <label for="modalAlamat" class="form-label">Alamat</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalAlamat" readonly>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="modalRt" class="form-label">RT</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalRt" readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalRw" class="form-label">RW</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalRw" readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalKelurahan" class="form-label">Kelurahan</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalKelurahan" readonly>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="modalKecamatan" class="form-label">Kecamatan</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalKecamatan" readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalKabupaten" class="form-label">Kabupaten</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalKabupaten" readonly>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modalProvinsi" class="form-label">Provinsi</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalProvinsi" readonly>
-                                </div>
-                            </div>
-                            <!-- Insurance Info -->
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="modalJaminan" class="form-label">Jaminan Kesehatan</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalJaminan" readonly>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="modalNoKepesertaan" class="form-label">No. Kepesertaan</label>
-                                    <input type="text" class="form-control form-control-sm" id="modalNoKepesertaan"
-                                        readonly>
-                                </div>
+                            <div class="col-md-4">
+                                <label for="modalNamaPasien" class="form-label">Nama Pasien</label>
+                                <input type="text" class="form-control form-control-sm" id="modalNamaPasien" readonly>
                             </div>
                         </div>
-                    </form>
-                </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="modalTempatLahir" class="form-label">Tempat Lahir</label>
+                                <input type="text" class="form-control form-control-sm" id="modalTempatLahir" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalTanggalLahir" class="form-label">Tanggal Lahir</label>
+                                <input type="text" class="form-control form-control-sm" id="modalTanggalLahir" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalJenisKelamin" class="form-label">Jenis Kelamin</label>
+                                <input type="text" class="form-control form-control-sm" id="modalJenisKelamin" readonly>
+                            </div>
+                        </div>
+                        <!-- Health Info -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="modalGolonganDarah" class="form-label">Golongan Darah</label>
+                                <input type="text" class="form-control form-control-sm" id="modalGolonganDarah"
+                                    readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalAgama" class="form-label">Agama</label>
+                                <input type="text" class="form-control form-control-sm" id="modalAgama" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalPekerjaan" class="form-label">Pekerjaan</label>
+                                <input type="text" class="form-control form-control-sm" id="modalPekerjaan" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="modalStatusPernikahan" class="form-label">Status Pernikahan</label>
+                                <input type="text" class="form-control form-control-sm" id="modalStatusPernikahan"
+                                    readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalKepalaKeluarga" class="form-label">Kepala Keluarga</label>
+                                <input type="text" class="form-control form-control-sm" id="modalKepalaKeluarga"
+                                    readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalNoHp" class="form-label">Nomor Telepon</label>
+                                <input type="text" class="form-control form-control-sm" id="modalNoHp" readonly>
+                            </div>
+                        </div>
+                        <!-- Address Info -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="modalAlamat" class="form-label">Alamat</label>
+                                <input type="text" class="form-control form-control-sm" id="modalAlamat" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="modalRt" class="form-label">RT</label>
+                                <input type="text" class="form-control form-control-sm" id="modalRt" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalRw" class="form-label">RW</label>
+                                <input type="text" class="form-control form-control-sm" id="modalRw" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalKelurahan" class="form-label">Kelurahan</label>
+                                <input type="text" class="form-control form-control-sm" id="modalKelurahan" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="modalKecamatan" class="form-label">Kecamatan</label>
+                                <input type="text" class="form-control form-control-sm" id="modalKecamatan" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalKabupaten" class="form-label">Kabupaten</label>
+                                <input type="text" class="form-control form-control-sm" id="modalKabupaten" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalProvinsi" class="form-label">Provinsi</label>
+                                <input type="text" class="form-control form-control-sm" id="modalProvinsi" readonly>
+                            </div>
+                        </div>
+                        <!-- Insurance Info -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="modalJaminan" class="form-label">Jaminan Kesehatan</label>
+                                <input type="text" class="form-control form-control-sm" id="modalJaminan" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="modalNoKepesertaan" class="form-label">No. Kepesertaan</label>
+                                <input type="text" class="form-control form-control-sm" id="modalNoKepesertaan"
+                                    readonly>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
-@endsection
 
 <!-- Modal Riwayat Berobat -->
 <div class="modal fade" id="modalRiwayatBerobat" tabindex="-1" aria-labelledby="modalRiwayatBerobatLabel" aria-hidden="true">
@@ -398,7 +395,7 @@
         </div>
     </div>
 </div>
-
+@endsection
 @section('scripts')
 <script>
     var riwayatBerobatModal = document.getElementById('modalRiwayatBerobat');

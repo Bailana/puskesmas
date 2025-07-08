@@ -18,6 +18,7 @@
     <link rel="icon" type="image/png" href="{{ url('template/images/LogoRohil.png') }}">
 
     <link href="{{url('dokterAssets/css/app.css')}}" rel="stylesheet">
+    <link href="{{url('dokterAssets/css/custom-pagination.css')}}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
@@ -83,7 +84,7 @@
 
 
                     <ul class="navbar-nav navbar-align">
-                        <li class="nav-item dropdown">
+                        <!-- <li class="nav-item dropdown">
                             <a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
                                 <div class="position-relative">
                                     <i class="align-middle" data-feather="bell"></i>
@@ -151,7 +152,7 @@
                                     <a href="#" class="text-muted">Show all notifications</a>
                                 </div>
                             </div>
-                        </li>
+                        </li> -->
 
                         <li class="nav-item dropdown">
                             <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#"
@@ -221,7 +222,7 @@
 
     @if(session('status'))
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             toastr.options = {
                 "positionClass": "toast-top-right",
                 "timeOut": "3000",
@@ -230,7 +231,6 @@
             };
             toastr.success("{{ session('status') }}");
         });
-
     </script>
     @endif
 
@@ -265,7 +265,6 @@
 
         setInterval(updateTime, 1000); // Perbarui setiap detik
         updateTime(); // Panggil sekali saat halaman dimuat
-
     </script>
 </body>
 

@@ -38,7 +38,7 @@
                             @else
                             @foreach ($antrians as $index => $antrian)
                             <tr>
-                                <td style="white-space: nowrap;">{{ $antrians->firstItem() + $index }}</td>
+                                <td style="white-space: nowrap;">{{ $antrians->firstItem() + $index }}.</td>
                                 <td style="white-space: nowrap;">{{ $antrian->no_rekam_medis }}</td>
                                 <td style="white-space: nowrap;">{{ $antrian->pasien->nama_pasien }}</td>
                                 <td style="white-space: nowrap;">
@@ -47,7 +47,7 @@
                                 <td style="white-space: nowrap;">{{ $antrian->pasien->jaminan_kesehatan }}</td>
                                 <!-- <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($antrian->tanggal_berobat)->format('d-m-Y') }}</td> -->
                                 <td style="white-space: nowrap;"><span
-                                        class="badge bg-warning">{{ $antrian->status }}</span></td>
+                                        class="badge bg-danger">{{ $antrian->status }}</span></td>
                                 <td style="white-space: nowrap;">
                                     <button type="button" class="btn btn-success btn-sm rounded btn-hasilanalisa"
                                         data-rekam-medis="{{ $antrian->no_rekam_medis }}"

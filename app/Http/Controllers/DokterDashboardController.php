@@ -20,24 +20,48 @@ class DokterDashboardController extends Controller
 
         $antrians = Antrian::where('poli_id', 1)
             ->where('status', 'Pemeriksaan')
+            ->whereDate('tanggal_berobat', $today)
             ->paginate(5);
 
         // Count total antrian for today with status 'Pemeriksaan' and poli_id 1 (Umum)
-        $totalAntrianCount = Antrian::whereDate('tanggal_berobat', $today)
-            ->where('status', 'Pemeriksaan')
+        $totalAntrianCount = Antrian::where('status', 'Pemeriksaan')
             ->where('poli_id', 1)
+            ->whereDate('tanggal_berobat', $today)
             ->count();
 
         $obats = \App\Models\Obat::select('id', 'nama_obat', 'bentuk_obat', 'stok')->get();
 
         // Count total antrian selesai for today with poli_id 1 (Umum)
-        $today = \Carbon\Carbon::today()->toDateString();
         $totalAntrianSelesaiCount = Antrian::whereDate('tanggal_berobat', $today)
             ->where('status', 'Selesai')
             ->where('poli_id', 1)
             ->count();
 
-        return view('dokter.dashboard', compact('antrians', 'obats', 'totalAntrianCount', 'totalAntrianSelesaiCount'));
+        return view('dokter.dashboard', compact(
+            'antrians',
+            'obats',
+            'totalAntrianCount',
+            'totalAntrianSelesaiCount'
+        ));
+
+        $obats = \App\Models\Obat::select('id', 'nama_obat', 'bentuk_obat', 'stok')->get();
+
+        // Count total antrian selesai for today with poli_id 1 (Umum)
+        $totalAntrianSelesaiCount = Antrian::whereDate('tanggal_berobat', $today)
+            ->where('status', 'Selesai')
+            ->where('poli_id', 1)
+            ->count();
+
+        // Pass debug counts to view for temporary display
+        return view('dokter.dashboard', compact(
+            'antrians',
+            'obats',
+            'totalAntrianCount',
+            'totalAntrianSelesaiCount',
+            'totalAntrianToday',
+            'totalAntrianStatusPemeriksaan',
+            'totalAntrianPoliUmum'
+        ));
     }
 
     public function hasilAnalisaAjax($no_rekam_medis)
@@ -138,7 +162,7 @@ class DokterDashboardController extends Controller
             });
         }
 
-        $antrians = $query->paginate(1);
+        $antrians = $query->paginate(10);
 
         if ($request->ajax()) {
             return response()->json($antrians);

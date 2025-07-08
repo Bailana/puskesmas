@@ -38,7 +38,7 @@
                         <tbody>
                             @foreach ($pasiens as $index => $pasien)
                             <tr>
-                                <td class="white-space: nowrap">{{ $pasiens->firstItem() + $index }}</td>
+                                <td class="white-space: nowrap">{{ $pasiens->firstItem() + $index }}.</td>
                                 <td style="white-space: nowrap;">{{ $pasien->no_rekam_medis }}</td>
                                 <td style="white-space: nowrap;">{{ $pasien->nama_pasien}}</td>
                                 <td style="white-space: nowrap;">
@@ -659,7 +659,7 @@
             pasiens.data.forEach((pasien, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                                <td class="nowrap">${index + 1 + (pasiens.current_page - 1) * pasiens.per_page}</td>
+                                <td class="nowrap">${index + 1 + (pasiens.current_page - 1) * pasiens.per_page}.</td>
                                 <td class="nowrap">${pasien.no_rekam_medis}</td>
                                 <td class="nowrap">${pasien.nama_pasien}</td>
                                 <td class="nowrap">${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>

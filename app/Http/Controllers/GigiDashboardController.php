@@ -99,7 +99,7 @@ class GigiDashboardController extends Controller
             $query->whereDate('tanggal_lahir', $request->tanggal_lahir);
         }
 
-        $pasiens = $query->paginate(10)->withQueryString();
+        $pasiens = $query->paginate(5)->withQueryString();
 
         if ($request->ajax()) {
             return response()->json($pasiens);

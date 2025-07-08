@@ -76,6 +76,22 @@
                                                         {{ request('gol_darah') == 'AB' ? 'selected' : '' }}>AB</option>
                                                     <option value="O"
                                                         {{ request('gol_darah') == 'O' ? 'selected' : '' }}>O</option>
+                                                    <option value="A+"
+                                                        {{ request('gol_darah') == 'A+' ? 'selected' : '' }}>A+</option>
+                                                    <option value="A-"
+                                                        {{ request('gol_darah') == 'A-' ? 'selected' : '' }}>A-</option>
+                                                    <option value="B+"
+                                                        {{ request('gol_darah') == 'B+' ? 'selected' : '' }}>B+</option>
+                                                    <option value="B-"
+                                                        {{ request('gol_darah') == 'B-' ? 'selected' : '' }}>B-</option>
+                                                    <option value="AB+"
+                                                        {{ request('gol_darah') == 'AB+' ? 'selected' : '' }}>AB+</option>
+                                                    <option value="AB-"
+                                                        {{ request('gol_darah') == 'AB-' ? 'selected' : '' }}>AB-</option>
+                                                    <option value="O+"
+                                                        {{ request('gol_darah') == 'O+' ? 'selected' : '' }}>O+</option>
+                                                    <option value="O-"
+                                                        {{ request('gol_darah') == 'O-' ? 'selected' : '' }}>O-</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
@@ -90,9 +106,6 @@
                                                     <option value="BPJS Kesehatan"
                                                         {{ request('jaminan_kesehatan') == 'BPJS Kesehatan' ? 'selected' : '' }}>
                                                         BPJS Kesehatan</option>
-                                                    <option value="Perusahaan"
-                                                        {{ request('jaminan_kesehatan') == 'Perusahaan' ? 'selected' : '' }}>
-                                                        Perusahaan</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
@@ -431,7 +444,6 @@
                                 <option value="">Pilih Jaminan Kesehatan</option>
                                 <option value="Umum">Umum</option>
                                 <option value="BPJS Kesehatan">BPJS Kesehatan</option>
-                                <option value="Perusahaan">Perusahaan</option>
                             </select>
                             <div class="invalid-feedback">Jaminan Kesehatan wajib dipilih.</div>
                         </div>
@@ -607,7 +619,6 @@
                             <select class="form-control form-control-sm" id="modalJaminan" disabled>
                                 <option value="Umum">Umum</option>
                                 <option value="BPJS Kesehatan">BPJS Kesehatan</option>
-                                <option value="Perusahaan">Kesehatan Perusahaan</option>
                             </select>
                         </div>
                         <div class="col-6">

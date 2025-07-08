@@ -2,9 +2,7 @@
 
 @section('dokter')
 <div class="container-fluid p-0">
-
     <h1 class="h3 mb-3"><strong>Dashboard Dokter</strong></h1>
-
     <div class="row">
         <div class="col-xl-12 col-xxl-12 d-flex">
             <div class="w-100">
@@ -23,6 +21,7 @@
                                     </div>
                                 </div>
                                 <h1 class="mt-1 mb-3">{{ $totalAntrianCount }}</h1>
+                                {{-- Remove debug counts to avoid undefined variable error --}}
                                 <div class="mb-0">
                                     <span class="text-muted">Antrian</span>
                                 </div>
@@ -54,7 +53,7 @@
         </div>
     </div>
 
-    <div class="container-fluid p-0">
+    <!-- <div class="container-fluid p-0">
         <h1 class="h3 mb-3"><strong>Antrian Pasien</strong></h1>
         <div class="row">
             <div class="col-12 col-lg-12 col-xxl-12 d-flex">
@@ -68,8 +67,6 @@
                                     <th>Nama Pasien</th>
                                     <th>Umur</th>
                                     <th>JamKes</th>
-                                    <!-- Removed Poli Tujuan column as per user request -->
-                                    <!-- <th>Tgl. Berobat</th> -->
                                     <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -92,9 +89,6 @@
                                         {{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun
                                     </td>
                                     <td style="white-space: nowrap;">{{ $antrian->pasien->jaminan_kesehatan }}</td>
-                                    <!-- Removed Poli Tujuan data cell as per user request -->
-                                    <!-- <td style="white-space: nowrap;">
-                                    {{ \Carbon\Carbon::parse($antrian->tanggal_berobat)->format('d-m-Y') }}</td> -->
                                     <td style="white-space: nowrap;">
                                         @if ($antrian->status == 'Perlu Analisa')
                                         <span class="badge bg-danger">{{ $antrian->status }}</span>
@@ -104,7 +98,6 @@
                                         <span class="badge bg-warning">{{ $antrian->status }}</span>
                                         @else
                                         <span class="badge bg-secondary">{{ $antrian->status }}</span>
-                                        <!-- Default color if not matched -->
                                         @endif
                                     </td>
                                     <td style="white-space: nowrap;"><button type="button"
@@ -182,6 +175,21 @@
                                 </ul>
                             </nav>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <div class="row">
+        <div class="col-12 col-lg-12">
+            <div class="card flex-fill w-100">
+                <div class="card-header">
+                    <h5 class="card-title">Pasien Poli Umum / Bulan</h5>
+                    <!-- <h6 class="card-subtitle text-muted">A line chart is a way of plotting data points on a line.</h6> -->
+                </div>
+                <div class="card-body">
+                    <div class="chart chart-sm">
+                        <canvas id="chartjs-line"></canvas>
                     </div>
                 </div>
             </div>
@@ -392,7 +400,9 @@
         </div>
     </div>
 </div>
+@endsection
 
+@section('scripts')
 <style>
     .error-message {
         color: red;
@@ -486,7 +496,73 @@
         box-sizing: border-box;
     }
 </style>
-
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Line chart
+            new Chart(document.getElementById("chartjs-line"), {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+                        "Nov", "Dec"
+                    ],
+                    datasets: [{
+                        label: "Sales ($)",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: window.theme.primary,
+                        data: [2115, 1562, 1584, 1892, 1487, 2223, 2966, 2448, 2905, 3838, 2917,
+                            3327
+                        ]
+                    }, {
+                        label: "Orders",
+                        fill: true,
+                        backgroundColor: "transparent",
+                        borderColor: "#adb5bd",
+                        borderDash: [4, 4],
+                        data: [958, 724, 629, 883, 915, 1214, 1476, 1212, 1554, 2128, 1466,
+                            1827
+                        ]
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false
+                    },
+                    tooltips: {
+                        intersect: false
+                    },
+                    hover: {
+                        intersect: true
+                    },
+                    plugins: {
+                        filler: {
+                            propagate: false
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            reverse: true,
+                            gridLines: {
+                                color: "rgba(0,0,0,0.05)"
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                stepSize: 500
+                            },
+                            display: true,
+                            borderDash: [5, 5],
+                            gridLines: {
+                                color: "rgba(0,0,0,0)",
+                                fontColor: "#fff"
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+    </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const btnSimpanPeriksa = document.getElementById('btnSimpanPeriksa');

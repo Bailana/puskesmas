@@ -31,6 +31,7 @@
                                 <th class="nowrap">Poli Tujuan</th>
                                 <th class="nowrap">Tgl. Berobat</th>
                                 <th class="nowrap">Status</th>
+                                <th class="nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -44,7 +45,8 @@
                                 <td class="nowrap">{{ $antrian->pasien->jaminan_kesehatan }}</td>
                                 <td class="nowrap">{{ $antrian->poli ? $antrian->poli->nama_poli : 'Tidak ada' }}</td>
                                 <td class="nowrap">
-                                    {{ \Carbon\Carbon::parse($antrian->tanggal_berobat)->format('d-m-Y') }}</td>
+                                    {{ \Carbon\Carbon::parse($antrian->tanggal_berobat)->format('d-m-Y') }}
+                                </td>
                                 <td class="nowrap">
                                     @if ($antrian->status == 'Perlu Analisa')
                                     <span class="badge bg-danger">{{ $antrian->status }}</span>
@@ -55,6 +57,11 @@
                                     @else
                                     <span class="badge bg-info">{{ $antrian->status }}</span>
                                     @endif
+                                </td>
+                                <td class="nowrap">
+                                    <button type="button" class="btn btn-danger rounded btn-sm btn-hapus" data-id="{{ $antrian->id }}">
+                                        Hapus
+                                    </button>
                                 </td>
                             </tr>
                             @endforeach
@@ -84,33 +91,33 @@
 
                                 {{-- Pagination Elements --}}
                                 @php
-                                    $totalPages = $antrians->lastPage();
-                                    $currentPage = $antrians->currentPage();
-                                    $maxButtons = 3;
+                                $totalPages = $antrians->lastPage();
+                                $currentPage = $antrians->currentPage();
+                                $maxButtons = 3;
 
-                                    if ($totalPages <= $maxButtons) {
-                                        $start = 1;
-                                        $end = $totalPages;
+                                if ($totalPages <= $maxButtons) {
+                                    $start=1;
+                                    $end=$totalPages;
                                     } else {
-                                        if ($currentPage == 1) {
-                                            $start = 1;
-                                            $end = 3;
-                                        } elseif ($currentPage == $totalPages) {
-                                            $start = $totalPages - 2;
-                                            $end = $totalPages;
-                                        } else {
-                                            $start = $currentPage - 1;
-                                            $end = $currentPage + 1;
-                                        }
+                                    if ($currentPage==1) {
+                                    $start=1;
+                                    $end=3;
+                                    } elseif ($currentPage==$totalPages) {
+                                    $start=$totalPages - 2;
+                                    $end=$totalPages;
+                                    } else {
+                                    $start=$currentPage - 1;
+                                    $end=$currentPage + 1;
                                     }
-                                @endphp
-                                @for ($page = $start; $page <= $end; $page++)
-                                    @if ($page == $currentPage)
-                                        <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+                                    }
+                                    @endphp
+                                    @for ($page=$start; $page <=$end; $page++)
+                                    @if ($page==$currentPage)
+                                    <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
                                     @else
-                                        <li class="page-item"><a class="page-link" href="{{ $antrians->url($page) }}">{{ $page }}</a></li>
+                                    <li class="page-item"><a class="page-link" href="{{ $antrians->url($page) }}">{{ $page }}</a></li>
                                     @endif
-                                @endfor
+                                    @endfor
 
                                     {{-- Next Page Link --}}
                                     @if ($antrians->hasMorePages())
@@ -183,7 +190,7 @@
 
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
         const antrianTableBody = document.querySelector('#antrianTable tbody');
 
@@ -229,7 +236,7 @@
         }
 
         let debounceTimeout;
-        searchInput.addEventListener('input', function () {
+        searchInput.addEventListener('input', function() {
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
                 const query = searchInput.value.trim();
@@ -248,7 +255,7 @@
             }, 300);
         });
 
-        $('#btnCariPasien').click(function () {
+        $('#btnCariPasien').click(function() {
             var nomorKepesertaan = $('#noKepesertaan').val();
 
             // Remove previous validation error if any
@@ -261,7 +268,7 @@
                 if ($('#noKepesertaan').next('.invalid-feedback').length === 0) {
                     $('#noKepesertaan').after(
                         '<div class="invalid-feedback" style="display:block; color: red;">Field ini wajib diisi.</div>'
-                        );
+                    );
                 }
                 return;
             }
@@ -270,7 +277,7 @@
             $.ajax({
                 url: '/cari-pasien/' + nomorKepesertaan,
                 type: 'GET',
-                success: function (response) {
+                success: function(response) {
                     if (response.success) {
                         // Tampilkan data pasien di modal
                         $('#namaPasien').val(response.pasien.nama_pasien);
@@ -294,7 +301,7 @@
 
                     }
                 },
-                error: function () {
+                error: function() {
                     toastr.error("Terjadi kesalahan", "Error");
                     // Re-enable input on error
 
@@ -303,7 +310,7 @@
         });
 
         // SweetAlert konfirmasi ketika tombol "Tutup" ditekan setelah data pasien ditampilkan
-        $('#btnTutupAntrian').click(function () {
+        $('#btnTutupAntrian').click(function() {
             if ($('#btnSimpanAntrian').is(':visible')) {
                 Swal.fire({
                     title: 'Anda yakin ingin menutup?',
@@ -338,9 +345,37 @@
         $('#btnSimpanAntrian').hide();
         $('#tujuanPoli').val(''); // Reset tujuanPoli select
     }
+    $(document).on('click', '.btn-hapus', function() {
+        const button = $(this);
+        const antrianId = button.data('id');
+
+        Swal.fire({
+            title: 'Konfirmasi',
+            text: 'Apakah Anda yakin ingin menghapus antrian pasien ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/antrian/delete/${antrianId}`,
+                    type: 'DELETE',
+                    success: function(response) {
+                        toastr.success('Antrian pasien berhasil dihapus.', 'Berhasil');
+                        // Remove the row from the table
+                        button.closest('tr').remove();
+                    },
+                    error: function(xhr) {
+                        toastr.error('Gagal menghapus antrian pasien.', 'Error');
+                    }
+                });
+            }
+        });
+    });
 
     // Add event listener to reset modal after it is fully hidden
-    $('#modalTambahAntrian').on('hidden.bs.modal', function () {
+    $('#modalTambahAntrian').on('hidden.bs.modal', function() {
         resetModal();
     });
 
@@ -351,7 +386,7 @@
     });
 
     // Handle simpan antrian button click
-    $('#btnSimpanAntrian').click(function () {
+    $('#btnSimpanAntrian').click(function() {
         var noRekamMedis = $('#noRekamMedis').val();
         var tanggalBerobat = $('#tanggalBerobat').val();
         var status = 'Perlu Analisa'; // Default status, can be adjusted
@@ -371,14 +406,14 @@
                 status: status,
                 tujuan_poli: tujuanPoli
             },
-            success: function (response) {
+            success: function(response) {
                 toastr.success(response.message, "Berhasil");
                 $('#modalTambahAntrian').modal('hide');
                 // resetModal(); // No longer needed here because of hidden.bs.modal event
                 // Reload the page to update the antrian list
                 location.reload();
             },
-            error: function (xhr) {
+            error: function(xhr) {
                 var errorMessage = "Terjadi kesalahan saat menyimpan antrian";
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
@@ -395,7 +430,5 @@
     var year = today.getFullYear();
     var localDate = year + "-" + month + "-" + day;
     $('#tanggalBerobat').val(localDate);
-
 </script>
-
 @endsection

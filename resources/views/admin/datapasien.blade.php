@@ -206,9 +206,6 @@
                                 <option value="BPJS Kesehatan"
                                     {{ request('jaminan_kesehatan') == 'BPJS Kesehatan' ? 'selected' : '' }}>
                                     BPJS Kesehatan</option>
-                                <option value="Perusahaan"
-                                    {{ request('jaminan_kesehatan') == 'Perusahaan' ? 'selected' : '' }}>
-                                    Perusahaan</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -401,7 +398,6 @@
                             <select class="form-control form-control-sm" id="modalJaminan" disabled>
                                 <option value="Umum">Umum</option>
                                 <option value="BPJS Kesehatan">BPJS Kesehatan</option>
-                                <option value="Perusahaan">Kesehatan Perusahaan</option>
                             </select>
                         </div>
                         <div class="col-6">

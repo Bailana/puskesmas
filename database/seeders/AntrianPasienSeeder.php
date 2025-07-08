@@ -62,7 +62,7 @@ class AntrianPasienSeeder extends Seeder
             'pasien_id' => $pasien->id,
             'poli_id' => $poli->id,
             'tanggal_berobat' => now()->toDateString(),
-            'status' => 'Menunggu',
+            'status' => 'Pemeriksaan',
         ]);
     }
 }

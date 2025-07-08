@@ -31,7 +31,7 @@
                         <tbody>
                             @foreach ($antrians as $index => $antrian)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $index + 1 }}.</td>
                                 <td>{{ $antrian->no_rekam_medis }}</td>
                                 <td>{{ $antrian->pasien->nama_pasien }}</td>
                                 <td>{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
@@ -51,36 +51,57 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between align-items-center w-50">
-                            <div class="small text-muted mb-2 text-start ps-3">
-                                Showing {{ $antrians->firstItem() }} to {{ $antrians->lastItem() }} of
-                                {{ $antrians->total() }} results
-                            </div>
-                            <nav class="d-flex justify-content-center">
-                                <ul class="pagination d-flex flex-row flex-wrap gap-2"
-                                    style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
-                                    {{-- Previous Page Link --}}
-                                    @if ($antrians->onFirstPage())
-                                    <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
-                                        <span class="page-link" aria-hidden="true">&laquo;</span>
-                                    </li>
-                                    @else
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $antrians->previousPageUrl() }}" rel="prev"
-                                            aria-label="Previous">&laquo;</a>
-                                    </li>
-                                    @endif
+                </div>
+                <div class="mt-3 mb-2">
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <div class="small text-muted mb-2 text-start ps-3 pagination-info-text" style="max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            Showing {{ $antrians->firstItem() }} to {{ $antrians->lastItem() }} of
+                            {{ $antrians->total() }} results
+                        </div>
+                        <nav class="d-flex justify-content-center">
+                            <ul class="pagination d-flex flex-row flex-wrap gap-2"
+                                style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
+                                {{-- Previous Page Link --}}
+                                @if ($antrians->onFirstPage())
+                                <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
+                                    <span class="page-link" aria-hidden="true">&laquo;</span>
+                                </li>
+                                @else
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ $antrians->previousPageUrl() }}" rel="prev"
+                                        aria-label="Previous">&laquo;</a>
+                                </li>
+                                @endif
 
-                                    {{-- Pagination Elements --}}
-                                    @foreach ($antrians->getUrlRange(1, $antrians->lastPage()) as $page => $url)
-                                    @if ($page == $antrians->currentPage())
-                                    <li class="page-item active" aria-current="page"><span
-                                            class="page-link">{{ $page }}</span></li>
+                                {{-- Pagination Elements --}}
+                                @php
+                                $totalPages = $antrians->lastPage();
+                                $currentPage = $antrians->currentPage();
+                                $maxButtons = 3;
+
+                                if ($totalPages <= $maxButtons) {
+                                    $start=1;
+                                    $end=$totalPages;
+                                    } else {
+                                    if ($currentPage==1) {
+                                    $start=1;
+                                    $end=3;
+                                    } elseif ($currentPage==$totalPages) {
+                                    $start=$totalPages - 2;
+                                    $end=$totalPages;
+                                    } else {
+                                    $start=$currentPage - 1;
+                                    $end=$currentPage + 1;
+                                    }
+                                    }
+                                    @endphp
+                                    @for ($page=$start; $page <=$end; $page++)
+                                    @if ($page==$currentPage)
+                                    <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
                                     @else
-                                    <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
+                                    <li class="page-item"><a class="page-link" href="{{ $antrians->url($page) }}">{{ $page }}</a></li>
                                     @endif
-                                    @endforeach
+                                    @endfor
 
                                     {{-- Next Page Link --}}
                                     @if ($antrians->hasMorePages())
@@ -93,11 +114,11 @@
                                         <span class="page-link" aria-hidden="true">&raquo;</span>
                                     </li>
                                     @endif
-                                </ul>
-                            </nav>
-                        </div>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -109,6 +130,7 @@
             <div class="modal-content" style="overflow-x: hidden;">
                 <div class="modal-header d-flex justify-content-between">
                     <h3 class="modal-title" id="modalPeriksaPasienLabel"><strong>Periksa Pasien</strong></h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
                     <form id="formPeriksaPasien">
@@ -161,8 +183,6 @@
                     </form>
                 </div>
                 <div class="modal-footer d-flex justify-content-end mt-3">
-                    <button type="button" class="btn btn-danger" id="btnTutupModal"
-                        data-bs-dismiss="modal">Tutup</button>
                     <button type="button" class="btn btn-success ms-2" id="btnSimpanPeriksa">Simpan</button>
                 </div>
             </div>
@@ -324,13 +344,13 @@
 
     @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             var periksaButtons = document.querySelectorAll('.btnPeriksa');
             var modalElement = document.getElementById('modalPeriksaPasien');
             var modal = new bootstrap.Modal(modalElement);
 
-            periksaButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
+            periksaButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
                     const pasienId = button.getAttribute('data-pasien-id');
                     document.getElementById('pasienId').value = pasienId;
                     document.getElementById('tanggalPeriksa').value = new Date().toISOString()
@@ -351,7 +371,7 @@
             });
 
             const btnSimpanPeriksa = document.getElementById('btnSimpanPeriksa');
-            btnSimpanPeriksa.addEventListener('click', function () {
+            btnSimpanPeriksa.addEventListener('click', function() {
                 btnSimpanPeriksa.disabled = true; // nonaktifkan tombol untuk mencegah klik ganda
                 const form = document.getElementById('formPeriksaPasien');
                 const formData = new FormData(form);
@@ -398,12 +418,11 @@
                     });
             });
         });
-
     </script>
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const odontogram = document.getElementById('odontogram');
             const odontogramDataInput = document.getElementById('odontogramData');
 
@@ -454,17 +473,16 @@
 
             odontogramDataInput.value = JSON.stringify(odontogramData);
         });
-
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             var periksaButtons = document.querySelectorAll('.btn-periksa');
             var modalElement = document.getElementById('modalPeriksaPasien');
             var modal = new bootstrap.Modal(modalElement);
 
-            periksaButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
+            periksaButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
                     const pasienId = button.getAttribute('data-pasien-id');
                     document.getElementById('pasienId').value = pasienId;
                     document.getElementById('tanggalPeriksa').value = new Date().toISOString()
@@ -486,6 +504,5 @@
 
 
         });
-
     </script>
     @endsection

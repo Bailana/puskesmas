@@ -21,70 +21,68 @@
                             <i class="fas fa-filter"></i> Filter
                         </button>
                     </form>
-
-
                 </div>
-                <table class="table table-hover my-0" id="dokterPasien">
-                    <thead>
-                        <tr>
-                            <th style="white-space: nowrap;">No.</th>
-                            <th style="white-space: nowrap;">No. RM</th>
-                            <th style="white-space: nowrap;">Nama Pasien</th>
-                            <th style="white-space: nowrap;">Tempat, Tanggal Lahir</th>
-                            <th style="white-space: nowrap;">Jenis Kelamin</th>
-                            <th style="white-space: nowrap;">Gol.Darah</th>
-                            <th style="white-space: nowrap;">JamKes</th>
-                            <th style="white-space: nowrap;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($pasiens as $index => $pasien)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $pasien->no_rekam_medis }}</td>
-                            <td>{{ $pasien->nama_pasien}}</td>
-                            <td>
-                                {{ $pasien->tempat_lahir }},
-                                {{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}
-                            </td>
-                            <td>{{ $pasien->jenis_kelamin }}</td>
-                            <td>{{ $pasien->gol_darah }}</td>
-                            <td>{{ $pasien->jaminan_kesehatan }}</td>
-                            <td>
-                                <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
-                                    data-bs-target="#modalPasienDetail"
-                                    data-no_rekam_medis="{{ $pasien->no_rekam_medis }}" data-nik="{{ $pasien->nik }}"
-                                    data-nama="{{ $pasien->nama_pasien }}"
-                                    data-tempat_lahir="{{ $pasien->tempat_lahir }}"
-                                    data-tanggal_lahir="{{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}"
-                                    data-jenis_kelamin="{{ $pasien->jenis_kelamin }}"
-                                    data-gol_darah="{{ $pasien->gol_darah }}" data-agama="{{ $pasien->agama }}"
-                                    data-pekerjaan="{{ $pasien->pekerjaan }}"
-                                    data-status_pernikahan="{{ $pasien->status_pernikahan }}"
-                                    data-alamat="{{ $pasien->alamat_jalan }}" data-rt="{{ $pasien->rt }}"
-                                    data-rw="{{ $pasien->rw }}" data-kelurahan="{{ $pasien->kelurahan }}"
-                                    data-kecamatan="{{ $pasien->kecamatan }}" data-kabupaten="{{ $pasien->kabupaten }}"
-                                    data-provinsi="{{ $pasien->provinsi }}"
-                                    data-jaminan="{{ $pasien->jaminan_kesehatan }}"
-                                    data-no_kepesertaan="{{ $pasien->nomor_kepesertaan }}"
-                                    data-kepala_keluarga="{{ $pasien->kepala_keluarga}}"
-                                    data-no_hp="{{ $pasien->no_hp}}">
-                                    Selengkapnya
-                                </button>
-                                <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
-                                    data-bs-target="#modalRiwayatBerobat"
-                                    data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
-                                    data-nama="{{ $pasien->nama_pasien }}">
-                                    Riwayat Berobat
-                                </button>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <div class="mt-3">
-                    <div class="d-flex justify-content-between align-items-center w-50">
-                        <div class="small text-muted mb-2 text-start ps-3">
+                <div class="table-responsive">
+                    <table class="table table-hover my-0" id="dokterPasien">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">No.</th>
+                                <th style="white-space: nowrap;">No. RM</th>
+                                <th style="white-space: nowrap;">Nama Pasien</th>
+                                <th style="white-space: nowrap;">Tempat, Tanggal Lahir</th>
+                                <th style="white-space: nowrap;">Jenis Kelamin</th>
+                                <th style="white-space: nowrap;">JamKes</th>
+                                <th style="white-space: nowrap;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($pasiens as $index => $pasien)
+                            <tr>
+                                <td class="nowrap">{{ ($pasiens->currentPage() - 1) * $pasiens->perPage() + $index + 1 }}.</td>
+                                <td class="nowrap">{{ $pasien->no_rekam_medis }}</td>
+                                <td class="nowrap">{{ $pasien->nama_pasien}}</td>
+                                <td class="nowrap">
+                                    {{ $pasien->tempat_lahir }},
+                                    {{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}
+                                </td>
+                                <td class="nowrap">{{ $pasien->jenis_kelamin }}</td>
+                                <td class="nowrap">{{ $pasien->jaminan_kesehatan }}</td>
+                                <td class="nowrap">
+                                    <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
+                                        data-bs-target="#modalPasienDetail"
+                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}" data-nik="{{ $pasien->nik }}"
+                                        data-nama="{{ $pasien->nama_pasien }}"
+                                        data-tempat_lahir="{{ $pasien->tempat_lahir }}"
+                                        data-tanggal_lahir="{{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}"
+                                        data-jenis_kelamin="{{ $pasien->jenis_kelamin }}"
+                                        data-gol_darah="{{ $pasien->gol_darah }}" data-agama="{{ $pasien->agama }}"
+                                        data-pekerjaan="{{ $pasien->pekerjaan }}"
+                                        data-status_pernikahan="{{ $pasien->status_pernikahan }}"
+                                        data-alamat="{{ $pasien->alamat_jalan }}" data-rt="{{ $pasien->rt }}"
+                                        data-rw="{{ $pasien->rw }}" data-kelurahan="{{ $pasien->kelurahan }}"
+                                        data-kecamatan="{{ $pasien->kecamatan }}" data-kabupaten="{{ $pasien->kabupaten }}"
+                                        data-provinsi="{{ $pasien->provinsi }}"
+                                        data-jaminan="{{ $pasien->jaminan_kesehatan }}"
+                                        data-no_kepesertaan="{{ $pasien->nomor_kepesertaan }}"
+                                        data-kepala_keluarga="{{ $pasien->kepala_keluarga}}"
+                                        data-no_hp="{{ $pasien->no_hp}}">
+                                        Selengkapnya
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
+                                        data-bs-target="#modalRiwayatBerobat"
+                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
+                                        data-nama="{{ $pasien->nama_pasien }}">
+                                        Riwayat Berobat
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 mb-2">
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <div class="small text-muted mb-2 text-start ps-3 pagination-info-text" style="max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             Showing {{ $pasiens->firstItem() }} to {{ $pasiens->lastItem() }} of
                             {{ $pasiens->total() }} results
                         </div>
@@ -104,26 +102,47 @@
                                 @endif
 
                                 {{-- Pagination Elements --}}
-                                @foreach ($pasiens->getUrlRange(1, $pasiens->lastPage()) as $page => $url)
-                                @if ($page == $pasiens->currentPage())
-                                <li class="page-item active" aria-current="page"><span
-                                        class="page-link">{{ $page }}</span></li>
-                                @else
-                                <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
-                                @endif
-                                @endforeach
+                                @php
+                                $totalPages = $pasiens->lastPage();
+                                $currentPage = $pasiens->currentPage();
+                                $maxButtons = 3;
 
-                                {{-- Next Page Link --}}
-                                @if ($pasiens->hasMorePages())
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $pasiens->nextPageUrl() }}" rel="next"
-                                        aria-label="Next">&raquo;</a>
-                                </li>
-                                @else
-                                <li class="page-item disabled" aria-disabled="true" aria-label="Next">
-                                    <span class="page-link" aria-hidden="true">&raquo;</span>
-                                </li>
-                                @endif
+                                if ($totalPages <= $maxButtons) {
+                                    $start=1;
+                                    $end=$totalPages;
+                                    } else {
+                                    if ($currentPage==1) {
+                                    $start=1;
+                                    $end=3;
+                                    } elseif ($currentPage==$totalPages) {
+                                    $start=$totalPages - 2;
+                                    $end=$totalPages;
+                                    } else {
+                                    $start=$currentPage - 1;
+                                    $end=$currentPage + 1;
+                                    }
+                                    }
+                                    @endphp
+
+                                    @for ($page=$start; $page <=$end; $page++)
+                                    @if ($page==$currentPage)
+                                    <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+                                    @else
+                                    <li class="page-item"><a class="page-link" href="{{ $pasiens->url($page) }}">{{ $page }}</a></li>
+                                    @endif
+                                    @endfor
+
+                                    {{-- Next Page Link --}}
+                                    @if ($pasiens->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $pasiens->nextPageUrl() }}" rel="next"
+                                            aria-label="Next">&raquo;</a>
+                                    </li>
+                                    @else
+                                    <li class="page-item disabled" aria-disabled="true" aria-label="Next">
+                                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                                    </li>
+                                    @endif
                             </ul>
                         </nav>
                     </div>
@@ -137,7 +156,7 @@
                     <div class="modal-content">
                         <form method="GET" action="{{ route('gigi.pasien') }}">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="filterModalLabel">Filter Data Pasien</h5>
+                                <h4 class="modal-title" id="filterModalLabel"><strong>Filter Data Pasien</strong></h4>
                             </div>
                             <div class="modal-body">
                                 <div class="row g-3">
@@ -157,14 +176,30 @@
                                         <label for="gol_darah" class="form-label">Golongan Darah</label>
                                         <select name="gol_darah" id="gol_darah" class="form-select">
                                             <option value="">Semua</option>
-                                            <option value="A" {{ request('gol_darah') == 'A' ? 'selected' : '' }}>A
-                                            </option>
-                                            <option value="B" {{ request('gol_darah') == 'B' ? 'selected' : '' }}>B
-                                            </option>
-                                            <option value="AB" {{ request('gol_darah') == 'AB' ? 'selected' : '' }}>AB
-                                            </option>
-                                            <option value="O" {{ request('gol_darah') == 'O' ? 'selected' : '' }}>O
-                                            </option>
+                                            <option value="A"
+                                                {{ request('gol_darah') == 'A' ? 'selected' : '' }}>A</option>
+                                            <option value="B"
+                                                {{ request('gol_darah') == 'B' ? 'selected' : '' }}>B</option>
+                                            <option value="AB"
+                                                {{ request('gol_darah') == 'AB' ? 'selected' : '' }}>AB</option>
+                                            <option value="O"
+                                                {{ request('gol_darah') == 'O' ? 'selected' : '' }}>O</option>
+                                            <option value="A+"
+                                                {{ request('gol_darah') == 'A+' ? 'selected' : '' }}>A+</option>
+                                            <option value="A-"
+                                                {{ request('gol_darah') == 'A-' ? 'selected' : '' }}>A-</option>
+                                            <option value="B+"
+                                                {{ request('gol_darah') == 'B+' ? 'selected' : '' }}>B+</option>
+                                            <option value="B-"
+                                                {{ request('gol_darah') == 'B-' ? 'selected' : '' }}>B-</option>
+                                            <option value="AB+"
+                                                {{ request('gol_darah') == 'AB+' ? 'selected' : '' }}>AB+</option>
+                                            <option value="AB-"
+                                                {{ request('gol_darah') == 'AB-' ? 'selected' : '' }}>AB-</option>
+                                            <option value="O+"
+                                                {{ request('gol_darah') == 'O+' ? 'selected' : '' }}>O+</option>
+                                            <option value="O-"
+                                                {{ request('gol_darah') == 'O-' ? 'selected' : '' }}>O-</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
@@ -423,11 +458,11 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const btnTutupDetail = document.getElementById('btnTutupDetail');
         const hasilPeriksaDetail = document.getElementById('hasilPeriksaDetail');
 
-        btnTutupDetail.addEventListener('click', function () {
+        btnTutupDetail.addEventListener('click', function() {
             hasilPeriksaDetail.style.display = 'none';
         });
     });
@@ -438,7 +473,7 @@
 @section('scripts')
 <script>
     var pasienDetailModal = document.getElementById('modalPasienDetail');
-    pasienDetailModal.addEventListener('show.bs.modal', function (event) {
+    pasienDetailModal.addEventListener('show.bs.modal', function(event) {
         var button = event.relatedTarget;
         // Extract info from data-bs-* attributes
         var noRekamMedis = button.getAttribute('data-no_rekam_medis');
@@ -486,11 +521,10 @@
         pasienDetailModal.querySelector('#modalKepalaKeluarga').value = kepalaKeluarga || '';
         pasienDetailModal.querySelector('#modalNoHp').value = noHp || '';
     });
-
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
         const pasienTableBody = document.querySelector('#dokterPasien tbody');
 
@@ -504,14 +538,13 @@
             pasiens.forEach((pasien, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${pasien.no_rekam_medis}</td>
-                            <td>${pasien.nama_pasien}</td>
-                            <td>${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>
-                            <td>${pasien.jenis_kelamin}</td>
-                            <td>${pasien.gol_darah}</td>
-                            <td>${pasien.jaminan_kesehatan}</td>
-                            <td>
+                            <td class="nowrap">${index + 1}.</td>
+                            <td class="nowrap">${pasien.no_rekam_medis}</td>
+                            <td class="nowrap">${pasien.nama_pasien}</td>
+                            <td class="nowrap">${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>
+                            <td class="nowrap">${pasien.jenis_kelamin}</td>
+                            <td class="nowrap">${pasien.jaminan_kesehatan}</td>
+                            <td class="nowrap">
                                 <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
                                     data-bs-target="#modalPasienDetail"
                                     data-no_rekam_medis="${pasien.no_rekam_medis}" data-nik="${pasien.nik}"
@@ -532,12 +565,12 @@
                                     data-no_hp="${pasien.no_hp}">
                                     Selengkapnya
                                 </button>
-                                <button type="button" class="btn btn-success btn-sm rounded" data-bs-toggle="modal"
-                                    data-bs-target="#modalRiwayatBerobat"
-                                    data-no_rekam_medis="${pasien.no_rekam_medis}"
-                                    data-nama="${pasien.nama_pasien}">
-                                    Riwayat Berobat
-                                </button>
+                                <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
+                                        data-bs-target="#modalRiwayatBerobat"
+                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
+                                        data-nama="{{ $pasien->nama_pasien }}">
+                                        Riwayat Berobat
+                                    </button>
                             </td>
                         `;
                 pasienTableBody.appendChild(row);
@@ -545,7 +578,7 @@
         }
 
         let debounceTimeout;
-        searchInput.addEventListener('input', function () {
+        searchInput.addEventListener('input', function() {
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
                 const query = searchInput.value.trim();
@@ -566,18 +599,17 @@
 
         // Prevent form submission on enter key in search input
         const searchForm = document.getElementById('searchForm');
-        searchForm.addEventListener('submit', function (event) {
+        searchForm.addEventListener('submit', function(event) {
             event.preventDefault();
         });
     });
-
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Handle Riwayat Berobat button click in pasien view
         document.querySelectorAll('button[data-bs-target="#modalRiwayatBerobat"]').forEach(button => {
-            button.addEventListener('click', function () {
+            button.addEventListener('click', function() {
                 const noRekamMedis = this.getAttribute('data-no_rekam_medis');
                 const namaPasien = this.getAttribute('data-nama');
                 const modal = new bootstrap.Modal(document.getElementById(
@@ -612,7 +644,7 @@
 
                             // Add event listeners to Lihat buttons
                             riwayatList.querySelectorAll('.btnLihat').forEach(btnLihat => {
-                                btnLihat.addEventListener('click', function () {
+                                btnLihat.addEventListener('click', function() {
                                     const tanggal = this.getAttribute(
                                         'data-tanggal');
                                     const noRekamMedis = this.getAttribute(
@@ -624,7 +656,7 @@
                                             if (!response.ok) {
                                                 throw new Error(
                                                     'Data hasil periksa tidak ditemukan'
-                                                    );
+                                                );
                                             }
                                             return response.json();
                                         })
@@ -635,7 +667,7 @@
                                                     'detailTanggal')
                                                 .textContent = new Date(
                                                     data.tanggal_periksa
-                                                    )
+                                                )
                                                 .toLocaleDateString(
                                                     'id-ID');
                                             document.getElementById(
@@ -664,7 +696,7 @@
                                                 .catatan || '-';
                                             document.getElementById(
                                                     'detailPenanggungJawab'
-                                                    ).textContent = data
+                                                ).textContent = data
                                                 .penanggung_jawab_nama ||
                                                 '-';
                                         })
@@ -683,6 +715,5 @@
             });
         });
     });
-
 </script>
 @endsection

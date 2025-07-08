@@ -63,7 +63,7 @@
                             @if(isset($antrians))
                             @forelse($antrians as $index => $antrian)
                             <tr>
-                                <td style="white-space: nowrap;">{{ $antrians->firstItem() + $index }}</td>
+                                <td style="white-space: nowrap;">{{ $antrians->firstItem() + $index }}.</td>
                                 <td style="white-space: nowrap;">{{ $antrian->no_rekam_medis }}</td>
                                 <td style="white-space: nowrap;">{{ $antrian->pasien ? $antrian->pasien->nama_pasien : 'Data Pasien Tidak Ditemukan' }}</td>
                                 <td style="white-space: nowrap;">
@@ -76,14 +76,7 @@
                                 <td style="white-space: nowrap;">{{ $antrian->pasien ? $antrian->pasien->jaminan_kesehatan : '-' }}</td>
                                 <td style="white-space: nowrap;"><span class="badge bg-danger">{{ $antrian->status }}</span></td>
                                 <td style="white-space: nowrap;">
-                                    <button type="button" class="btn btn-primary btn-sm rounded btn-analisa"
-                                        data-rekam-medis="{{ $antrian->no_rekam_medis }}"
-                                        data-pasien-id="{{ $antrian->pasien ? $antrian->pasien->id : '' }}"
-                                        data-nama="{{ $antrian->pasien ? $antrian->pasien->nama_pasien : '' }}"
-                                        data-tanggal-lahir="{{ $antrian->pasien ? $antrian->pasien->tanggal_lahir : '' }}"
-                                        data-bs-toggle="modal" data-bs-target="#modalAnalisa"
-                                        @if(!$antrian->pasien) disabled @endif>Analisa</button>
-                                    <button type="button" class="btn btn-info btn-sm rounded btn-selengkapnya"
+                                    <button type="button" class="btn btn-primary btn-sm rounded btn-selengkapnya"
                                         data-bs-toggle="modal" data-bs-target="#modalPasienDetail"
                                         data-no-rekam-medis="{{ $antrian->no_rekam_medis }}"
                                         data-nik="{{ $antrian->pasien ? $antrian->pasien->nik : '' }}"
@@ -109,6 +102,13 @@
                                         @if(!$antrian->pasien) disabled @endif>
                                         Selengkapnya
                                     </button>
+                                    <button type="button" class="btn btn-warning btn-sm rounded btn-analisa"
+                                        data-rekam-medis="{{ $antrian->no_rekam_medis }}"
+                                        data-pasien-id="{{ $antrian->pasien ? $antrian->pasien->id : '' }}"
+                                        data-nama="{{ $antrian->pasien ? $antrian->pasien->nama_pasien : '' }}"
+                                        data-tanggal-lahir="{{ $antrian->pasien ? $antrian->pasien->tanggal_lahir : '' }}"
+                                        data-bs-toggle="modal" data-bs-target="#modalAnalisa"
+                                        @if(!$antrian->pasien) disabled @endif>Analisa</button>
                                 </td>
                             </tr>
                             @empty

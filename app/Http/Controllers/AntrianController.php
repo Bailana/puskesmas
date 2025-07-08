@@ -82,4 +82,26 @@ class AntrianController extends Controller
             ]);
         }
     }
+
+    /**
+     * Remove the specified antrian from storage.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete($id): JsonResponse
+    {
+        $antrian = \App\Models\Antrian::find($id);
+        if (!$antrian) {
+            return response()->json([
+                'message' => 'Antrian tidak ditemukan',
+            ], 404);
+        }
+
+        $antrian->delete();
+
+        return response()->json([
+            'message' => 'Antrian berhasil dihapus',
+        ]);
+    }
 }

@@ -471,6 +471,7 @@ Route::middleware(['auth', 'role:resepsionis'])->group(function () {
     // Add route for antrian.store
     Route::get('/antrian', [\App\Http\Controllers\ResepsionisDashboardController::class, 'antrian'])->name('resepsionis.antrian');
     Route::post('/antrian/store', [\App\Http\Controllers\AntrianController::class, 'store'])->name('antrian.store');
+    Route::delete('/antrian/delete/{id}', [\App\Http\Controllers\AntrianController::class, 'delete'])->name('antrian.delete');
 
     Route::middleware(['auth', 'role:rawatinap'])->group(function () {
         Route::get('/cari-pasien/{nomorKepesertaan}', [\App\Http\Controllers\AntrianController::class, 'searchPasien']);
