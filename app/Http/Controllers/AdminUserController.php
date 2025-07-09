@@ -49,8 +49,13 @@ class AdminUserController extends Controller
             'password' => 'required|string|min:6',
         ]);
 
+        $role = $request->input('role');
+        if (trim(strtolower($role)) === 'rawat inap') {
+            $role = 'rawatinap';
+        }
+
         $user = new User();
-        $user->role = $request->input('role');
+        $user->role = $role;
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));

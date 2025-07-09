@@ -34,7 +34,7 @@
             <tbody id="usersTableBody">
               @foreach ($users as $index => $user)
               <tr>
-                <td class="nowrap">{{ $users->firstItem() + $index }}</td>
+                <td class="nowrap">{{ $users->firstItem() + $index }}.</td>
                 <td class="nowrap">{{ ucfirst($user->role) }}</td>
                 <td class="nowrap">{{ $user->name }}</td>
                 <td class="nowrap">{{ $user->email }}</td>
@@ -479,6 +479,26 @@
         reader.readAsDataURL(file);
       }
     });
+
+    // New code: pre-select "rawat inap" role when "Tambah Data User" button is clicked
+    const addUserModal = document.getElementById('addUserModal');
+    const addUserButton = document.querySelector('button[data-bs-target="#addUserModal"]');
+    const addUserRoleSelect = document.getElementById('role');
+
+    // addUserButton.addEventListener('click', function() {
+    //   if (addUserRoleSelect) {
+    //     addUserRoleSelect.value = 'rawat inap';
+    //   }
+    // });
+
+    // New code: show toastr success notification if session has success message
+    @if(session('success'))
+      if (typeof toastr !== 'undefined') {
+        toastr.success("{{ session('success') }}");
+      } else {
+        alert("{{ session('success') }}");
+      }
+    @endif
   });
 </script>
 @endsection

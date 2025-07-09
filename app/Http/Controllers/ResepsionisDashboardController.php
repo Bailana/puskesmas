@@ -17,7 +17,6 @@ use App\Mail\PasswordChangeConfirmation;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-use App\Exports\PasienExport;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;

@@ -5,6 +5,7 @@ namespace App\Exports;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PasienExport
 {
@@ -83,5 +84,12 @@ class PasienExport
         $response->headers->set('Cache-Control', 'max-age=0');
 
         return $response;
+    }
+
+    public function exportPdf(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        $pdf = Pdf::loadView('admin.export_pdf_html', ['pasiens' => $this->pasiens]);
+        $filename = 'pasien_export_' . date('Ymd_His') . '.pdf';
+        return $pdf->download($filename);
     }
 }

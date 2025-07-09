@@ -45,6 +45,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('admin.datapasien', compact('pasiens'));
     })->name('admin.datapasien');
 
+    // Export routes for admin datapasien
+    Route::get('/admin/datapasien/export/pdf', [\App\Http\Controllers\AdminDatapasienController::class, 'exportPdf'])->name('admin.datapasien.exportPdf');
+    Route::get('/admin/datapasien/export/csv', [\App\Http\Controllers\AdminDatapasienController::class, 'exportExcel'])->name('admin.datapasien.exportExcel');
+
     Route::post('/admin/datapasien/{id}', [\App\Http\Controllers\PasienController::class, 'update'])->name('admin.datapasien.update');
 
     // New route for fetching riwayat berobat data for a pasien by pasien_id
