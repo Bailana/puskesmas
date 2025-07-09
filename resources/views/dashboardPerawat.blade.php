@@ -215,7 +215,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
+    @yield('scripts')
     <script>
         $(document).ready(function() {
             // Fungsi Pencarian
@@ -231,38 +231,6 @@
                         $(this).text().toLowerCase().indexOf(value) > -1
                     );
                 });
-            });
-        });
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Doughnut chart
-            new Chart(document.getElementById("chartjs-doughnut"), {
-                type: "doughnut",
-                data: {
-                    labels: ["Umum", "Gigi", "KIA", "Lansia", "KB", "Anak", "Physiotheraphy"],
-                    datasets: [{
-                        data: [260, 125, 54, 146, 23, 234, 123],
-                        backgroundColor: [
-                            window.theme.primary,
-                            window.theme.success,
-                            window.theme.warning,
-                            window.theme.danger,
-                            window.theme.info,
-                            window.theme.secondary,
-                            "#8E3E63"
-                        ],
-                        borderColor: "transparent"
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    cutoutPercentage: 65,
-                    legend: {
-                        display: false
-                    }
-                }
             });
         });
     </script>
@@ -369,7 +337,6 @@
         }
     </script>
 
-    @yield('scripts')
 </body>
 
 </html>

@@ -69,10 +69,10 @@
                                         data-no_hp="{{ $pasien->no_hp}}">
                                         Selengkapnya
                                     </button>
-                                    <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
-                                        data-bs-target="#modalRiwayatBerobat"
-                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
-                                        data-nama="{{ $pasien->nama_pasien }}">
+                                    <button type="button" class="btn btn-danger btn-sm rounded btn-riwayat"
+                                        data-rekam-medis="{{ $pasien->no_rekam_medis }}"
+                                        data-nama="{{ $pasien->nama_pasien }}"
+                                        data-bs-toggle="modal" data-bs-target="#modalRiwayatBerobat">
                                         Riwayat Berobat
                                     </button>
                                 </td>
@@ -384,73 +384,707 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
         <div class="modal-content" style="overflow-x: hidden;">
             <div class="modal-header d-flex justify-content-between">
-                <h3 class="modal-title" id="modalRiwayatBerobatLabel"><strong>Riwayat Berobat</strong></h3>
+                <h3 class="modal-title" id="modalRiwayatBerobatLabel"><strong>Riwayat Berobat Pasien</strong></h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-3" style="max-height: 400px; overflow-y: auto;">
-                <div id="riwayatBerobatContent">
-                    <p>Loading data...</p>
+            <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                <div id="riwayatList">
+                    <!-- List of dates will be populated here -->
+                </div>
+
+                <div id="hasilPeriksaDetail" style="display:none;">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>Tanggal Periksa</th>
+                                <td id="detailTanggal"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5 id="headingHasilPeriksa">Hasil Periksa</h5>
+                    <table class="table table-bordered" id="tableHasilPeriksa">
+                        <tbody>
+                            <tr>
+                                <th>Anamnesis</th>
+                                <td id="detailAnamnesis"></td>
+                            </tr>
+                            <tr>
+                                <th>Pemeriksaan Fisik</th>
+                                <td id="detailPemeriksaanFisik"></td>
+                            </tr>
+                            <tr>
+                                <th>Rencana dan Terapi</th>
+                                <td id="detailRencanaTerapi"></td>
+                            </tr>
+                            <tr>
+                                <th>Diagnosis</th>
+                                <td id="detailDiagnosis"></td>
+                            </tr>
+                            <tr>
+                                <th>Edukasi</th>
+                                <td id="detailEdukasi"></td>
+                            </tr>
+                            <tr>
+                                <th>Kode ICD</th>
+                                <td id="detailKodeICD"></td>
+                            </tr>
+                            <tr>
+                                <th>Kesan Status Gizi</th>
+                                <td id="detailStatusGizi"></td>
+                            </tr>
+                            <tr>
+                                <th>Penanggung Jawab</th>
+                                <td id="detailPenanggungJawab"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5 id="headingHasilAnalisa">Hasil Analisa</h5>
+                    <table class="table table-bordered" id="tableHasilAnalisa">
+                        <tbody>
+                            <tr>
+                                <th>Tekanan Darah (mmHg)</th>
+                                <td id="detailTekananDarah"></td>
+                            </tr>
+                            <tr>
+                                <th>Frekuensi Nadi (/menit)</th>
+                                <td id="detailFrekuensiNadi"></td>
+                            </tr>
+                            <tr>
+                                <th>Suhu (°C)</th>
+                                <td id="detailSuhu"></td>
+                            </tr>
+                            <tr>
+                                <th>Frekuensi Nafas (/menit)</th>
+                                <td id="detailFrekuensiNafas"></td>
+                            </tr>
+                            <tr>
+                                <th>Skor Nyeri</th>
+                                <td id="detailSkorNyeri"></td>
+                            </tr>
+                            <tr>
+                                <th>Skor Jatuh</th>
+                                <td id="detailSkorJatuh"></td>
+                            </tr>
+                            <tr>
+                                <th>Berat Badan</th>
+                                <td id="detailBeratBadan"></td>
+                            </tr>
+                            <tr>
+                                <th>Tinggi Badan</th>
+                                <td id="detailTinggiBadan"></td>
+                            </tr>
+                            <tr>
+                                <th>Lingkar Kepala</th>
+                                <td id="detailLingkarKepala"></td>
+                            </tr>
+                            <tr>
+                                <th>IMT</th>
+                                <td id="detailIMT"></td>
+                            </tr>
+                            <tr>
+                                <th>Alat Bantu</th>
+                                <td id="detailAlatBantu"></td>
+                            </tr>
+                            <tr>
+                                <th>Prosthesa</th>
+                                <td id="detailProsthesa"></td>
+                            </tr>
+                            <tr>
+                                <th>Cacat Tubuh</th>
+                                <td id="detailCacatTubuh"></td>
+                            </tr>
+                            <tr>
+                                <th>ADL Mandiri</th>
+                                <td id="detailADLMandiri"></td>
+                            </tr>
+                            <tr>
+                                <th>Riwayat Jatuh</th>
+                                <td id="detailRiwayatJatuh"></td>
+                            </tr>
+                            <tr>
+                                <th>Status Psikologi</th>
+                                <td id="detailStatusPsikologi"></td>
+                            </tr>
+                            <tr>
+                                <th>Hambatan Edukasi</th>
+                                <td id="detailHambatanEdukasi"></td>
+                            </tr>
+                            <tr>
+                                <th>Alergi</th>
+                                <td id="detailAlergi"></td>
+                            </tr>
+                            <tr>
+                                <th>Catatan</th>
+                                <td id="detailCatatan"></td>
+                            </tr>
+                            <tr>
+                                <th>Poli Tujuan</th>
+                                <td id="detailPoliTujuan"></td>
+                            </tr>
+                            <tr>
+                                <th>Penanggung Jawab</th>
+                                <td id="detailPenanggungJawabAnalisa"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5 id="headingHasilPeriksaAnak">Hasil Periksa Anak</h5>
+                    <table class="table table-bordered" id="hasilPeriksaAnakTable">
+                        <tbody>
+                            <!-- Data hasil periksa anak akan dimasukkan di sini -->
+                        </tbody>
+                    </table>
+
+                    <h5 id="headingHasilPeriksaGigi">Hasil Periksa Gigi</h5>
+                    <table class="table table-bordered" id="tableHasilPeriksaGigi">
+                        <tbody>
+                            <tr>
+                                <th>Odontogram</th>
+                                <td id="detailOdontogramGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Pemeriksaan Subjektif</th>
+                                <td id="detailPemeriksaanSubjektifGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Pemeriksaan Objektif</th>
+                                <td id="detailPemeriksaanObjektifGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Diagnosis Gigi</th>
+                                <td id="detailDiagnosisGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Terapi/Anjuran Gigi</th>
+                                <td id="detailTerapiAnjuranGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Catatan Gigi</th>
+                                <td id="detailCatatanGigi"></td>
+                            </tr>
+                            <tr>
+                                <th>Penanggung Jawab Gigi</th>
+                                <td id="detailPenanggungJawabGigi"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5 id="headingHasilAnalisaRawatinap">Hasil Analisa Rawat Inap</h5>
+                    <table class="table table-bordered" id="tableHasilAnalisaRawatinap">
+                        <tbody>
+                            <tr>
+                                <th>Tekanan Darah (mmHg)</th>
+                                <td id="detailTekananDarahRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Frekuensi Nadi (/menit)</th>
+                                <td id="detailFrekuensiNadiRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Suhu (°C)</th>
+                                <td id="detailSuhuRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Frekuensi Nafas (/menit)</th>
+                                <td id="detailFrekuensiNafasRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Skor Nyeri</th>
+                                <td id="detailSkorNyeriRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Skor Jatuh</th>
+                                <td id="detailSkorJatuhRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Berat Badan</th>
+                                <td id="detailBeratBadanRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Tinggi Badan</th>
+                                <td id="detailTinggiBadanRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Lingkar Kepala</th>
+                                <td id="detailLingkarKepalaRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>IMT</th>
+                                <td id="detailIMTRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Alat Bantu</th>
+                                <td id="detailAlatBantuRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Prosthesa</th>
+                                <td id="detailProsthesaRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Cacat Tubuh</th>
+                                <td id="detailCacatTubuhRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>ADL Mandiri</th>
+                                <td id="detailADLMandiriRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Riwayat Jatuh</th>
+                                <td id="detailRiwayatJatuhRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Status Psikologi</th>
+                                <td id="detailStatusPsikologiRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Penanggung Jawab</th>
+                                <td id="detailPenanggungJawabRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Hambatan Edukasi</th>
+                                <td id="detailHambatanEdukasiRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Alergi</th>
+                                <td id="detailAlergiRawatinap"></td>
+                            </tr>
+                            <tr>
+                                <th>Catatan</th>
+                                <td id="detailCatatanRawatinap"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5 id="headingHasilPeriksaUgd">Hasil Periksa UGD</h5>
+                    <table class="table table-bordered" id="tableHasilPeriksaUgd">
+                        <tbody>
+                            <tr>
+                                <th>Tanggal Periksa</th>
+                                <td id="detailTanggalPeriksaUgd"></td>
+                            </tr>
+                            <tr>
+                                <th>Waktu</th>
+                                <td id="detailWaktuUgd"></td>
+                            </tr>
+                            <tr>
+                                <th>SOAP</th>
+                                <td id="detailSoapUgd"></td>
+                            </tr>
+                            <tr>
+                                <th>Instruksi Tenaga Kerja</th>
+                                <td id="detailIntruksiTenagaKerjaUgd"></td>
+                            </tr>
+                            <tr>
+                                <th>Penanggung Jawab</th>
+                                <td id="detailPenanggungJawabUgd"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-danger btn-sm mt-2" id="btnTutupDetail">Tutup</button>
+                    </div>
                 </div>
             </div>
+            <div class="modal-footer d-flex justify-content-end mt-3"></div>
         </div>
     </div>
 </div>
 @endsection
 @section('scripts')
 <script>
-    var riwayatBerobatModal = document.getElementById('modalRiwayatBerobat');
-    riwayatBerobatModal.addEventListener('show.bs.modal', function(event) {
-        var button = event.relatedTarget;
-        var noRekamMedis = button.getAttribute('data-no_rekam_medis');
-        var contentDiv = document.getElementById('riwayatBerobatContent');
-        contentDiv.innerHTML = '<p>Loading data...</p>';
+    // Handle Riwayat Berobat button click in antrian view (copy dari antrian.blade.php)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event delegation untuk .btn-riwayat
+        document.body.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-riwayat')) {
+                const button = e.target;
+                const noRekamMedis = button.getAttribute('data-rekam-medis');
+                const namaPasien = button.getAttribute('data-nama');
+                const modal = new bootstrap.Modal(document.getElementById('modalRiwayatBerobat'));
+                const riwayatList = document.getElementById('riwayatList');
+                const hasilPeriksaDetail = document.getElementById('hasilPeriksaDetail');
 
-        console.log('Fetching riwayat berobat for noRekamMedis:', noRekamMedis);
-        fetch(`/perawat/hasilanalisa/riwayat/${noRekamMedis}`, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Riwayat berobat data:', data);
-                if (data.error) {
-                    contentDiv.innerHTML = '<p>' + data.error + '</p>';
-                    return;
-                }
-                if (data.length === 0) {
-                    contentDiv.innerHTML = '<p>Belum ada hasil analisa untuk pasien ini.</p>';
-                    return;
-                }
-                var html = '<table class="table table-bordered"><thead><tr><th>Tanggal Analisa</th><th>Tekanan Darah</th><th>Frekuensi Nadi</th><th>Suhu</th><th>Frekuensi Nafas</th><th>Skor Nyeri</th><th>Skor Jatuh</th><th>Berat Badan</th><th>Tinggi Badan</th></tr></thead><tbody>';
-                data.forEach(function(item) {
-                    html += '<tr>';
-                    html += '<td>' + new Date(item.tanggal_analisa).toLocaleDateString('id-ID') + '</td>';
-                    html += '<td>' + (item.tekanan_darah || '-') + '</td>';
-                    html += '<td>' + (item.frekuensi_nadi || '-') + '</td>';
-                    html += '<td>' + (item.suhu || '-') + '</td>';
-                    html += '<td>' + (item.frekuensi_nafas || '-') + '</td>';
-                    html += '<td>' + (item.skor_nyeri !== null ? item.skor_nyeri : '-') + '</td>';
-                    html += '<td>' + (item.skor_jatuh !== null ? item.skor_jatuh : '-') + '</td>';
-                    html += '<td>' + (item.berat_badan !== null ? item.berat_badan : '-') + '</td>';
-                    html += '<td>' + (item.tinggi_badan !== null ? item.tinggi_badan : '-') + '</td>';
-                    html += '</tr>';
-                });
-                html += '</tbody></table>';
-                contentDiv.innerHTML = html;
-            })
-            .catch(error => {
-                console.error('Error fetching riwayat berobat:', error);
-                contentDiv.innerHTML = '<p>Gagal mengambil data riwayat berobat.</p>';
-            });
+                // Clear previous content
+                riwayatList.innerHTML = '';
+                hasilPeriksaDetail.style.display = 'none';
+                riwayatList.style.display = 'block';
+
+                // Fetch riwayat berobat dates by pasien no_rekam_medis
+                fetch(`/perawat/riwayat-berobat/${noRekamMedis}/dates?type=rawatinap`, {
+                        credentials: 'include'
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (!result.success) {
+                            riwayatList.innerHTML = `<p>Error: ${result.message}</p>`;
+                            return;
+                        }
+                        const data = result.data;
+                        if ((!data.rawatinap || data.rawatinap.length === 0) && (!data.rawatjalan || data.rawatjalan.length === 0)) {
+                            riwayatList.innerHTML = '<p>Tidak ada riwayat berobat.</p>';
+                            return;
+                        }
+
+                        // Function to render a group of dates with header
+                        function renderDateGroup(source, dateList) {
+                            if (!dateList || dateList.length === 0) return;
+
+                            const sourceHeader = document.createElement('h6');
+                            if (source === 'rawatinap') {
+                                sourceHeader.textContent = 'UGD & Rawat Inap';
+                            } else if (source === 'rawatjalan') {
+                                sourceHeader.textContent = 'Rawat Jalan';
+                            } else {
+                                sourceHeader.textContent = source;
+                            }
+                            sourceHeader.style.marginTop = '1rem';
+                            riwayatList.appendChild(sourceHeader);
+
+                            dateList.forEach((item, index) => {
+                                const tanggal = item.date;
+                                const sourceKey = item.source;
+                                const dateObj = new Date(tanggal);
+                                const options = {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit'
+                                };
+                                const dateStr = dateObj.toLocaleDateString('id-ID', options);
+                                const div = document.createElement('div');
+                                div.classList.add('d-flex', 'justify-content-between', 'align-items-center');
+                                if (index < dateList.length - 1) {
+                                    div.style.borderBottom = '1px solid #dee2e6';
+                                    div.style.paddingBottom = '0.5rem';
+                                    div.style.marginBottom = '0.5rem';
+                                }
+                                div.innerHTML = `
+                <span>${dateStr}</span>
+                <button class="btn btn-primary btn-sm btnLihat" data-tanggal="${tanggal}" data-norm="${noRekamMedis}" data-source="${sourceKey}">Lihat</button>
+            `;
+                                riwayatList.appendChild(div);
+                            });
+                        }
+
+                        renderDateGroup('rawatinap', data.rawatinap);
+                        renderDateGroup('rawatjalan', data.rawatjalan);
+                    })
+                    .catch(error => {
+                        riwayatList.innerHTML = `<p>Error: ${error.message}</p>`;
+                    });
+
+                modal.show();
+            }
+        });
+
+        // Event delegation untuk btnLihat di #riwayatList
+        document.getElementById('riwayatList').addEventListener('click', function(ev) {
+            if (ev.target.classList.contains('btnLihat')) {
+                const tanggal = ev.target.getAttribute('data-tanggal');
+                const noRekamMedis = ev.target.getAttribute('data-norm');
+                const hasilPeriksaDetail = document.getElementById('hasilPeriksaDetail');
+                const riwayatList = document.getElementById('riwayatList');
+                fetch(`/perawat/riwayat-berobat/${noRekamMedis}/${tanggal}?source=${ev.target.getAttribute('data-source')}`, {
+                        credentials: 'include'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Data hasil periksa tidak ditemukan');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        hasilPeriksaDetail.style.display = 'block';
+                        riwayatList.style.display = 'none';
+                        const d = data.data || {};
+                        const dateObj = new Date(d.tanggal_periksa);
+                        const options = {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        };
+                        document.getElementById('detailTanggal').textContent = dateObj.toLocaleDateString('id-ID', options);
+                        // Cek apakah ada data pada hasil periksa
+                        const hasHasilPeriksa = d.anamnesis || d.pemeriksaan_fisik || d.rencana_dan_terapi || d.diagnosis || d.edukasi || d.kode_icd || d.status_gizi;
+                        document.getElementById('headingHasilPeriksa').style.display = hasHasilPeriksa ? 'block' : 'none';
+                        document.getElementById('tableHasilPeriksa').style.display = hasHasilPeriksa ? 'table' : 'none';
+                        if (hasHasilPeriksa) {
+                            document.getElementById('detailAnamnesis').textContent = d.anamnesis || '-';
+                            document.getElementById('detailPemeriksaanFisik').textContent = d.pemeriksaan_fisik || '-';
+                            document.getElementById('detailRencanaTerapi').textContent = d.rencana_dan_terapi || '-';
+                            document.getElementById('detailDiagnosis').textContent = d.diagnosis || '-';
+                            document.getElementById('detailEdukasi').textContent = d.edukasi || '-';
+                            document.getElementById('detailKodeICD').textContent = d.kode_icd || '-';
+                            document.getElementById('detailStatusGizi').textContent = d.status_gizi || '-';
+                            if (document.getElementById('detailPenanggungJawab')) {
+                                document.getElementById('detailPenanggungJawab').textContent = d.penanggung_jawab_periksa || '-';
+                            }
+                        }
+                        // Cek hasil analisa
+                        const hasHasilAnalisa = d.tekanan_darah || d.frekuensi_nadi || d.suhu || d.frekuensi_nafas || d.skor_nyeri || d.skor_jatuh || d.berat_badan || d.tinggi_badan || d.lingkar_kepala || d.imt || d.alat_bantu || d.prosthesa || d.cacat_tubuh || d.adl_mandiri || d.riwayat_jatuh || d.status_psikologi || d.hambatan_edukasi || d.alergi || d.catatan || d.poli_tujuan || d.penanggung_jawab_nama;
+                        document.getElementById('headingHasilAnalisa').style.display = hasHasilAnalisa ? 'block' : 'none';
+                        document.getElementById('tableHasilAnalisa').style.display = hasHasilAnalisa ? 'table' : 'none';
+                        if (hasHasilAnalisa) {
+                            document.getElementById('detailTekananDarah').textContent = d.tekanan_darah || '-';
+                            document.getElementById('detailFrekuensiNadi').textContent = d.frekuensi_nadi || '-';
+                            document.getElementById('detailSuhu').textContent = d.suhu || '-';
+                            document.getElementById('detailFrekuensiNafas').textContent = d.frekuensi_nafas || '-';
+                            document.getElementById('detailSkorNyeri').textContent = d.skor_nyeri || '-';
+                            document.getElementById('detailSkorJatuh').textContent = d.skor_jatuh || '-';
+                            document.getElementById('detailBeratBadan').textContent = d.berat_badan || '-';
+                            document.getElementById('detailTinggiBadan').textContent = d.tinggi_badan || '-';
+                            document.getElementById('detailLingkarKepala').textContent = d.lingkar_kepala || '-';
+                            document.getElementById('detailIMT').textContent = d.imt || '-';
+                            document.getElementById('detailAlatBantu').textContent = d.alat_bantu || '-';
+                            document.getElementById('detailProsthesa').textContent = d.prosthesa || '-';
+                            document.getElementById('detailCacatTubuh').textContent = d.cacat_tubuh || '-';
+                            document.getElementById('detailADLMandiri').textContent = d.adl_mandiri || '-';
+                            document.getElementById('detailRiwayatJatuh').textContent = d.riwayat_jatuh || '-';
+                            document.getElementById('detailStatusPsikologi').textContent = d.status_psikologi || '-';
+                            document.getElementById('detailHambatanEdukasi').textContent = d.hambatan_edukasi || '-';
+                            document.getElementById('detailAlergi').textContent = d.alergi || '-';
+                            document.getElementById('detailCatatan').textContent = d.catatan || '-';
+                            document.getElementById('detailPoliTujuan').textContent = d.poli_tujuan || '-';
+                            document.getElementById('detailPenanggungJawabAnalisa').textContent = d.penanggung_jawab_analisa || '-';
+                        }
+                        // Cek hasil periksa anak
+                        const hasHasilPeriksaAnak = d.berat_badan_anak || d.makanan_anak || d.gejala_anak || d.nasehat_anak || d.pegobatan_anak;
+                        document.getElementById('headingHasilPeriksaAnak').style.display = hasHasilPeriksaAnak ? 'block' : 'none';
+                        document.getElementById('hasilPeriksaAnakTable').style.display = hasHasilPeriksaAnak ? 'table' : 'none';
+                        if (hasHasilPeriksaAnak) {
+                            const tbodyAnak = document.querySelector('#hasilPeriksaAnakTable tbody');
+                            tbodyAnak.innerHTML = `
+            <tr><th>Berat Badan Anak</th><td>${d.berat_badan_anak || '-'}</td></tr>
+            <tr><th>Makanan Anak</th><td>${d.makanan_anak || '-'}</td></tr>
+            <tr><th>Gejala Anak</th><td>${d.gejala_anak || '-'}</td></tr>
+            <tr><th>Nasehat Anak</th><td>${d.nasehat_anak || '-'}</td></tr>
+            <tr><th>Pengobatan Anak</th><td>${d.pegobatan_anak || '-'}</td></tr>
+            <tr><th>Penanggung Jawab Anak</th><td>${d.penanggung_jawab_anak || '-'}</td></tr>
+        `;
+                        } else {
+                            document.querySelector('#hasilPeriksaAnakTable tbody').innerHTML = '';
+                        }
+                        // Cek hasil periksa gigi
+                        const hasHasilPeriksaGigi = d.odontogram || d.pemeriksaan_subjektif || d.pemeriksaan_objektif || d.diagnosa_gigi || d.terapi_anjuran_gigi || d.catatan_gigi;
+                        document.getElementById('headingHasilPeriksaGigi').style.display = hasHasilPeriksaGigi ? 'block' : 'none';
+                        document.getElementById('tableHasilPeriksaGigi').style.display = hasHasilPeriksaGigi ? 'table' : 'none';
+                        if (hasHasilPeriksaGigi) {
+                            document.getElementById('detailOdontogramGigi').textContent = d.odontogram || '-';
+                            document.getElementById('detailPemeriksaanSubjektifGigi').textContent = d.pemeriksaan_subjektif || '-';
+                            document.getElementById('detailPemeriksaanObjektifGigi').textContent = d.pemeriksaan_objektif || '-';
+                            document.getElementById('detailDiagnosisGigi').textContent = d.diagnosa_gigi || '-';
+                            document.getElementById('detailTerapiAnjuranGigi').textContent = d.terapi_anjuran_gigi || '-';
+                            document.getElementById('detailCatatanGigi').textContent = d.catatan_gigi || '-';
+                            document.getElementById('detailPenanggungJawabGigi').textContent = d.penanggung_jawab_gigi || '-';
+                        }
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+            }
+        });
+
+        // Event delegation untuk btnLihat di #riwayatList
+        document.getElementById('riwayatList').addEventListener('click', function(ev) {
+            if (ev.target.classList.contains('btnLihat')) {
+                const tanggal = ev.target.getAttribute('data-tanggal');
+                const noRekamMedis = ev.target.getAttribute('data-norm');
+                const hasilPeriksaDetail = document.getElementById('hasilPeriksaDetail');
+                const riwayatList = document.getElementById('riwayatList');
+                fetch(`/perawat/riwayat-berobat/${noRekamMedis}/${tanggal}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Data hasil periksa tidak ditemukan');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        hasilPeriksaDetail.style.display = 'block';
+                        riwayatList.style.display = 'none';
+                        const d = data.data || {};
+                        const dateObj = new Date(d.tanggal_periksa);
+                        const options = {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        };
+                        document.getElementById('detailTanggal').textContent = dateObj.toLocaleDateString('id-ID', options);
+
+                        // Cek apakah ada data pada hasil periksa
+                        const hasHasilPeriksa = d.anamnesis || d.pemeriksaan_fisik || d.rencana_dan_terapi || d.diagnosis || d.edukasi || d.kode_icd || d.status_gizi;
+                        document.getElementById('headingHasilPeriksa').style.display = hasHasilPeriksa ? 'block' : 'none';
+                        document.getElementById('tableHasilPeriksa').style.display = hasHasilPeriksa ? 'table' : 'none';
+                        if (hasHasilPeriksa) {
+                            document.getElementById('detailAnamnesis').textContent = d.anamnesis || '-';
+                            document.getElementById('detailPemeriksaanFisik').textContent = d.pemeriksaan_fisik || '-';
+                            document.getElementById('detailRencanaTerapi').textContent = d.rencana_dan_terapi || '-';
+                            document.getElementById('detailDiagnosis').textContent = d.diagnosis || '-';
+                            document.getElementById('detailEdukasi').textContent = d.edukasi || '-';
+                            document.getElementById('detailKodeICD').textContent = d.kode_icd || '-';
+                            document.getElementById('detailStatusGizi').textContent = d.status_gizi || '-';
+                            if (document.getElementById('detailPenanggungJawab')) {
+                                document.getElementById('detailPenanggungJawab').textContent = d.penanggung_jawab_periksa || '-';
+                            }
+                        }
+
+                        // Cek hasil analisa
+                        const hasHasilAnalisa = d.tekanan_darah || d.frekuensi_nadi || d.suhu || d.frekuensi_nafas || d.skor_nyeri || d.skor_jatuh || d.berat_badan || d.tinggi_badan || d.lingkar_kepala || d.imt || d.alat_bantu || d.prosthesa || d.cacat_tubuh || d.adl_mandiri || d.riwayat_jatuh || d.status_psikologi || d.hambatan_edukasi || d.alergi || d.catatan || d.poli_tujuan || d.penanggung_jawab_nama;
+                        document.getElementById('headingHasilAnalisa').style.display = hasHasilAnalisa ? 'block' : 'none';
+                        document.getElementById('tableHasilAnalisa').style.display = hasHasilAnalisa ? 'table' : 'none';
+                        if (hasHasilAnalisa) {
+                            document.getElementById('detailTekananDarah').textContent = d.tekanan_darah || '-';
+                            document.getElementById('detailFrekuensiNadi').textContent = d.frekuensi_nadi || '-';
+                            document.getElementById('detailSuhu').textContent = d.suhu || '-';
+                            document.getElementById('detailFrekuensiNafas').textContent = d.frekuensi_nafas || '-';
+                            document.getElementById('detailSkorNyeri').textContent = d.skor_nyeri || '-';
+                            document.getElementById('detailSkorJatuh').textContent = d.skor_jatuh || '-';
+                            document.getElementById('detailBeratBadan').textContent = d.berat_badan || '-';
+                            document.getElementById('detailTinggiBadan').textContent = d.tinggi_badan || '-';
+                            document.getElementById('detailLingkarKepala').textContent = d.lingkar_kepala || '-';
+                            document.getElementById('detailIMT').textContent = d.imt || '-';
+                            document.getElementById('detailAlatBantu').textContent = d.alat_bantu || '-';
+                            document.getElementById('detailProsthesa').textContent = d.prosthesa || '-';
+                            document.getElementById('detailCacatTubuh').textContent = d.cacat_tubuh || '-';
+                            document.getElementById('detailADLMandiri').textContent = d.adl_mandiri || '-';
+                            document.getElementById('detailRiwayatJatuh').textContent = d.riwayat_jatuh || '-';
+                            document.getElementById('detailStatusPsikologi').textContent = d.status_psikologi || '-';
+                            document.getElementById('detailHambatanEdukasi').textContent = d.hambatan_edukasi || '-';
+                            document.getElementById('detailAlergi').textContent = d.alergi || '-';
+                            document.getElementById('detailCatatan').textContent = d.catatan || '-';
+                            document.getElementById('detailPoliTujuan').textContent = d.poli_tujuan || '-';
+                            document.getElementById('detailPenanggungJawabAnalisa').textContent = d.penanggung_jawab_analisa || '-';
+                        }
+
+                        // Cek hasil periksa anak
+                        const hasHasilPeriksaAnak = d.berat_badan_anak || d.makanan_anak || d.gejala_anak || d.nasehat_anak || d.pegobatan_anak;
+                        document.getElementById('headingHasilPeriksaAnak').style.display = hasHasilPeriksaAnak ? 'block' : 'none';
+                        document.getElementById('hasilPeriksaAnakTable').style.display = hasHasilPeriksaAnak ? 'table' : 'none';
+                        if (hasHasilPeriksaAnak) {
+                            const tbodyAnak = document.querySelector('#hasilPeriksaAnakTable tbody');
+                            tbodyAnak.innerHTML = `
+                            <tr><th>Berat Badan Anak</th><td>${d.berat_badan_anak || '-'}</td></tr>
+                            <tr><th>Makanan Anak</th><td>${d.makanan_anak || '-'}</td></tr>
+                            <tr><th>Gejala Anak</th><td>${d.gejala_anak || '-'}</td></tr>
+                            <tr><th>Nasehat Anak</th><td>${d.nasehat_anak || '-'}</td></tr>
+                            <tr><th>Pengobatan Anak</th><td>${d.pegobatan_anak || '-'}</td></tr>
+                            <tr><th>Penanggung Jawab Anak</th><td>${d.penanggung_jawab_anak || '-'}</td></tr>
+                        `;
+                        } else {
+                            document.querySelector('#hasilPeriksaAnakTable tbody').innerHTML = '';
+                        }
+
+                        // Cek hasil periksa gigi
+                        const hasHasilPeriksaGigi = d.odontogram || d.pemeriksaan_subjektif || d.pemeriksaan_objektif || d.diagnosa_gigi || d.terapi_anjuran_gigi || d.catatan_gigi;
+                        document.getElementById('headingHasilPeriksaGigi').style.display = hasHasilPeriksaGigi ? 'block' : 'none';
+                        document.getElementById('tableHasilPeriksaGigi').style.display = hasHasilPeriksaGigi ? 'table' : 'none';
+                        if (hasHasilPeriksaGigi) {
+                            document.getElementById('detailOdontogramGigi').textContent = d.odontogram || '-';
+                            document.getElementById('detailPemeriksaanSubjektifGigi').textContent = d.pemeriksaan_subjektif || '-';
+                            document.getElementById('detailPemeriksaanObjektifGigi').textContent = d.pemeriksaan_objektif || '-';
+                            document.getElementById('detailDiagnosisGigi').textContent = d.diagnosa_gigi || '-';
+                            document.getElementById('detailTerapiAnjuranGigi').textContent = d.terapi_anjuran_gigi || '-';
+                            document.getElementById('detailCatatanGigi').textContent = d.catatan_gigi || '-';
+                            document.getElementById('detailPenanggungJawabGigi').textContent = d.penanggung_jawab_gigi || '-';
+                        }
+
+                        // Populate Hasil Analisa Rawatinap
+                        const hasHasilAnalisaRawatinap = d.tekanan_darah_rawatinap || d.frekuensi_nadi_rawatinap || d.suhu_rawatinap || d.frekuensi_nafas_rawatinap || d.skor_nyeri_rawatinap || d.skor_jatuh_rawatinap || d.berat_badan_rawatinap || d.tinggi_badan_rawatinap || d.lingkar_kepala_rawatinap || d.imt_rawatinap || d.alat_bantu_rawatinap || d.prosthesa_rawatinap || d.cacat_tubuh_rawatinap || d.adl_mandiri_rawatinap || d.riwayat_jatuh_rawatinap || d.status_psikologi_rawatinap || d.hambatan_edukasi_rawatinap || d.alergi_rawatinap || d.catatan_rawatinap;
+                        document.getElementById('headingHasilAnalisaRawatinap').style.display = hasHasilAnalisaRawatinap ? 'block' : 'none';
+                        document.getElementById('tableHasilAnalisaRawatinap').style.display = hasHasilAnalisaRawatinap ? 'table' : 'none';
+                        if (hasHasilAnalisaRawatinap) {
+                            document.getElementById('detailTekananDarahRawatinap').textContent = d.tekanan_darah_rawatinap || '-';
+                            document.getElementById('detailFrekuensiNadiRawatinap').textContent = d.frekuensi_nadi_rawatinap || '-';
+                            document.getElementById('detailSuhuRawatinap').textContent = d.suhu_rawatinap || '-';
+                            document.getElementById('detailFrekuensiNafasRawatinap').textContent = d.frekuensi_nafas_rawatinap || '-';
+                            document.getElementById('detailSkorNyeriRawatinap').textContent = d.skor_nyeri_rawatinap || '-';
+                            document.getElementById('detailSkorJatuhRawatinap').textContent = d.skor_jatuh_rawatinap || '-';
+                            document.getElementById('detailBeratBadanRawatinap').textContent = d.berat_badan_rawatinap || '-';
+                            document.getElementById('detailTinggiBadanRawatinap').textContent = d.tinggi_badan_rawatinap || '-';
+                            document.getElementById('detailLingkarKepalaRawatinap').textContent = d.lingkar_kepala_rawatinap || '-';
+                            document.getElementById('detailIMTRawatinap').textContent = d.imt_rawatinap || '-';
+                            document.getElementById('detailAlatBantuRawatinap').textContent = d.alat_bantu_rawatinap || '-';
+                            document.getElementById('detailProsthesaRawatinap').textContent = d.prosthesa_rawatinap || '-';
+                            document.getElementById('detailCacatTubuhRawatinap').textContent = d.cacat_tubuh_rawatinap || '-';
+                            document.getElementById('detailADLMandiriRawatinap').textContent = d.adl_mandiri_rawatinap || '-';
+                            document.getElementById('detailRiwayatJatuhRawatinap').textContent = d.riwayat_jatuh_rawatinap || '-';
+                            document.getElementById('detailStatusPsikologiRawatinap').textContent = d.status_psikologi_rawatinap || '-';
+                            document.getElementById('detailHambatanEdukasiRawatinap').textContent = d.hambatan_edukasi_rawatinap || '-';
+                            document.getElementById('detailAlergiRawatinap').textContent = d.alergi_rawatinap || '-';
+                            document.getElementById('detailCatatanRawatinap').textContent = d.catatan_rawatinap || '-';
+                            document.getElementById('detailPenanggungJawabRawatinap').textContent = d.penanggung_jawab_rawatinap || '-';
+                        } else {
+                            document.getElementById('detailTekananDarahRawatinap').textContent = '-';
+                            document.getElementById('detailFrekuensiNadiRawatinap').textContent = '-';
+                            document.getElementById('detailSuhuRawatinap').textContent = '-';
+                            document.getElementById('detailFrekuensiNafasRawatinap').textContent = '-';
+                            document.getElementById('detailSkorNyeriRawatinap').textContent = '-';
+                            document.getElementById('detailSkorJatuhRawatinap').textContent = '-';
+                            document.getElementById('detailBeratBadanRawatinap').textContent = '-';
+                            document.getElementById('detailTinggiBadanRawatinap').textContent = '-';
+                            document.getElementById('detailLingkarKepalaRawatinap').textContent = '-';
+                            document.getElementById('detailIMTRawatinap').textContent = '-';
+                            document.getElementById('detailAlatBantuRawatinap').textContent = '-';
+                            document.getElementById('detailProsthesaRawatinap').textContent = '-';
+                            document.getElementById('detailCacatTubuhRawatinap').textContent = '-';
+                            document.getElementById('detailADLMandiriRawatinap').textContent = '-';
+                            document.getElementById('detailRiwayatJatuhRawatinap').textContent = '-';
+                            document.getElementById('detailStatusPsikologiRawatinap').textContent = '-';
+                            document.getElementById('detailHambatanEdukasiRawatinap').textContent = '-';
+                            document.getElementById('detailAlergiRawatinap').textContent = '-';
+                            document.getElementById('detailCatatanRawatinap').textContent = '-';
+                            document.getElementById('detailPenanggungJawabRawatinap').textContent = '-';
+                        }
+
+                        // Populate Hasil Periksa UGD
+                        const hasHasilPeriksaUgd = d.tanggal_periksa_ugd || d.waktu_ugd || d.soap_ugd || d.intruksi_tenaga_kerja_ugd || d.penanggung_jawab_ugd;
+                        document.getElementById('headingHasilPeriksaUgd').style.display = hasHasilPeriksaUgd ? 'block' : 'none';
+                        document.getElementById('tableHasilPeriksaUgd').style.display = hasHasilPeriksaUgd ? 'table' : 'none';
+                        if (hasHasilPeriksaUgd) {
+                            document.getElementById('detailTanggalPeriksaUgd').textContent = d.tanggal_periksa_ugd || '-';
+                            document.getElementById('detailWaktuUgd').textContent = d.waktu_ugd || '-';
+                            document.getElementById('detailSoapUgd').textContent = d.soap_ugd || '-';
+                            document.getElementById('detailIntruksiTenagaKerjaUgd').textContent = d.intruksi_tenaga_kerja_ugd || '-';
+                            document.getElementById('detailPenanggungJawabUgd').textContent = d.penanggung_jawab_ugd || '-';
+                        } else {
+                            document.getElementById('detailTanggalPeriksaUgd').textContent = '-';
+                            document.getElementById('detailWaktuUgd').textContent = '-';
+                            document.getElementById('detailSoapUgd').textContent = '-';
+                            document.getElementById('detailIntruksiTenagaKerjaUgd').textContent = '-';
+                            document.getElementById('detailPenanggungJawabUgd').textContent = '-';
+                        }
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+            }
+        });
+
+        // Event listener tombol Tutup di detail view
+        document.getElementById('btnTutupDetail').addEventListener('click', function() {
+            document.getElementById('hasilPeriksaDetail').style.display = 'none';
+            document.getElementById('riwayatList').style.display = 'block';
+        });
     });
 </script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
         const pasienTableBody = document.querySelector('#dokterPasien tbody');
         let timeout = null;
+
+        function formatDateToDash(dateString) {
+            const date = new Date(dateString);
+            if (isNaN(date)) return '-';
+            const day = ('0' + date.getDate()).slice(-2);
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
 
         function fetchPasien(url = null) {
             let query = searchInput.value;
@@ -468,29 +1102,29 @@
                         let rows = '';
                         data.data.forEach((pasien, index) => {
                             rows += `
-                            <tr>
-                                <td style="white-space: nowrap;">${data.from + index}</td>
-                                <td style="white-space: nowrap;">${pasien.no_rekam_medis}</td>
-                                <td style="white-space: nowrap;">${pasien.nama_pasien}</td>
-                                <td style="white-space: nowrap;">${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : '-'}</td>
-                                <td style="white-space: nowrap;">${pasien.jenis_kelamin}</td>
-                                <td style="white-space: nowrap;">${pasien.jaminan_kesehatan}</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
-                                        data-bs-target="#modalPasienDetail"
-                                        data-no_rekam_medis="${pasien.no_rekam_medis}" data-nik="${pasien.nik}"
-                                        data-nama="${pasien.nama_pasien}">
-                                        Selengkapnya
-                                    </button>
-                                    <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
-                                        data-bs-target="#modalRiwayatBerobat"
-                                        data-no_rekam_medis="${pasien.no_rekam_medis}"
-                                        data-nama="${pasien.nama_pasien}">
-                                        Riwayat Berobat
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
+                <tr>
+                    <td style="white-space: nowrap;">${data.from + index}</td>
+                    <td style="white-space: nowrap;">${pasien.no_rekam_medis}</td>
+                    <td style="white-space: nowrap;">${pasien.nama_pasien}</td>
+                    <td style="white-space: nowrap;">${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? formatDateToDash(pasien.tanggal_lahir) : '-'}</td>
+                    <td style="white-space: nowrap;">${pasien.jenis_kelamin}</td>
+                    <td style="white-space: nowrap;">${pasien.jaminan_kesehatan}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
+                            data-bs-target="#modalPasienDetail"
+                            data-no_rekam_medis="${pasien.no_rekam_medis}" data-nik="${pasien.nik}"
+                            data-nama="${pasien.nama_pasien}">
+                            Selengkapnya
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
+                            data-bs-target="#modalRiwayatBerobat"
+                            data-no_rekam_medis="${pasien.no_rekam_medis}"
+                            data-nama="${pasien.nama_pasien}">
+                            Riwayat Berobat
+                        </button>
+                    </td>
+                </tr>
+            `;
                         });
                         pasienTableBody.innerHTML = rows;
                     }
@@ -564,17 +1198,17 @@
             });
         }
 
-        // Initial attach
-        attachPaginationEvents();
-        // Fetch data pasien dan pagination info via AJAX saat halaman pertama kali dimuat
-        fetchPasien();
+        // // Initial attach
+        // attachPaginationEvents();
+        // // Fetch data pasien dan pagination info via AJAX saat halaman pertama kali dimuat
+        // fetchPasien();
 
-        searchInput.addEventListener('input', function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                fetchPasien();
-            }, 300);
-        });
+        // searchInput.addEventListener('input', function() {
+        //     clearTimeout(timeout);
+        //     timeout = setTimeout(() => {
+        //         fetchPasien();
+        //     }, 300);
+        // });
     });
 </script>
 
@@ -629,14 +1263,4 @@
         });
     });
 </script>
-
-<!-- @push('styles')
-<style>
-    /* Hilangkan border-radius pada tombol pagination agar tidak bulat */
-    .pagination .page-link {
-        border-radius: 0 !important;
-    }
-</style>
-@endpush -->
-
 @endsection

@@ -100,4 +100,5 @@ class PerawatHasilAnalisaController extends Controller
         Log::info('Hasil analisa count', ['count' => $hasilAnalisa->count()]);
         return response()->json($hasilAnalisa);
     }
+    
 }

@@ -209,8 +209,13 @@ Route::middleware(['auth', 'role:perawat'])->group(function () {
 
     Route::get('/perawat/profile', [PerawatProfileController::class, 'show'])->name('perawat.profile');
     Route::patch('/perawat/profile', [PerawatProfileController::class, 'update'])->name('perawat.profile.update');
-
+    // Route::get('/perawat/hasil-analisa/{no_rekam_medis}', [PerawatDashboardController::class, 'hasilAnalisaAjax'])->name('perawat.hasilanalisa.ajax');
     Route::get('/perawat/jadwal', [PerawatDashboardController::class, 'jadwal'])->name('perawat.jadwaldokter');
+    // Route::get('/perawat/pasien/{no_rekam_medis}/riwayat', [App\Http\Controllers\PerawatDashboardController::class, 'riwayatBerobat'])
+    //     ->name('perawat.riwayat');
+    Route::get('/perawat/riwayat-berobat/{no_rekam_medis}/dates', [App\Http\Controllers\PerawatDashboardController::class, 'getVisitDates'])->name('perawat.riwayat.dates');
+    // API route to get hasil analisa and periksa data for a date
+    Route::get('/perawat/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\PerawatDashboardController::class, 'getVisitData'])->name('perawat.riwayat.data');
 });
 
 Route::middleware(['auth', 'role:bidan'])->group(function () {
@@ -428,11 +433,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/gigi/antrian', [App\Http\Controllers\GigiDashboardController::class, 'antrian'])->middleware('role:doktergigi')->name('gigi.antrian');
     Route::post('/gigi/hasilperiksa/store', [App\Http\Controllers\GigiDashboardController::class, 'storeHasilPeriksa'])->middleware('role:doktergigi')->name('gigi.hasilperiksa.store');
     Route::post('/gigi/hasilperiksa-gigi/store', [App\Http\Controllers\GigiDashboardController::class, 'storeHasilPeriksaGigi'])->middleware('role:doktergigi')->name('gigi.hasilperiksagigi.store');
+    Route::get('/gigi/riwayat-berobat/{no_rekam_medis}/dates', [App\Http\Controllers\GigiDashboardController::class, 'getVisitDates'])->name('gigi.riwayat.dates');
+    // API route to get hasil analisa and periksa data for a date
+    Route::get('/gigi/riwayat-berobat/{no_rekam_medis}/{tanggal}', [App\Http\Controllers\GigiDashboardController::class, 'getVisitData'])->name('gigi.riwayat.data');
 
     Route::post('/dokter/hasilperiksa/store', [DokterDashboardController::class, 'storeHasilPeriksa'])->middleware('role:dokter')->name('dokter.hasilperiksa.store');
 
     Route::get('/perawat', [PerawatDashboardController::class, 'index'])->middleware('role:perawat')->name('perawat.dashboard');
     Route::get('/perawat/antrian', [PerawatDashboardController::class, 'antrian'])->middleware('role:perawat')->name('perawat.antrian');
+
     Route::get('/apoteker', [ApotekerDashboardController::class, 'index'])->middleware('role:apoteker')->name('apoteker.dashboard');
 
     Route::get('/apoteker/profile', [ApotekerDashboardController::class, 'profile'])->middleware(['auth', 'role:apoteker'])->name('profileapoteker');
