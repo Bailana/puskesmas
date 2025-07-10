@@ -165,8 +165,9 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <form method="GET" action="{{ route('admin.datapasien') }}">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="filterModalLabel">Filter Data Pasien</h5>
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <h3 class="modal-title mb-0" id="filterModalLabel"><strong>Filter Data Pasien</strong></h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row g-3">
@@ -186,23 +187,41 @@
                             <label for="gol_darah" class="form-label">Golongan Darah</label>
                             <select name="gol_darah" id="gol_darah" class="form-select">
                                 <option value="">Semua</option>
-                                <option value="A" {{ request('gol_darah') == 'A' ? 'selected' : '' }}>A
-                                </option>
-                                <option value="B" {{ request('gol_darah') == 'B' ? 'selected' : '' }}>B
-                                </option>
-                                <option value="AB" {{ request('gol_darah') == 'AB' ? 'selected' : '' }}>AB
-                                </option>
-                                <option value="O" {{ request('gol_darah') == 'O' ? 'selected' : '' }}>O
-                                </option>
+                                <option value="A"
+                                    {{ request('gol_darah') == 'A' ? 'selected' : '' }}>A</option>
+                                <option value="B"
+                                    {{ request('gol_darah') == 'B' ? 'selected' : '' }}>B</option>
+                                <option value="AB"
+                                    {{ request('gol_darah') == 'AB' ? 'selected' : '' }}>AB</option>
+                                <option value="O"
+                                    {{ request('gol_darah') == 'O' ? 'selected' : '' }}>O</option>
+                                <option value="A+"
+                                    {{ request('gol_darah') == 'A+' ? 'selected' : '' }}>A+</option>
+                                <option value="A-"
+                                    {{ request('gol_darah') == 'A-' ? 'selected' : '' }}>A-</option>
+                                <option value="B+"
+                                    {{ request('gol_darah') == 'B+' ? 'selected' : '' }}>B+</option>
+                                <option value="B-"
+                                    {{ request('gol_darah') == 'B-' ? 'selected' : '' }}>B-</option>
+                                <option value="AB+"
+                                    {{ request('gol_darah') == 'AB+' ? 'selected' : '' }}>AB+</option>
+                                <option value="AB-"
+                                    {{ request('gol_darah') == 'AB-' ? 'selected' : '' }}>AB-</option>
+                                <option value="O+"
+                                    {{ request('gol_darah') == 'O+' ? 'selected' : '' }}>O+</option>
+                                <option value="O-"
+                                    {{ request('gol_darah') == 'O-' ? 'selected' : '' }}>O-</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="jaminan_kesehatan" class="form-label">Jaminan Kesehatan</label>
-                            <select name="jaminan_kesehatan" id="jaminan_kesehatan" class="form-select">
+                            <label for="jaminan_kesehatan" class="form-label">Jaminan
+                                Kesehatan</label>
+                            <select name="jaminan_kesehatan" id="jaminan_kesehatan"
+                                class="form-select">
                                 <option value="">Semua</option>
                                 <option value="Umum"
-                                    {{ request('jaminan_kesehatan') == 'Umum' ? 'selected' : '' }}>Umum
-                                </option>
+                                    {{ request('jaminan_kesehatan') == 'Umum' ? 'selected' : '' }}>
+                                    Umum</option>
                                 <option value="BPJS Kesehatan"
                                     {{ request('jaminan_kesehatan') == 'BPJS Kesehatan' ? 'selected' : '' }}>
                                     BPJS Kesehatan</option>
@@ -210,8 +229,8 @@
                         </div>
                         <div class="col-md-6">
                             <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
-                            <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control"
-                                value="{{ request('tempat_lahir') }}">
+                            <input type="text" name="tempat_lahir" id="tempat_lahir"
+                                class="form-control" value="{{ request('tempat_lahir') }}">
                         </div>
                         <div class="col-md-6">
                             <label for="kecamatan" class="form-label">Kecamatan</label>
@@ -224,8 +243,10 @@
                                 value="{{ request('kelurahan') }}">
                         </div>
                         <div class="col-md-6">
-                            <label for="status_pernikahan" class="form-label">Status Pernikahan</label>
-                            <select name="status_pernikahan" id="status_pernikahan" class="form-select">
+                            <label for="status_pernikahan" class="form-label">Status
+                                Pernikahan</label>
+                            <select name="status_pernikahan" id="status_pernikahan"
+                                class="form-select">
                                 <option value="">Semua</option>
                                 <option value="Belum Menikah"
                                     {{ request('status_pernikahan') == 'Belum Menikah' ? 'selected' : '' }}>
@@ -234,19 +255,18 @@
                                     {{ request('status_pernikahan') == 'Menikah' ? 'selected' : '' }}>
                                     Menikah</option>
                                 <option value="Cerai"
-                                    {{ request('status_pernikahan') == 'Cerai' ? 'selected' : '' }}>Cerai
-                                </option>
+                                    {{ request('status_pernikahan') == 'Cerai' ? 'selected' : '' }}>
+                                    Cerai</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control"
-                                value="{{ request('tanggal_lahir') }}">
+                            <input type="date" name="tanggal_lahir" id="tanggal_lahir"
+                                class="form-control" value="{{ request('tanggal_lahir') }}">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-end mt-3" style="gap: 10px;">
-                    <button type="button" class="btn btn-danger " data-bs-dismiss="modal">Tutup</button>
                     <button type="submit" class="btn btn-primary">Terapkan Filter</button>
                 </div>
             </form>

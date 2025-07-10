@@ -13,12 +13,48 @@ class GigiDashboardController extends Controller
 {
     public function index()
     {
+        $today = \Carbon\Carbon::today()->toDateString();
+
         $antrians = Antrian::where('status', 'Pemeriksaan')
             ->whereHas('poli', function ($query) {
                 $query->where('nama_poli', 'Gigi');
             })
+            ->whereDate('tanggal_berobat', $today)
             ->paginate(5);
-        return view('gigi.dashboard', compact('antrians'));
+
+        $totalAntrianCount = Antrian::where('status', 'Pemeriksaan')
+            ->whereHas('poli', function ($query) {
+                $query->where('nama_poli', 'Gigi');
+            })
+            ->whereDate('tanggal_berobat', $today)
+            ->count();
+
+        $totalAntrianSelesaiCount = Antrian::where('status', 'Selesai')
+            ->whereHas('poli', function ($query) {
+                $query->where('nama_poli', 'Gigi');
+            })
+            ->whereDate('tanggal_berobat', $today)
+            ->count();
+
+        // Get patient count per month for poli "Gigi" for the current year
+        $currentYear = \Carbon\Carbon::now()->year;
+        $pasienPerBulan = Antrian::selectRaw('MONTH(tanggal_berobat) as month, COUNT(*) as count')
+            ->whereHas('poli', function ($query) {
+                $query->where('nama_poli', 'Gigi');
+            })
+            ->whereYear('tanggal_berobat', $currentYear)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        // Fill missing months with 0 count
+        $pasienPerBulanFull = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $pasienPerBulanFull[$m] = $pasienPerBulan[$m] ?? 0;
+        }
+
+        return view('gigi.dashboard', compact('antrians', 'totalAntrianCount', 'totalAntrianSelesaiCount', 'pasienPerBulanFull'));
     }
 
     public function profile()

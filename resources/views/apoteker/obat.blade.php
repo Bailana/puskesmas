@@ -44,7 +44,7 @@
                                 <form method="POST" action="{{ route('apoteker.obat.store') }}" id="formTambahObat">
                                     @csrf
                                     <div class="modal-header d-flex justify-content-between">
-                                        <h5 class="modal-title" id="modalTambahObatLabel">Tambah Data Obat</h5>
+                                        <h4 class="modal-title" id="modalTambahObatLabel"><strong>Tambah Data Obat</strong></h4>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -98,9 +98,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="modal-footer d-flex justify-content-end mt-3" style="gap: 10px;">
-                                        <button type="button" class="btn btn-danger"
-                                            data-bs-dismiss="modal">Batal</button>
+                                    <div class="modal-footer d-flex justify-content-end mt-3">
                                         <button type="submit" class="btn btn-primary">Simpan</button>
                                     </div>
                                 </form>
@@ -114,8 +112,9 @@
                         <div class="modal-dialog modal-lg modal-dialog-centered">
                             <div class="modal-content">
                                 <form method="GET" action="{{ route('apoteker.obat') }}">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="filterModalLabel">Filter Data Obat</h5>
+                                    <div class="modal-header d-flex justify-content-between align-items-center">
+                                        <h4 class="modal-title" id="filterModalLabel"><strong>Filter Data Pasien</strong></h4>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <!-- Add filter fields as needed -->
@@ -167,8 +166,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="modal-footer d-flex justify-content-end mt-3" style="gap: 10px;">
-                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                                    <div class="modal-footer d-flex justify-content-end mt-3">
                                         <button type="submit" class="btn btn-primary">Terapkan Filter</button>
                                     </div>
                                 </form>
@@ -178,50 +176,50 @@
                 </div>
 
                 <div class="table-responsive">
-                <table class="table table-hover my-0" id="dataObatTabel">
-                    <thead>
-                        <tr>
-                            <th style="white-space: nowrap;">No.</th>
-                            <th style="white-space: nowrap;">Nama Obat</th>
-                            <th style="white-space: nowrap;">Jenis Obat</th>
-                            <th style="white-space: nowrap;">Bentuk Obat</th>
-                            <th style="white-space: nowrap;">Stok</th>
-                            <th style="white-space: nowrap;">Harga Satuan</th>
-                            <th style="white-space: nowrap;">Tanggal Kadaluarsa</th>
-                            <th style="white-space: nowrap;">Aksi</th>
-                        </tr>
-                    </thead>
+                    <table class="table table-hover my-0" id="dataObatTabel">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">No.</th>
+                                <th style="white-space: nowrap;">Nama Obat</th>
+                                <th style="white-space: nowrap;">Jenis Obat</th>
+                                <th style="white-space: nowrap;">Bentuk Obat</th>
+                                <th style="white-space: nowrap;">Stok</th>
+                                <th style="white-space: nowrap;">Harga Satuan</th>
+                                <th style="white-space: nowrap;">Tanggal Kadaluarsa</th>
+                                <th style="white-space: nowrap;">Aksi</th>
+                            </tr>
+                        </thead>
                         <tbody>
-                        @foreach ($obats as $index => $obat)
-                        <tr>
-                            <td style="white-space: nowrap;">{{ $obats->firstItem() + $index }}</td>
-                            <td style="white-space: nowrap;">{{ $obat->nama_obat }}</td>
-                            <td style="white-space: nowrap;">{{ $obat->jenis_obat }}</td>
-                            <td style="white-space: nowrap;">{{ $obat->bentuk_obat }}</td>
-                            <td style="white-space: nowrap;">
-                                @if ($obat->stok == 0)
-                                <span class="badge bg-danger">{{ $obat->stok }}</span>
-                                @elseif ($obat->stok < 20) <span class="badge bg-warning">{{ $obat->stok }}</span>
-                                    @else
-                                    <span class="badge bg-success">{{ $obat->stok }}</span>
-                                    @endif
-                            </td>
-                            <td style="white-space: nowrap;">Rp. {{ rtrim(rtrim(number_format($obat->harga_satuan, 2, ',', '.'), '0'), ',') }}</td>
-                            <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($obat->tanggal_kadaluarsa)->format('d-m-Y') }}</td>
-                            <td style="white-space: nowrap;">
-                                <button type="button" class="btn btn-primary btn-sm rounded btn-detail-obat"
-                                    data-id="{{ $obat->id }}">
-                                    Selengkapnya
-                                </button>
-                                <button type="button" class="btn btn-danger btn-sm rounded btn-hapus-obat"
-                                    data-id="{{ $obat->id }}">
-                                    Hapus
-                                </button>
-                            </td>
-                        </tr>
-                        @endforeach
+                            @foreach ($obats as $index => $obat)
+                            <tr>
+                                <td style="white-space: nowrap;">{{ $obats->firstItem() + $index }}</td>
+                                <td style="white-space: nowrap;">{{ $obat->nama_obat }}</td>
+                                <td style="white-space: nowrap;">{{ $obat->jenis_obat }}</td>
+                                <td style="white-space: nowrap;">{{ $obat->bentuk_obat }}</td>
+                                <td style="white-space: nowrap;">
+                                    @if ($obat->stok == 0)
+                                    <span class="badge bg-danger">{{ $obat->stok }}</span>
+                                    @elseif ($obat->stok < 20) <span class="badge bg-warning">{{ $obat->stok }}</span>
+                                        @else
+                                        <span class="badge bg-success">{{ $obat->stok }}</span>
+                                        @endif
+                                </td>
+                                <td style="white-space: nowrap;">Rp. {{ rtrim(rtrim(number_format($obat->harga_satuan, 2, ',', '.'), '0'), ',') }}</td>
+                                <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($obat->tanggal_kadaluarsa)->format('d-m-Y') }}</td>
+                                <td style="white-space: nowrap;">
+                                    <button type="button" class="btn btn-primary btn-sm rounded btn-detail-obat"
+                                        data-id="{{ $obat->id }}">
+                                        Selengkapnya
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm rounded btn-hapus-obat"
+                                        data-id="{{ $obat->id }}">
+                                        Hapus
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
                         </tbody>
-                </table>
+                    </table>
                 </div>
                 <div class="mt-3 mb-2">
                     <div class="d-flex justify-content-between align-items-center w-100">
@@ -343,7 +341,7 @@
 
 @section('scripts')
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         var isEditMode = false;
         var currentObatId = null;
 
@@ -413,7 +411,7 @@
         }
 
         // Use event delegation for dynamically added buttons
-        $('#dataObatTabel').on('click', '.btn-detail-obat', function () {
+        $('#dataObatTabel').on('click', '.btn-detail-obat', function() {
             currentObatId = $(this).data('id');
             var modalElement = document.getElementById('modalObatDetail');
             var modal = new bootstrap.Modal(modalElement);
@@ -433,7 +431,7 @@
             $.ajax({
                 url: '/apoteker/obat/' + currentObatId,
                 method: 'GET',
-                success: function (data) {
+                success: function(data) {
                     $('#modalNamaObat').val(data.nama_obat);
                     $('#modalJenisObat').val(data.jenis_obat);
                     $('#modalDosis').val(data.dosis);
@@ -446,13 +444,13 @@
                     toggleEditMode(false);
                     modal.show();
                 },
-                error: function () {
+                error: function() {
                     alert('Gagal mengambil data obat.');
                 }
             });
         });
 
-        $('#btnEditObat').on('click', function () {
+        $('#btnEditObat').on('click', function() {
             if (!isEditMode) {
                 // Enable edit mode
                 toggleEditMode(true);
@@ -475,7 +473,7 @@
                     url: '/apoteker/obat/' + currentObatId,
                     method: 'PUT',
                     data: updatedData,
-                    success: function (response) {
+                    success: function(response) {
                         toggleEditMode(false);
                         var modalElement = document.getElementById('modalObatDetail');
                         var modal = bootstrap.Modal.getInstance(modalElement);
@@ -485,12 +483,12 @@
                             extendedTimeOut: 1000,
                             closeButton: true,
                             progressBar: true,
-                            onHidden: function () {
+                            onHidden: function() {
                                 location.reload();
                             }
                         });
                     },
-                    error: function () {
+                    error: function() {
                         toastr.error('Gagal menyimpan data obat');
                     }
                 });
@@ -498,7 +496,7 @@
         });
 
         // AJAX form submission for Tambah Obat modal
-        $('#formTambahObat').on('submit', function (e) {
+        $('#formTambahObat').on('submit', function(e) {
             e.preventDefault();
             var form = $(this);
             var url = form.attr('action');
@@ -508,7 +506,7 @@
                 url: url,
                 method: 'POST',
                 data: formData,
-                success: function (response) {
+                success: function(response) {
                     var modalElement = document.getElementById('modalTambahObat');
                     var modal = bootstrap.Modal.getInstance(modalElement);
                     modal.hide();
@@ -517,12 +515,12 @@
                         extendedTimeOut: 1000,
                         closeButton: true,
                         progressBar: true,
-                        onHidden: function () {
+                        onHidden: function() {
                             location.reload();
                         }
                     });
                 },
-                error: function (xhr) {
+                error: function(xhr) {
                     toastr.error('Gagal menambahkan data obat');
                 }
             });
@@ -530,7 +528,7 @@
     });
 
     // Tambahkan event listener untuk input pencarian dinamis
-    $('#searchInput').on('input', function () {
+    $('#searchInput').on('input', function() {
         var query = $(this).val();
         $('#loadingIndicator').show();
 
@@ -540,7 +538,7 @@
             data: {
                 search: query
             },
-            success: function (response) {
+            success: function(response) {
                 $('#loadingIndicator').hide();
 
                 // Bangun ulang isi tabel berdasarkan data JSON yang diterima
@@ -550,9 +548,9 @@
                 if (response.data.length === 0) {
                     tbody.append(
                         '<tr><td colspan="8" class="text-center">Tidak ada data ditemukan</td></tr>'
-                        );
+                    );
                 } else {
-                    $.each(response.data, function (index, obat) {
+                    $.each(response.data, function(index, obat) {
                         var stokBadge = '';
                         if (obat.stok == 0) {
                             stokBadge = '<span class="badge bg-danger">' + obat.stok +
@@ -592,7 +590,7 @@
                     });
                 }
             },
-            error: function () {
+            error: function() {
                 $('#loadingIndicator').hide();
                 alert('Gagal mengambil data pencarian.');
             }
@@ -600,12 +598,12 @@
     });
 
     // Prevent form submission on Enter key press
-    $('#searchForm').on('submit', function (e) {
+    $('#searchForm').on('submit', function(e) {
         e.preventDefault();
     });
 
     // Dynamic search on input
-    $('#searchInput').on('input', function () {
+    $('#searchInput').on('input', function() {
         var query = $(this).val();
 
         $.ajax({
@@ -614,7 +612,7 @@
             data: {
                 search: query
             },
-            success: function (response) {
+            success: function(response) {
 
                 var tbody = $('#dataObatTabel tbody');
                 tbody.empty();
@@ -622,9 +620,9 @@
                 if (response.data.length === 0) {
                     tbody.append(
                         '<tr><td colspan="8" class="text-center">Tidak ada data ditemukan</td></tr>'
-                        );
+                    );
                 } else {
-                    $.each(response.data, function (index, obat) {
+                    $.each(response.data, function(index, obat) {
                         var stokBadge = '';
                         if (obat.stok == 0) {
                             stokBadge = '<span class="badge bg-danger">' + obat.stok +
@@ -664,14 +662,14 @@
                     });
                 }
             },
-            error: function () {
+            error: function() {
                 alert('Gagal mengambil data pencarian.');
             }
         });
     });
 
     // Handle delete obat button click
-    $('#dataObatTabel').on('click', '.btn-hapus-obat', function () {
+    $('#dataObatTabel').on('click', '.btn-hapus-obat', function() {
         var obatId = $(this).data('id');
         Swal.fire({
             title: 'Konfirmasi',
@@ -689,24 +687,23 @@
                     data: {
                         _token: '{{ csrf_token() }}'
                     },
-                    success: function (response) {
+                    success: function(response) {
                         toastr.success(response.message, '', {
                             timeOut: 3000,
                             extendedTimeOut: 1000,
                             closeButton: true,
                             progressBar: true,
-                            onHidden: function () {
+                            onHidden: function() {
                                 location.reload();
                             }
                         });
                     },
-                    error: function (xhr) {
+                    error: function(xhr) {
                         toastr.error('Gagal menghapus data obat');
                     }
                 });
             }
         });
     });
-
 </script>
 @endsection

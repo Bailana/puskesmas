@@ -45,7 +45,7 @@
                             @else
                             @foreach ($pasiens as $index => $pasien)
                             <tr>
-                                <td style="white-space: nowrap;">{{ $pasiens->firstItem() + $index }}</td>
+                                <td style="white-space: nowrap;">{{ $pasiens->firstItem() + $index }}.</td>
                                 <td style="white-space: nowrap;">{{ $pasien->no_rekam_medis }}</td>
                                 <td style="white-space: nowrap;">{{ $pasien->nama_pasien}}</td>
                                 <td style="white-space: nowrap;">
@@ -93,7 +93,7 @@
                         </div>
                         <nav class="d-flex justify-content-center">
                             <ul class="pagination d-flex flex-row flex-wrap gap-2"
-                                    style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
+                                style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
                                 {{-- Previous Page Link --}}
                                 @if ($pasiens->onFirstPage())
                                 <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
@@ -108,33 +108,33 @@
 
                                 {{-- Pagination Elements --}}
                                 @php
-                                    $totalPages = $pasiens->lastPage();
-                                    $currentPage = $pasiens->currentPage();
-                                    $maxButtons = 3;
+                                $totalPages = $pasiens->lastPage();
+                                $currentPage = $pasiens->currentPage();
+                                $maxButtons = 3;
 
-                                    if ($totalPages <= $maxButtons) {
-                                        $start = 1;
-                                        $end = $totalPages;
+                                if ($totalPages <= $maxButtons) {
+                                    $start=1;
+                                    $end=$totalPages;
                                     } else {
-                                        if ($currentPage == 1) {
-                                            $start = 1;
-                                            $end = 3;
-                                        } elseif ($currentPage == $totalPages) {
-                                            $start = $totalPages - 2;
-                                            $end = $totalPages;
-                                        } else {
-                                            $start = $currentPage - 1;
-                                            $end = $currentPage + 1;
-                                        }
+                                    if ($currentPage==1) {
+                                    $start=1;
+                                    $end=3;
+                                    } elseif ($currentPage==$totalPages) {
+                                    $start=$totalPages - 2;
+                                    $end=$totalPages;
+                                    } else {
+                                    $start=$currentPage - 1;
+                                    $end=$currentPage + 1;
                                     }
-                                @endphp
-                                @for ($page = $start; $page <= $end; $page++)
-                                    @if ($page == $currentPage)
-                                        <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+                                    }
+                                    @endphp
+                                    @for ($page=$start; $page <=$end; $page++)
+                                    @if ($page==$currentPage)
+                                    <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
                                     @else
-                                        <li class="page-item"><a class="page-link" href="{{ $pasiens->url($page) }}">{{ $page }}</a></li>
+                                    <li class="page-item"><a class="page-link" href="{{ $pasiens->url($page) }}">{{ $page }}</a></li>
                                     @endif
-                                @endfor
+                                    @endfor
 
                                     {{-- Next Page Link --}}
                                     @if ($pasiens->hasMorePages())
@@ -183,15 +183,30 @@
                                             <label for="gol_darah" class="form-label">Golongan Darah</label>
                                             <select name="gol_darah" id="gol_darah" class="form-select">
                                                 <option value="">Semua</option>
-                                                <option value="A" {{ request('gol_darah') == 'A' ? 'selected' : '' }}>A
-                                                </option>
-                                                <option value="B" {{ request('gol_darah') == 'B' ? 'selected' : '' }}>B
-                                                </option>
-                                                <option value="AB" {{ request('gol_darah') == 'AB' ? 'selected' : '' }}>
-                                                    AB
-                                                </option>
-                                                <option value="O" {{ request('gol_darah') == 'O' ? 'selected' : '' }}>O
-                                                </option>
+                                                <option value="A"
+                                                    {{ request('gol_darah') == 'A' ? 'selected' : '' }}>A</option>
+                                                <option value="B"
+                                                    {{ request('gol_darah') == 'B' ? 'selected' : '' }}>B</option>
+                                                <option value="AB"
+                                                    {{ request('gol_darah') == 'AB' ? 'selected' : '' }}>AB</option>
+                                                <option value="O"
+                                                    {{ request('gol_darah') == 'O' ? 'selected' : '' }}>O</option>
+                                                <option value="A+"
+                                                    {{ request('gol_darah') == 'A+' ? 'selected' : '' }}>A+</option>
+                                                <option value="A-"
+                                                    {{ request('gol_darah') == 'A-' ? 'selected' : '' }}>A-</option>
+                                                <option value="B+"
+                                                    {{ request('gol_darah') == 'B+' ? 'selected' : '' }}>B+</option>
+                                                <option value="B-"
+                                                    {{ request('gol_darah') == 'B-' ? 'selected' : '' }}>B-</option>
+                                                <option value="AB+"
+                                                    {{ request('gol_darah') == 'AB+' ? 'selected' : '' }}>AB+</option>
+                                                <option value="AB-"
+                                                    {{ request('gol_darah') == 'AB-' ? 'selected' : '' }}>AB-</option>
+                                                <option value="O+"
+                                                    {{ request('gol_darah') == 'O+' ? 'selected' : '' }}>O+</option>
+                                                <option value="O-"
+                                                    {{ request('gol_darah') == 'O-' ? 'selected' : '' }}>O-</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
@@ -204,9 +219,6 @@
                                                 <option value="BPJS Kesehatan"
                                                     {{ request('jaminan_kesehatan') == 'BPJS Kesehatan' ? 'selected' : '' }}>
                                                     BPJS Kesehatan</option>
-                                                <option value="Perusahaan"
-                                                    {{ request('jaminan_kesehatan') == 'Perusahaan' ? 'selected' : '' }}>
-                                                    Perusahaan</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
@@ -435,7 +447,7 @@
     @section('scripts')
     <script>
         var pasienDetailModal = document.getElementById('modalPasienDetail');
-        pasienDetailModal.addEventListener('show.bs.modal', function (event) {
+        pasienDetailModal.addEventListener('show.bs.modal', function(event) {
             var button = event.relatedTarget;
             // Extract info from data-bs-* attributes
             var noRekamMedis = button.getAttribute('data-no_rekam_medis');
@@ -483,31 +495,30 @@
             pasienDetailModal.querySelector('#modalKepalaKeluarga').value = kepalaKeluarga || '';
             pasienDetailModal.querySelector('#modalNoHp').value = noHp || '';
         });
-
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
             const pasienTableBody = document.querySelector('#kasirPasien tbody');
             const searchForm = searchInput.closest('form');
 
             // Prevent form submission on Enter key press
-            searchForm.addEventListener('submit', function (e) {
+            searchForm.addEventListener('submit', function(e) {
                 e.preventDefault();
             });
 
-                function renderTableRows(pasiens) {
-                    pasienTableBody.innerHTML = '';
-                    if (pasiens.length === 0) {
-                        pasienTableBody.innerHTML =
-                            '<tr><td colspan="8" class="text-center">Data pasien tidak ditemukan</td></tr>';
-                        return;
-                    }
-                    pasiens.forEach((pasien, index) => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                                    <td style="white-space: nowrap;">${index + 1}</td>
+            function renderTableRows(pasiens) {
+                pasienTableBody.innerHTML = '';
+                if (pasiens.length === 0) {
+                    pasienTableBody.innerHTML =
+                        '<tr><td colspan="8" class="text-center">Data pasien tidak ditemukan</td></tr>';
+                    return;
+                }
+                pasiens.forEach((pasien, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                                    <td style="white-space: nowrap;">${index + 1}.</td>
                                     <td style="white-space: nowrap;">${pasien.no_rekam_medis}</td>
                                     <td style="white-space: nowrap;">${pasien.nama_pasien}</td>
                                     <td style="white-space: nowrap;">${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>
@@ -535,20 +546,14 @@
                                             data-no_hp="${pasien.no_hp}">
                                             Selengkapnya
                                         </button>
-                                        <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
-                                            data-bs-target="#modalRiwayatBerobat"
-                                            data-no_rekam_medis="${pasien.no_rekam_medis}"
-                                            data-nama="${pasien.nama_pasien}">
-                                            Riwayat Berobat
-                                        </button>
                                     </td>
                                 `;
-                        pasienTableBody.appendChild(row);
-                    });
-                }
+                    pasienTableBody.appendChild(row);
+                });
+            }
 
             let debounceTimeout;
-            searchInput.addEventListener('input', function () {
+            searchInput.addEventListener('input', function() {
                 clearTimeout(debounceTimeout);
                 debounceTimeout = setTimeout(() => {
                     const query = searchInput.value.trim();
@@ -567,14 +572,13 @@
                 }, 300);
             });
         });
-
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Handle Riwayat Berobat button click in pasien view
             document.querySelectorAll('button[data-bs-target="#modalRiwayatBerobat"]').forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     const noRekamMedis = this.getAttribute('data-no_rekam_medis');
                     const namaPasien = this.getAttribute('data-nama');
                     const modal = new bootstrap.Modal(document.getElementById(
@@ -610,7 +614,7 @@
                                 // Add event listeners to Lihat buttons
                                 riwayatList.querySelectorAll('.btnLihat').forEach(
                                     btnLihat => {
-                                        btnLihat.addEventListener('click', function () {
+                                        btnLihat.addEventListener('click', function() {
                                             const tanggal = this.getAttribute(
                                                 'data-tanggal');
                                             const noRekamMedis = this
@@ -694,6 +698,5 @@
                 });
             });
         });
-
     </script>
     @endsection

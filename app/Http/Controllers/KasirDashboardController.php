@@ -22,7 +22,21 @@ class KasirDashboardController extends Controller
             ->where('status', 'Pembayaran')
             ->paginate(5);
 
-        return view('kasir.dashboard', compact('antrians'));
+        $currentYear = date('Y');
+        $danaMasukPerBulan = \App\Models\Tagihan::selectRaw('MONTH(created_at) as month, SUM(total_biaya) as total')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        // Fill missing months with 0
+        $danaMasukPerBulanFull = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $danaMasukPerBulanFull[$m] = $danaMasukPerBulan[$m] ?? 0;
+        }
+
+        return view('kasir.dashboard', compact('antrians', 'danaMasukPerBulanFull'));
     }
 
     public function jadwal()

@@ -39,7 +39,7 @@
                         <tbody>
                             @foreach ($pasiens as $index => $pasien)
                             <tr>
-                                <td style="white-space: nowrap;">{{ $index + 1 }}</td>
+                                <td style="white-space: nowrap;">{{ $index + 1 }}.</td>
                                 <td style="white-space: nowrap;">{{ $pasien->no_rekam_medis }}</td>
                                 <td style="white-space: nowrap;">{{ $pasien->nama_pasien}}</td>
                                 <td style="white-space: nowrap;">
@@ -131,8 +131,9 @@
                 <div class="modal-dialog modal-lg modal-dialog-centered">
                     <div class="modal-content">
                         <form method="GET" action="{{ route('apoteker.pasien') }}">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="filterModalLabel">Filter Data Pasien</h5>
+                            <div class="modal-header d-flex justify-content-between align-items-center">
+                                <h4 class="modal-title" id="filterModalLabel"><strong>Filter Data Pasien</strong></h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row g-3">
@@ -152,14 +153,30 @@
                                         <label for="gol_darah" class="form-label">Golongan Darah</label>
                                         <select name="gol_darah" id="gol_darah" class="form-select">
                                             <option value="">Semua</option>
-                                            <option value="A" {{ request('gol_darah') == 'A' ? 'selected' : '' }}>A
-                                            </option>
-                                            <option value="B" {{ request('gol_darah') == 'B' ? 'selected' : '' }}>B
-                                            </option>
-                                            <option value="AB" {{ request('gol_darah') == 'AB' ? 'selected' : '' }}>AB
-                                            </option>
-                                            <option value="O" {{ request('gol_darah') == 'O' ? 'selected' : '' }}>O
-                                            </option>
+                                            <option value="A"
+                                                {{ request('gol_darah') == 'A' ? 'selected' : '' }}>A</option>
+                                            <option value="B"
+                                                {{ request('gol_darah') == 'B' ? 'selected' : '' }}>B</option>
+                                            <option value="AB"
+                                                {{ request('gol_darah') == 'AB' ? 'selected' : '' }}>AB</option>
+                                            <option value="O"
+                                                {{ request('gol_darah') == 'O' ? 'selected' : '' }}>O</option>
+                                            <option value="A+"
+                                                {{ request('gol_darah') == 'A+' ? 'selected' : '' }}>A+</option>
+                                            <option value="A-"
+                                                {{ request('gol_darah') == 'A-' ? 'selected' : '' }}>A-</option>
+                                            <option value="B+"
+                                                {{ request('gol_darah') == 'B+' ? 'selected' : '' }}>B+</option>
+                                            <option value="B-"
+                                                {{ request('gol_darah') == 'B-' ? 'selected' : '' }}>B-</option>
+                                            <option value="AB+"
+                                                {{ request('gol_darah') == 'AB+' ? 'selected' : '' }}>AB+</option>
+                                            <option value="AB-"
+                                                {{ request('gol_darah') == 'AB-' ? 'selected' : '' }}>AB-</option>
+                                            <option value="O+"
+                                                {{ request('gol_darah') == 'O+' ? 'selected' : '' }}>O+</option>
+                                            <option value="O-"
+                                                {{ request('gol_darah') == 'O-' ? 'selected' : '' }}>O-</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
@@ -172,9 +189,6 @@
                                             <option value="BPJS Kesehatan"
                                                 {{ request('jaminan_kesehatan') == 'BPJS Kesehatan' ? 'selected' : '' }}>
                                                 BPJS Kesehatan</option>
-                                            <option value="Perusahaan"
-                                                {{ request('jaminan_kesehatan') == 'Perusahaan' ? 'selected' : '' }}>
-                                                Perusahaan</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
@@ -214,8 +228,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer d-flex justify-content-end mt-3" style="gap: 10px;">
-                                <button type="button" class="btn btn-danger " data-bs-dismiss="modal">Tutup</button>
+                            <div class="modal-footer d-flex justify-content-end mt-3">
                                 <button type="submit" class="btn btn-primary">Terapkan Filter</button>
                             </div>
                         </form>
@@ -426,7 +439,7 @@
             pasiens.forEach((pasien, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                            <td style="white-space: nowrap;">${index + 1}</td>
+                            <td style="white-space: nowrap;">${index + 1}.</td>
                             <td style="white-space: nowrap;">${pasien.no_rekam_medis}</td>
                             <td style="white-space: nowrap;">${pasien.nama_pasien}</td>
                             <td style="white-space: nowrap;">${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>

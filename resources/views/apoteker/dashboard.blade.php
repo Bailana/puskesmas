@@ -333,6 +333,10 @@
 @section('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // Prepare data from PHP variables
+        const obatMasukData = @json(array_values($obatMasukPerBulanFull));
+        const obatKeluarData = @json(array_values($obatKeluarPerBulanFull));
+
         // Line chart
         new Chart(document.getElementById("chartjs-line"), {
             type: "line",
@@ -345,18 +349,13 @@
                     fill: true,
                     backgroundColor: "transparent",
                     borderColor: window.theme.primary,
-                    data: [2115, 1562, 1584, 1892, 1487, 2223, 2966, 2448, 2905, 3838, 2917,
-                        3327
-                    ]
+                    data: obatMasukData
                 }, {
                     label: "Obat Keluar",
                     fill: true,
                     backgroundColor: "transparent",
                     borderColor: window.theme.danger,
-                    // borderDash: [4, 4],
-                    data: [958, 724, 629, 883, 915, 1214, 1476, 1212, 1554, 2128, 1466,
-                        1827
-                    ]
+                    data: obatKeluarData
                 }]
             },
             options: {

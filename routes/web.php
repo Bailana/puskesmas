@@ -22,6 +22,8 @@ use App\Models\User;
 use App\Models\JadwalDokter;
 use App\Http\Controllers\AdminLogController;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\AdminDatapasienController;
+ 
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/ugd', function () {
@@ -38,12 +40,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/rawatinap/ugd/detail/{no_rekam_medis}', [App\Http\Controllers\RawatinapUgdController::class, 'getUgdPatientDetail'])->name('rawatinap.ugd.detail');
 
     // Route::get('/admin/rawatinap', [\App\Http\Controllers\RawatinapUgdController::class, 'adminRawatinap'])->name('admin.rawatinap');
-
-    Route::get('/admin/datapasien', function () {
-        $pasiens = \App\Models\Pasien::paginate(10);
-
-        return view('admin.datapasien', compact('pasiens'));
-    })->name('admin.datapasien');
+    Route::get('/admin/datapasien', [AdminDatapasienController::class, 'index'])->name('admin.datapasien');
 
     // Export routes for admin datapasien
     Route::get('/admin/datapasien/export/pdf', [\App\Http\Controllers\AdminDatapasienController::class, 'exportPdf'])->name('admin.datapasien.exportPdf');

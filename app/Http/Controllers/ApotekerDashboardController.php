@@ -38,7 +38,45 @@ class ApotekerDashboardController extends Controller
         // Count obat with stok 0
         $totalObatStokHabis = \App\Models\Obat::where('stok', 0)->count();
 
-        return view('apoteker.dashboard', compact('antrians', 'totalObatTersedia', 'totalObatKadaluarsa', 'totalObatStokMenipis', 'totalObatStokHabis'));
+        // Get obat masuk per month (sum stok grouped by month of created_at)
+        $currentYear = date('Y');
+        $obatMasukPerBulan = \App\Models\Obat::selectRaw('MONTH(created_at) as month, SUM(stok) as total')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        // Fill missing months with 0
+        $obatMasukPerBulanFull = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $obatMasukPerBulanFull[$m] = $obatMasukPerBulan[$m] ?? 0;
+        }
+
+        // Get obat keluar per month (sum jumlah grouped by month of created_at in hasilperiksa_obat)
+        $obatKeluarPerBulan = \DB::table('hasilperiksa_obat')
+            ->selectRaw('MONTH(created_at) as month, SUM(jumlah) as total')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        // Fill missing months with 0
+        $obatKeluarPerBulanFull = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $obatKeluarPerBulanFull[$m] = $obatKeluarPerBulan[$m] ?? 0;
+        }
+
+        return view('apoteker.dashboard', compact(
+            'antrians',
+            'totalObatTersedia',
+            'totalObatKadaluarsa',
+            'totalObatStokMenipis',
+            'totalObatStokHabis',
+            'obatMasukPerBulanFull',
+            'obatKeluarPerBulanFull'
+        ));
     }
 
     public function jadwal()

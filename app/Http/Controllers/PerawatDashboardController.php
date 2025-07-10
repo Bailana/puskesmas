@@ -27,7 +27,22 @@ class PerawatDashboardController extends Controller
             ->whereDate('created_at', $today)
             ->count();
 
-        return view('perawat.dashboard', compact('totalAntrianPerluAnalisa', 'totalAntrianSelesai'));
+        // Get patient count per month for current year
+        $currentYear = \Carbon\Carbon::now()->year;
+        $pasienPerBulan = \App\Models\Antrian::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        // Fill missing months with 0 count
+        $pasienPerBulanFull = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $pasienPerBulanFull[$m] = $pasienPerBulan[$m] ?? 0;
+        }
+
+        return view('perawat.dashboard', compact('totalAntrianPerluAnalisa', 'totalAntrianSelesai', 'pasienPerBulanFull'));
     }
 
     /**

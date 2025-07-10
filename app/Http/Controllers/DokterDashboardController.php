@@ -37,30 +37,28 @@ class DokterDashboardController extends Controller
             ->where('poli_id', 1)
             ->count();
 
-        return view('dokter.dashboard', compact(
-            'antrians',
-            'obats',
-            'totalAntrianCount',
-            'totalAntrianSelesaiCount'
-        ));
-
-        $obats = \App\Models\Obat::select('id', 'nama_obat', 'bentuk_obat', 'stok')->get();
-
-        // Count total antrian selesai for today with poli_id 1 (Umum)
-        $totalAntrianSelesaiCount = Antrian::whereDate('tanggal_berobat', $today)
-            ->where('status', 'Selesai')
+        // Get patient count per month for poli_id 1 (Umum) for the current year
+        $currentYear = \Carbon\Carbon::now()->year;
+        $pasienPerBulan = Antrian::selectRaw('MONTH(tanggal_berobat) as month, COUNT(*) as count')
             ->where('poli_id', 1)
-            ->count();
+            ->whereYear('tanggal_berobat', $currentYear)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
 
-        // Pass debug counts to view for temporary display
+        // Fill missing months with 0 count
+        $pasienPerBulanFull = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $pasienPerBulanFull[$m] = $pasienPerBulan[$m] ?? 0;
+        }
+
         return view('dokter.dashboard', compact(
             'antrians',
             'obats',
             'totalAntrianCount',
             'totalAntrianSelesaiCount',
-            'totalAntrianToday',
-            'totalAntrianStatusPemeriksaan',
-            'totalAntrianPoliUmum'
+            'pasienPerBulanFull'
         ));
     }
 

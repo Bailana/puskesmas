@@ -360,30 +360,26 @@
 @section('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Line chart
-        new Chart(document.getElementById("chartjs-line"), {
+        // Data dari Controller Laravel
+        let originalData = @json(array_values($danaMasukPerBulanFull));
+
+        // Kalikan setiap data bulanan dengan 1000
+        const monthlyData = originalData.map(value => value * 1000);
+
+        const monthLabels = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+
+        // Inisialisasi Line chart
+        const ctx = document.getElementById("chartjs-line").getContext("2d");
+        new Chart(ctx, {
             type: "line",
             data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
-                    "Nov", "Dec"
-                ],
+                labels: monthLabels,
                 datasets: [{
-                    label: "Sales ($)",
+                    label: "Dana Masuk",
                     fill: true,
                     backgroundColor: "transparent",
                     borderColor: window.theme.primary,
-                    data: [2115, 1562, 1584, 1892, 1487, 2223, 2966, 2448, 2905, 3838, 2917,
-                        3327
-                    ]
-                }, {
-                    label: "Orders",
-                    fill: true,
-                    backgroundColor: "transparent",
-                    borderColor: "#adb5bd",
-                    borderDash: [4, 4],
-                    data: [958, 724, 629, 883, 915, 1214, 1476, 1212, 1554, 2128, 1466,
-                        1827
-                    ]
+                    data: monthlyData // Gunakan data yang sudah dikalikan
                 }]
             },
             options: {
@@ -392,31 +388,42 @@
                     display: false
                 },
                 tooltips: {
-                    intersect: false
-                },
-                hover: {
-                    intersect: true
-                },
-                plugins: {
-                    filler: {
-                        propagate: false
+                    intersect: false,
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            let label = data.datasets[tooltipItem.datasetIndex].label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += new Intl.NumberFormat('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0
+                            }).format(tooltipItem.yLabel);
+                            return label;
+                        }
                     }
                 },
                 scales: {
                     xAxes: [{
-                        reverse: true,
+                        reverse: false,
                         gridLines: {
                             color: "rgba(0,0,0,0.05)"
                         }
                     }],
                     yAxes: [{
                         ticks: {
-                            stepSize: 500
+                            callback: function(value, index, values) {
+                                return new Intl.NumberFormat('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR',
+                                    minimumFractionDigits: 0
+                                }).format(value);
+                            }
                         },
-                        display: true,
-                        borderDash: [5, 5],
+                        borderDash: [2, 2],
                         gridLines: {
-                            color: "rgba(0,0,0,0)",
+                            color: "rgba(0,0,0,0.0)",
                             fontColor: "#fff"
                         }
                     }]

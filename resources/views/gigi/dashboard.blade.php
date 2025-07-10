@@ -22,7 +22,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">25</h1>
+                                <h1 class="mt-1 mb-3">{{ $totalAntrianCount }}</h1>
                                 <div class="mb-0">
                                     <span class="text-muted">Antrian</span>
                                 </div>
@@ -42,7 +42,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h1 class="mt-1 mb-3">5</h1>
+                                <h1 class="mt-1 mb-3">{{ $totalAntrianSelesaiCount }}</h1>
                                 <div class="mb-0">
                                     <span class="text-muted">Antrian</span>
                                 </div>
@@ -53,123 +53,7 @@
             </div>
         </div>
     </div>
-
-    <!-- <div class="row">
-        <h1 class="h3 mb-3"><strong>Antrian Pasien</strong></h1>
-        <div class="col-12 col-lg-12 col-xxl-12 d-flex">
-            <div class="card flex-fill">
-                <div class="table-responsive">
-                    <table class="table table-hover my-0">
-                        <thead>
-                            <tr>
-                                <th class="nowrap">No.</th>
-                                <th class="nowrap">Nomor RM</th>
-                                <th class="nowrap">Nama Pasien</th>
-                                <th class="nowrap">Umur</th>
-                                <th class="nowrap">JamKes</th>
-                                <th class="nowrap">Status</th>
-                                <th class="nowrap">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($antrians as $index => $antrian)
-                            @if ($antrian->status == 'Selesai')
-                            @continue
-                            @endif
-                            <tr>
-                                <td class="nowrap">{{ $index + 1 }}</td>
-                                <td class="nowrap">{{ $antrian->no_rekam_medis }}</td>
-                                <td class="nowrap">{{ $antrian->pasien->nama_pasien }}</td>
-                                <td class="nowrap">{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
-                                <td class="nowrap">{{ $antrian->pasien->jaminan_kesehatan }}</td>
-                                <td class="nowrap">
-                                    @if ($antrian->status == 'Perlu Analisa')
-                                    <span class="badge bg-danger">{{ $antrian->status }}</span>
-                                    @elseif ($antrian->status == 'Sudah Analisa')
-                                    <span class="badge bg-primary">{{ $antrian->status }}</span>
-                                    @elseif ($antrian->status == 'Pemeriksaan')
-                                    <span class="badge bg-warning">{{ $antrian->status }}</span>
-                                    @else
-                                    <span class="badge bg-secondary">{{ $antrian->status }}</span>
-                                    @endif
-                                </td>
-                                <td class="nowrap"><button type="button" class="btn btn-primary btn-sm rounded btn-periksa"
-                                        data-pasien-id="{{ $antrian->pasien->id }}">Periksa</button></td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-3 mb-2">
-                    <div class="d-flex justify-content-between align-items-center w-100">
-                        <div class="small text-muted mb-2 text-start ps-3 pagination-info-text" style="max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            Showing {{ $antrians->firstItem() }} to {{ $antrians->lastItem() }} of
-                            {{ $antrians->total() }} results
-                        </div>
-                        <nav class="d-flex justify-content-center">
-                            <ul class="pagination d-flex flex-row flex-wrap gap-2"
-                                style="list-style-type: none; padding-left: 0; margin-bottom: 0;">
-                                {{-- Previous Page Link --}}
-                                @if ($antrians->onFirstPage())
-                                <li class="page-item disabled" aria-disabled="true" aria-label="Previous">
-                                    <span class="page-link" aria-hidden="true">&laquo;</span>
-                                </li>
-                                @else
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $antrians->previousPageUrl() }}" rel="prev"
-                                        aria-label="Previous">&laquo;</a>
-                                </li>
-                                @endif
-
-                                {{-- Pagination Elements --}}
-                                @php
-                                $totalPages = $antrians->lastPage();
-                                $currentPage = $antrians->currentPage();
-                                $maxButtons = 3;
-
-                                if ($totalPages <= $maxButtons) {
-                                    $start=1;
-                                    $end=$totalPages;
-                                    } else {
-                                    if ($currentPage==1) {
-                                    $start=1;
-                                    $end=3;
-                                    } elseif ($currentPage==$totalPages) {
-                                    $start=$totalPages - 2;
-                                    $end=$totalPages;
-                                    } else {
-                                    $start=$currentPage - 1;
-                                    $end=$currentPage + 1;
-                                    }
-                                    }
-                                    @endphp
-
-                                    @for ($page=$start; $page <=$end; $page++)
-                                    @if ($page==$currentPage)
-                                    <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
-                                    @else
-                                    <li class="page-item"><a class="page-link" href="{{ $antrians->url($page) }}">{{ $page }}</a></li>
-                                    @endif
-                                    @endfor
-
-                                    {{-- Next Page Link --}}
-                                    @if ($antrians->hasMorePages())
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $antrians->nextPageUrl() }}" rel="next"
-                                            aria-label="Next">&raquo;</a>
-                                    </li>
-                                    @else
-                                    <li class="page-item disabled" aria-disabled="true" aria-label="Next">
-                                        <span class="page-link" aria-hidden="true">&raquo;</span>
-                                    </li>
-                                    @endif
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
+    
     <div class="row">
         <div class="col-12 col-lg-12">
             <div class="card flex-fill w-100">
@@ -256,30 +140,20 @@
 @section('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Line chart
+        // Line chart with dynamic data
+        const pasienPerBulan = @json(array_values($pasienPerBulanFull));
+        const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
         new Chart(document.getElementById("chartjs-line"), {
             type: "line",
             data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
-                    "Nov", "Dec"
-                ],
+                labels: labels,
                 datasets: [{
-                    label: "Sales ($)",
+                    label: "Jumlah Pasien Poli Gigi",
                     fill: true,
                     backgroundColor: "transparent",
                     borderColor: window.theme.primary,
-                    data: [2115, 1562, 1584, 1892, 1487, 2223, 2966, 2448, 2905, 3838, 2917,
-                        3327
-                    ]
-                }, {
-                    label: "Orders",
-                    fill: true,
-                    backgroundColor: "transparent",
-                    borderColor: "#adb5bd",
-                    borderDash: [4, 4],
-                    data: [958, 724, 629, 883, 915, 1214, 1476, 1212, 1554, 2128, 1466,
-                        1827
-                    ]
+                    data: pasienPerBulan
                 }]
             },
             options: {
@@ -307,7 +181,7 @@
                     }],
                     yAxes: [{
                         ticks: {
-                            stepSize: 500
+                            stepSize: 1
                         },
                         display: true,
                         borderDash: [5, 5],

@@ -199,7 +199,6 @@
         setInterval(updateTime, 1000); // Perbarui setiap detik
         updateTime(); // Panggil sekali saat halaman dimuat
     </script>
-    @yield('scripts')
 </body>
 
 </html>
