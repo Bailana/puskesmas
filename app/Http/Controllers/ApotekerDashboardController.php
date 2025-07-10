@@ -11,8 +11,10 @@ use App\Models\User;
 use App\Models\Obat;
 use App\Models\HasilPeriksa;
 use App\Exports\ObatExport;
+use App\Exports\ObatExportCustom;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\JadwalDokter;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ApotekerDashboardController extends Controller
 {
@@ -127,34 +129,8 @@ class ApotekerDashboardController extends Controller
         return view('apoteker.jadwal', compact('jadwalDokters', 'users'));
     }
 
-    public function obat(Request $request)
+    private function applyObatFilters($query, $filters)
     {
-        $search = $request->input('search');
-
-        $query = \App\Models\Obat::query();
-
-        if ($search) {
-            $query->where('nama_obat', 'like', '%' . $search . '%')
-                  ->orWhere('jenis_obat', 'like', '%' . $search . '%')
-                  ->orWhere('bentuk_obat', 'like', '%' . $search . '%')
-                  ->orWhere('nama_pabrikan', 'like', '%' . $search . '%');
-        }
-
-        $obats = $query->paginate(10)->withQueryString();
-
-        if ($request->ajax()) {
-            return response()->json($obats);
-        }
-
-        return view('apoteker.obat', compact('obats'));
-    }
-
-    public function exportPdf(Request $request)
-    {
-        $filters = $request->all();
-
-        $query = \App\Models\Obat::query();
-
         if (!empty($filters['nama_obat'])) {
             $query->where('nama_obat', 'like', '%' . $filters['nama_obat'] . '%');
         }
@@ -190,19 +166,51 @@ class ApotekerDashboardController extends Controller
                   ->orWhere('tanggal_kadaluarsa', 'like', '%' . $search . '%');
             });
         }
+    }
+
+    public function obat(Request $request)
+    {
+        $filters = $request->all();
+
+        $query = \App\Models\Obat::query();
+
+        $this->applyObatFilters($query, $filters);
+
+        $obats = $query->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json($obats);
+        }
+
+        return view('apoteker.obat', compact('obats'));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $filters = $request->all();
+
+        $query = \App\Models\Obat::query();
+
+        $this->applyObatFilters($query, $filters);
 
         $obats = $query->get();
 
-        $export = new ObatExport($obats);
-        return $export->export();
+        $pdf = Pdf::loadView('apoteker.obat_pdf', compact('obats'));
+        return $pdf->download('laporan-data-obat-' . date('Y-m-d') . '.pdf');
     }
 
     public function exportExcel(Request $request)
     {
         $filters = $request->all();
-        $fileName = 'data_obat_' . date('Ymd_His') . '.xlsx';
 
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ObatExport($filters), $fileName);
+        $query = \App\Models\Obat::query();
+
+        $this->applyObatFilters($query, $filters);
+
+        $obats = $query->get();
+
+        $export = new ObatExportCustom($obats);
+        return $export->export();
     }
 
     public function updateAntrianStatus(Request $request, $pasienId)

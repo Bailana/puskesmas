@@ -29,6 +29,7 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @if($antrians->count() > 0)
                             @foreach ($antrians as $index => $antrian)
                             <tr>
                                 <td>{{ $index + 1 }}.</td>
@@ -39,8 +40,10 @@
                                 <!-- Removed Poli Tujuan data cell as per user request -->
                                 <td><span class="badge bg-warning">{{ $antrian->status }}</span></td>
                                 <td>
-                                    <button type="button" class="btn btn-success btn-sm rounded" data-bs-toggle="modal"
-                                        data-bs-target="#modalAnalisa">Hasil Analisa</button>
+                                    <button type="button" class="btn btn-success btn-sm rounded btn-hasilanalisa"
+                                        data-rekam-medis="{{ $antrian->no_rekam_medis }}"
+                                        data-bs-toggle="modal" data-bs-target="#modalAnalisa">
+                                        Hasil Analisa</button>
                                     <button type="button" class="btn btn-primary btn-sm rounded btnPeriksa"
                                         data-bs-toggle="modal" data-bs-target="#modalPeriksaPasien"
                                         data-pasien-id="{{ $antrian->pasien->id }}">Periksa</button>
@@ -53,6 +56,11 @@
                                 </td>
                             </tr>
                             @endforeach
+                            @else
+                            <tr>
+                                <td colspan="8" class="text-center">Antrian pasien tidak tersedia</td>
+                            </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -193,153 +201,144 @@
         </div>
     </div>
 
+    <!-- Modal Hasil Analisa -->
     <div class="modal fade" id="modalAnalisa" tabindex="-1" aria-labelledby="modalAnalisaLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
-            <div class="modal-content" style="overflow-x: hidden;">
+            <div class="modal-content modal-analisa-position-relative" style="overflow-x: hidden;">
                 <div class="modal-header d-flex justify-content-between">
-                    <h3 class="modal-title" id="modalAnalisaLabel"><strong>Hasil Analisa Pasien</strong></h3>
+                    <h3 class="modal-title" id="modalAnalisaLabel">
+                        <strong>Hasil Analisa <span class="nama-pasien" id="nama_pasien_display"></span></strong>
+                    </h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
-                    <form id="formAnalisa">
+                <div class="modal-body modal-analisa-body-scroll" style="max-height: 400px; overflow-y: auto; padding: 16px 24px 16px 24px;">
+                    <form>
+                        <input type="hidden" id="modalAnalisaNoRekamMedis" readonly>
                         <!-- Tanda Vital -->
-                        <div class="row mb-3">
-                            <h5><strong>Tanda Vital</strong></h5>
-                            <div class="col-6">
-                                <label for="tekananDarah" class="form-label">Tekanan Darah (mmHg)</label>
-                                <input type="text" class="form-control form-control-sm" id="tekananDarah" disabled>
-                            </div>
-                            <div class="col-6">
-                                <label for="frekuensiNadi" class="form-label">Frekuensi Nadi (/menit)</label>
-                                <input type="text" class="form-control form-control-sm" id="frekuensiNadi" disabled>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <label for="suhu" class="form-label">Suhu (°C)</label>
-                                <input type="text" class="form-control form-control-sm" id="suhu" disabled>
-                            </div>
-                            <div class="col-6">
-                                <label for="frekuensiNafas" class="form-label">Frekuensi Nafas (/menit)</label>
-                                <input type="text" class="form-control form-control-sm" id="frekuensiNafas" disabled>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <label for="skorNyeri" class="form-label">Skor Nyeri</label>
-                                <input type="text" class="form-control form-control-sm" id="skorNyeri" disabled>
-                            </div>
-                            <div class="col-6">
-                                <label for="skorJatuh" class="form-label">Skor Jatuh</label>
-                                <input type="text" class="form-control form-control-sm" id="skorJatuh" disabled>
+                        <div class="mb-3">
+                            <h5 class="mb-3">Tanda Vital</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Tekanan Darah (mmHg)</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaTekananDarah" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Frekuensi Nadi (/menit)</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaFrekuensiNadi" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Suhu (°C)</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaSuhu" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Frekuensi Nafas (/menit)</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaFrekuensiNafas" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Skor Nyeri</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaSkorNyeri" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Skor Jatuh</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaSkorJatuh" readonly>
+                                </div>
                             </div>
                         </div>
                         <hr>
                         <!-- Antropometri -->
-                        <div class="row mb-3">
-                            <h5><strong>Antropometri</strong></h5>
-                            <div class="col-6">
-                                <label for="beratBadan" class="form-label">Berat Badan</label>
-                                <input type="text" class="form-control form-control-sm" id="beratBadan" disabled>
-                            </div>
-                            <div class="col-6">
-                                <label for="tinggiBadan" class="form-label">Tinggi Badan</label>
-                                <input type="text" class="form-control form-control-sm" id="tinggiBadan" disabled>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <label for="lingkarKepala" class="form-label">Lingkar Kepala</label>
-                                <input type="text" class="form-control form-control-sm" id="lingkarKepala" disabled>
-                            </div>
-                            <div class="col-6">
-                                <label for="imt" class="form-label">IMT</label>
-                                <input type="text" class="form-control form-control-sm" id="imt" disabled>
+                        <div class="mb-3">
+                            <h5 class="mb-3">Antropometri</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Berat Badan</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaBeratBadan" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Tinggi Badan</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaTinggiBadan" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Lingkar Kepala</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaLingkarKepala" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">IMT</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaIMT" readonly>
+                                </div>
                             </div>
                         </div>
                         <hr>
                         <!-- Fungsional -->
-                        <div class="row mb-3">
-                            <h5><strong>Fungsional</strong></h5>
-                            <div class="col-6">
-                                <label for="alatBantu" class="form-label">Alat Bantu</label>
-                                <input type="text" class="form-control form-control-sm" id="alatBantu" disabled>
-                            </div>
-                            <div class="col-6">
-                                <label for="prosthesa" class="form-label">Prosthesa</label>
-                                <input type="text" class="form-control form-control-sm" id="prosthesa" disabled>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <label for="cacatTubuh" class="form-label">Cacat Tubuh</label>
-                                <input type="text" class="form-control form-control-sm" id="cacatTubuh" disabled>
-                            </div>
-                            <div class="col-6">
-                                <label for="adlMandiri" class="form-label">ADL Mandiri</label>
-                                <input type="text" class="form-control form-control-sm" id="adlMandiri" disabled>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <label for="riwayatJatuh" class="form-label">Riwayat Jatuh</label>
-                                <input type="text" class="form-control form-control-sm" id="riwayatJatuh" disabled>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <h5>Status Psikologi</h5>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="checkboxDepresi">
-                                    <label class="form-check-label" for="checkboxDepresi">Depresi</label>
+                        <div class="mb-3">
+                            <h5 class="mb-3">Fungsional</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Alat Bantu</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaAlatBantu" readonly>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="checkboxTakut">
-                                    <label class="form-check-label" for="checkboxTakut">Takut</label>
+                                <div class="col-md-6">
+                                    <label class="form-label">Prosthesa</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaProsthesa" readonly>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="checkboxAgresif">
-                                    <label class="form-check-label" for="checkboxAgresif">Agresif</label>
+                                <div class="col-md-6">
+                                    <label class="form-label">Cacat Tubuh</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaCacatTubuh" readonly>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="checkboxMelukaiDiri">
-                                    <label class="form-check-label" for="checkboxMelukaiDiri">Melukai diri sendiri/Orang
-                                        lain</label>
+                                <div class="col-md-6">
+                                    <label class="form-label">ADL Mandiri</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaADLMandiri" readonly>
                                 </div>
-                            </div>
-
-                            <div class="col-6">
-                                <h5>Hambatan Edukasi</h5>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="checkboxBahasa">
-                                    <label class="form-check-label" for="checkboxBahasa">Bahasa</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="checkboxCacatFisik">
-                                    <label class="form-check-label" for="checkboxCacatFisik">Cacat Fisik</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="checkboxCacatKognitif">
-                                    <label class="form-check-label" for="checkboxCacatKognitif">Cacat Kognitif</label>
+                                <div class="col-md-6">
+                                    <label class="form-label">Riwayat Jatuh</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaRiwayatJatuh" readonly>
                                 </div>
                             </div>
                         </div>
                         <hr>
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <label for="alergi" class="form-label">Alergi</label>
-                                <textarea type="text" class="form-control form-control-sm" id="alergi"></textarea>
-                            </div>
-                            <div class="col-6">
-                                <label for="catatan" class="form-label">Catatan</label>
-                                <textarea type="text" class="form-control form-control-sm" id="catatan"></textarea>
+                        <!-- Status Psikologi & Hambatan Edukasi -->
+                        <div class="mb-3">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <h5>Status Psikologi</h5>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaStatusPsikologi" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Hambatan Edukasi</h5>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaHambatanEdukasi" readonly>
+                                </div>
                             </div>
                         </div>
-
+                        <hr>
+                        <!-- Alergi & Catatan -->
+                        <div class="mb-3">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Alergi</label>
+                                    <textarea class="form-control form-control-sm" id="modalAnalisaAlergi" readonly></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Catatan</label>
+                                    <textarea class="form-control form-control-sm" id="modalAnalisaCatatan" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <!-- Poli Tujuan & Penanggung Jawab -->
+                        <div class="mb-1">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Poli Tujuan</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaPoliTujuan" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Penanggung Jawab</label>
+                                    <input type="text" class="form-control form-control-sm" id="modalAnalisaPenanggungJawab" readonly>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
-
+                <!-- Modal footer dihapus agar tidak ada tombol tutup di bawah -->
             </div>
         </div>
     </div>
@@ -661,6 +660,101 @@
 @endsection
 
 @section('scripts')
+<script>
+    var modalAnalisa = document.getElementById('modalAnalisa');
+    if (modalAnalisa) {
+        modalAnalisa.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+            var noRekamMedis = button.getAttribute('data-rekam-medis');
+            var noRekamMedisInput = modalAnalisa.querySelector('#no_rekam_medis');
+            if (noRekamMedisInput) noRekamMedisInput.value = noRekamMedis;
+            // Set patient name display in modal header
+            var patientName = button.closest('tr').querySelector('td:nth-child(3)').textContent.trim();
+            var namaPasienDisplay = modalAnalisa.querySelector('#nama_pasien_display');
+            if (namaPasienDisplay) namaPasienDisplay.textContent = patientName;
+
+            // Clear modal fields before fetching new data
+            var ids = [
+                'modalAnalisaTekananDarah', 'modalAnalisaFrekuensiNadi', 'modalAnalisaSuhu', 'modalAnalisaFrekuensiNafas',
+                'modalAnalisaSkorNyeri', 'modalAnalisaSkorJatuh', 'modalAnalisaBeratBadan', 'modalAnalisaTinggiBadan',
+                'modalAnalisaLingkarKepala', 'modalAnalisaIMT', 'modalAnalisaAlatBantu', 'modalAnalisaProsthesa',
+                'modalAnalisaCacatTubuh', 'modalAnalisaADLMandiri', 'modalAnalisaRiwayatJatuh', 'modalAnalisaStatusPsikologi',
+                'modalAnalisaHambatanEdukasi', 'modalAnalisaAlergi', 'modalAnalisaCatatan', 'modalAnalisaPoliTujuan',
+                'modalAnalisaPenanggungJawab'
+            ];
+            ids.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            // Remove any existing no-data message
+            var noDataMessage = modalAnalisa.querySelector('#noDataMessage');
+            if (noDataMessage) {
+                noDataMessage.remove();
+            }
+
+            // Fetch hasil analisa data and populate modal fields
+            fetch('/gigi/hasil-analisa/' + encodeURIComponent(noRekamMedis), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(function(data) {
+                    console.log('AJAX success response:', data);
+                    if (data && data.hasil) {
+                        var h = data.hasil;
+                        document.getElementById('modalAnalisaTekananDarah').value = h.tekanan_darah || '';
+                        document.getElementById('modalAnalisaFrekuensiNadi').value = h.frekuensi_nadi || '';
+                        document.getElementById('modalAnalisaSuhu').value = h.suhu || '';
+                        document.getElementById('modalAnalisaFrekuensiNafas').value = h.frekuensi_nafas || '';
+                        document.getElementById('modalAnalisaSkorNyeri').value = h.skor_nyeri || '';
+                        document.getElementById('modalAnalisaSkorJatuh').value = h.skor_jatuh || '';
+                        document.getElementById('modalAnalisaBeratBadan').value = h.berat_badan || '';
+                        document.getElementById('modalAnalisaTinggiBadan').value = h.tinggi_badan || '';
+                        document.getElementById('modalAnalisaLingkarKepala').value = h.lingkar_kepala || '';
+                        document.getElementById('modalAnalisaIMT').value = h.imt || '';
+                        document.getElementById('modalAnalisaAlatBantu').value = h.alat_bantu || '';
+                        document.getElementById('modalAnalisaProsthesa').value = h.prosthesa || '';
+                        document.getElementById('modalAnalisaCacatTubuh').value = h.cacat_tubuh || '';
+                        document.getElementById('modalAnalisaADLMandiri').value = h.adl_mandiri || '';
+                        document.getElementById('modalAnalisaRiwayatJatuh').value = h.riwayat_jatuh || '';
+                        document.getElementById('modalAnalisaStatusPsikologi').value = h.status_psikologi || '';
+                        document.getElementById('modalAnalisaHambatanEdukasi').value = h.hambatan_edukasi || '';
+                        document.getElementById('modalAnalisaAlergi').value = h.alergi || '';
+                        document.getElementById('modalAnalisaCatatan').value = h.catatan || '';
+                        document.getElementById('modalAnalisaPoliTujuan').value = h.nama_poli || '';
+                        document.getElementById('modalAnalisaPenanggungJawab').value = h.nama_penanggung_jawab || '';
+                        // Ensure modal body form is visible
+                        var modalBody = modalAnalisa.querySelector('.modal-body form');
+                        if (modalBody) {
+                            modalBody.style.display = '';
+                        }
+                    } else {
+                        // Show no data message in modal body
+                        var modalBody = modalAnalisa.querySelector('.modal-body form');
+                        if (modalBody) {
+                            // Prevent duplicate message insertion
+                            if (!modalAnalisa.querySelector('#noDataMessage')) {
+                                var messageDiv = document.createElement('div');
+                                messageDiv.id = 'noDataMessage';
+                                messageDiv.style.padding = '5px';
+                                messageDiv.style.textAlign = 'center';
+                                // messageDiv.style.fontWeight = 'bold';
+                                messageDiv.textContent = 'Tidak ada hasil analisa pasien.';
+                                modalBody.parentNode.insertBefore(messageDiv, modalBody.nextSibling);
+                                modalBody.style.display = 'none';
+                            }
+                        }
+                    }
+                })
+                .catch(function(error) {
+                    console.error('AJAX error:', error);
+                    // Error, field tetap kosong
+                });
+        });
+    }
+</script>
 <script>
     // Handle Riwayat Berobat button click in antrian view (copy dari antrian.blade.php)
     document.addEventListener('DOMContentLoaded', function() {

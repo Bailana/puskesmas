@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Antrian;
 use App\Models\Pasien;
+use App\Exports\PasienExport;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;

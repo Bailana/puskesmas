@@ -19,10 +19,10 @@
                             data-bs-toggle="modal" data-bs-target="#filterModal">
                             <i class="fas fa-filter"></i> Filter
                         </button>
-                        <a href="{{ route('apoteker.obat.exportPdf', request()->query()) }}" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1" title="Export PDF" target="_blank">
+                        <a href="{{ route('apoteker.obat.export.pdf') }}" id="exportPdfBtn" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">
                             <i class="fas fa-file-pdf"></i> Export PDF
                         </a>
-                        <a href="{{ route('apoteker.obat.exportExcel', request()->query()) }}" class="btn btn-outline-success btn-sm d-flex align-items-center gap-1" title="Export Excel" target="_blank">
+                        <a href="{{ route('apoteker.obat.exportExcel') }}" id="exportExcelBtn" class="btn btn-outline-success btn-sm d-flex align-items-center gap-1" title="Export Excel">
                             <i class="fas fa-file-excel"></i> Export Excel
                         </a>
                     </form>
@@ -57,8 +57,18 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="jenis_obat" class="form-label">Jenis Obat</label>
-                                                <input type="text" name="jenis_obat" id="jenis_obat"
-                                                    class="form-control" required>
+                                                <select name="jenis_obat" id="jenis_obat" class="form-select" required>
+                                                    <option value="">Pilih Jenis Obat</option>
+                                                    <option value="Tablet">Tablet</option>
+                                                    <option value="Kapsul">Kapsul</option>
+                                                    <option value="Kaplet">Kaplet</option>
+                                                    <option value="Pil">Pil</option>
+                                                    <option value="Puyer">Puyer</option>
+                                                    <option value="Sirup">Sirup</option>
+                                                    <option value="Obat Oles">Obat Oles</option>
+                                                    <option value="Injeksi">Injeksi</option>
+                                                    <option value="Supositoria">Supositoria</option>
+                                                </select>
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="dosis" class="form-label">Dosis</label>
@@ -67,8 +77,13 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="bentuk_obat" class="form-label">Bentuk Obat</label>
-                                                <input type="text" name="bentuk_obat" id="bentuk_obat"
-                                                    class="form-control" required>
+                                                <select name="bentuk_obat" id="bentuk_obat" class="form-select" required>
+                                                    <option value="">Pilih Bentuk Obat</option>
+                                                    <option value="Padat">Padat</option>
+                                                    <option value="Setengah Padat">Setengah Padat</option>
+                                                    <option value="Cair">Cair</option>
+                                                    <option value="Gas">Gas</option>
+                                                </select>
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="stok" class="form-label">Stok</label>
@@ -111,9 +126,9 @@
                         aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered">
                             <div class="modal-content">
-                                <form method="GET" action="{{ route('apoteker.obat') }}">
+                                <form method="GET" action="{{ route('apoteker.obat') }}" id="filter-form">
                                     <div class="modal-header d-flex justify-content-between align-items-center">
-                                        <h4 class="modal-title" id="filterModalLabel"><strong>Filter Data Pasien</strong></h4>
+                                        <h4 class="modal-title" id="filterModalLabel"><strong>Filter Data Obat</strong></h4>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
@@ -127,8 +142,16 @@
                                             <div class="col-md-6">
                                                 <label for="jenis_obat" class="form-label">Jenis Obat</label>
                                                 <select name="jenis_obat" id="jenis_obat" class="form-select">
-                                                    <option value="">Semua</option>
-                                                    <!-- Add options dynamically if needed -->
+                                                    <option value="" {{ request('jenis_obat') == '' ? 'selected' : '' }}>Semua</option>
+                                                    <option value="Tablet" {{ request('jenis_obat') == 'Tablet' ? 'selected' : '' }}>Tablet</option>
+                                                    <option value="Kapsul" {{ request('jenis_obat') == 'Kapsul' ? 'selected' : '' }}>Kapsul</option>
+                                                    <option value="Kaplet" {{ request('jenis_obat') == 'Kaplet' ? 'selected' : '' }}>Kaplet</option>
+                                                    <option value="Pil" {{ request('jenis_obat') == 'Pil' ? 'selected' : '' }}>Pil</option>
+                                                    <option value="Puyer" {{ request('jenis_obat') == 'Puyer' ? 'selected' : '' }}>Puyer</option>
+                                                    <option value="Sirup" {{ request('jenis_obat') == 'Sirup' ? 'selected' : '' }}>Sirup</option>
+                                                    <option value="Obat Oles" {{ request('jenis_obat') == 'Obat Oles' ? 'selected' : '' }}>Obat Oles</option>
+                                                    <option value="Injeksi" {{ request('jenis_obat') == 'Injeksi' ? 'selected' : '' }}>Injeksi</option>
+                                                    <option value="Supositoria" {{ request('jenis_obat') == 'Supositoria' ? 'selected' : '' }}>Supositoria</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
@@ -138,8 +161,13 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="bentuk_obat" class="form-label">Bentuk Obat</label>
-                                                <input type="text" name="bentuk_obat" id="bentuk_obat"
-                                                    class="form-control" value="{{ request('bentuk_obat') }}">
+                                                <select name="bentuk_obat" id="bentuk_obat" class="form-select">
+                                                    <option value="" {{ request('bentuk_obat') == '' ? 'selected' : '' }}>Semua</option>
+                                                    <option value="Padat" {{ request('bentuk_obat') == 'Padat' ? 'selected' : '' }}>Padat</option>
+                                                    <option value="Setengah Padat" {{ request('bentuk_obat') == 'Setengah Padat' ? 'selected' : '' }}>Setengah Padat</option>
+                                                    <option value="Cair" {{ request('bentuk_obat') == 'Cair' ? 'selected' : '' }}>Cair</option>
+                                                    <option value="Gas" {{ request('bentuk_obat') == 'Gas' ? 'selected' : '' }}>Gas</option>
+                                                </select>
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="stok" class="form-label">Stok</label>
@@ -704,6 +732,37 @@
                 });
             }
         });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchForm = document.getElementById('searchForm');
+        const filterForm = document.getElementById('filter-form');
+
+        function handleExportClick(event) {
+            event.preventDefault();
+
+            const combinedFormData = new FormData(searchForm);
+            const filterFormData = new FormData(filterForm);
+
+            for (const [key, value] of filterFormData.entries()) {
+                if (value) {
+                    combinedFormData.append(key, value);
+                }
+            }
+
+            const params = new URLSearchParams(combinedFormData).toString();
+            const exportUrl = this.href + '?' + params;
+
+            if (this.id === 'exportExcelBtn') {
+                window.open(exportUrl, '_blank');
+            } else {
+                window.location.href = exportUrl;
+            }
+        }
+
+        document.getElementById('exportPdfBtn')?.addEventListener('click', handleExportClick);
+        document.getElementById('exportExcelBtn')?.addEventListener('click', handleExportClick);
     });
 </script>
 @endsection

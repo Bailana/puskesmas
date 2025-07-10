@@ -36,6 +36,7 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @if($pasiens->count() > 0)
                             @foreach ($pasiens as $index => $pasien)
                             <tr>
                                 <td class="nowrap">{{ ($pasiens->currentPage() - 1) * $pasiens->perPage() + $index + 1 }}.</td>
@@ -77,6 +78,11 @@
                                 </td>
                             </tr>
                             @endforeach
+                            @else
+                            <tr>
+                                <td colspan="8" class="text-center">Data pasien tidak ditemukan</td>
+                            </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -155,8 +161,9 @@
                 <div class="modal-dialog modal-lg modal-dialog-centered">
                     <div class="modal-content">
                         <form method="GET" action="{{ route('gigi.pasien') }}">
-                            <div class="modal-header">
+                            <div class="modal-header d-flex justify-content-between align-items-center">
                                 <h4 class="modal-title" id="filterModalLabel"><strong>Filter Data Pasien</strong></h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row g-3">
@@ -212,9 +219,6 @@
                                             <option value="BPJS Kesehatan"
                                                 {{ request('jaminan_kesehatan') == 'BPJS Kesehatan' ? 'selected' : '' }}>
                                                 BPJS Kesehatan</option>
-                                            <option value="Perusahaan"
-                                                {{ request('jaminan_kesehatan') == 'Perusahaan' ? 'selected' : '' }}>
-                                                Perusahaan</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
@@ -255,7 +259,6 @@
                                 </div>
                             </div>
                             <div class="modal-footer d-flex justify-content-end mt-3" style="gap: 10px;">
-                                <button type="button" class="btn btn-danger " data-bs-dismiss="modal">Tutup</button>
                                 <button type="submit" class="btn btn-primary">Terapkan Filter</button>
                             </div>
                         </form>
@@ -819,11 +822,11 @@
                                     Selengkapnya
                                 </button>
                                 <button type="button" class="btn btn-danger btn-sm rounded" data-bs-toggle="modal"
-                                        data-bs-target="#modalRiwayatBerobat"
-                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
-                                        data-nama="{{ $pasien->nama_pasien }}">
-                                        Riwayat Berobat
-                                    </button>
+                                    data-bs-target="#modalRiwayatBerobat"
+                                    data-no_rekam_medis="${pasien.no_rekam_medis}"
+                                    data-nama="${pasien.nama_pasien}">
+                                    Riwayat Berobat
+                                </button>
                             </td>
                         `;
                 pasienTableBody.appendChild(row);

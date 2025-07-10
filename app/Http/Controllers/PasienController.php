@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Pasien;
 use App\Models\Antrian;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class PasienController extends Controller

@@ -23,7 +23,7 @@ use App\Models\JadwalDokter;
 use App\Http\Controllers\AdminLogController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AdminDatapasienController;
- 
+
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/ugd', function () {
@@ -45,8 +45,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Export routes for admin datapasien
     Route::get('/admin/datapasien/export/pdf', [\App\Http\Controllers\AdminDatapasienController::class, 'exportPdf'])->name('admin.datapasien.exportPdf');
     Route::get('/admin/datapasien/export/csv', [\App\Http\Controllers\AdminDatapasienController::class, 'exportExcel'])->name('admin.datapasien.exportExcel');
+    Route::post('/admin/update/{no_rekam_medis}', [AdminDatapasienController::class, 'updatePasien'])->name('admin.pasien.update');
 
-    Route::post('/admin/datapasien/{id}', [\App\Http\Controllers\PasienController::class, 'update'])->name('admin.datapasien.update');
+    // Route::post('/admin/datapasien/{id}', [\App\Http\Controllers\PasienController::class, 'update'])->name('admin.datapasien.update');
 
     // New route for fetching riwayat berobat data for a pasien by pasien_id
     Route::get('/admin/datapasien/riwayat-berobat/{pasien_id}', [\App\Http\Controllers\RawatinapUgdController::class, 'getRiwayatBerobatByPasienId'])->name('admin.datapasien.riwayatberobat');
@@ -154,11 +155,8 @@ Route::middleware(['auth', 'role:apoteker'])->group(function () {
     Route::post('/apoteker/antrian/update-status/{pasienId}', [ApotekerDashboardController::class, 'updateAntrianStatus'])->name('apoteker.antrian.updateStatus');
     Route::put('/apoteker/obat/{id}', [ApotekerDashboardController::class, 'updateObat'])->name('apoteker.obat.update');
     Route::delete('/apoteker/obat/{id}', [ApotekerDashboardController::class, 'destroyObat'])->name('apoteker.obat.destroy');
-
-    // Export routes for obat
-    Route::get('/apoteker/obat/export-pdf', [ApotekerDashboardController::class, 'exportPdf'])->name('apoteker.obat.exportPdf');
-    Route::get('/apoteker/obat/export-excel', [ApotekerDashboardController::class, 'exportExcel'])->name('apoteker.obat.exportExcel');
-
+    Route::get('/apoteker/obat/export/pdf', [\App\Http\Controllers\ApotekerDashboardController::class, 'exportPdf'])->name('apoteker.obat.export.pdf');
+    Route::get('/apoteker/obat/export/excel', [ApotekerDashboardController::class, 'exportExcel'])->name('apoteker.obat.exportExcel');
     // Add route for apoteker getHasilPeriksa
     Route::get('/apoteker/hasil-periksa/{pasienId}', [ApotekerDashboardController::class, 'getHasilPeriksa'])->name('apoteker.hasil.periksa');
 
@@ -193,6 +191,7 @@ Route::middleware(['auth', 'role:doktergigi'])->group(function () {
     Route::get('/gigi/riwayat-berobat/{no_rekam_medis}', [\App\Http\Controllers\GigiDashboardController::class, 'getRiwayatBerobat'])->name('gigi.riwayat.berobat');
     Route::get('/gigi/hasil-periksa-detail/{no_rekam_medis}/{tanggal}', [\App\Http\Controllers\GigiDashboardController::class, 'getHasilPeriksaDetail'])->name('gigi.hasil.periksa.detail');
     Route::get('/gigi/jadwal', [GigiDashboardController::class, 'jadwal'])->name('gigi.jadwaldokter');
+    Route::get('/gigi/hasil-analisa/{no_rekam_medis}', [\App\Http\Controllers\GigiDashboardController::class, 'hasilAnalisaAjax'])->name('gigi.hasilanalisa.ajax');
 });
 
 Route::middleware(['auth', 'role:perawat'])->group(function () {

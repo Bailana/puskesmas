@@ -37,43 +37,49 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($pasiens as $index => $pasien)
-                            <tr>
-                                <td style="white-space: nowrap;">{{ $index + 1 }}.</td>
-                                <td style="white-space: nowrap;">{{ $pasien->no_rekam_medis }}</td>
-                                <td style="white-space: nowrap;">{{ $pasien->nama_pasien}}</td>
-                                <td style="white-space: nowrap;">
-                                    {{ $pasien->tempat_lahir }},
-                                    {{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}
-                                </td>
-                                <td style="white-space: nowrap;">{{ $pasien->jenis_kelamin }}</td>
-                                <td style="white-space: nowrap;">{{ $pasien->gol_darah }}</td>
-                                <td style="white-space: nowrap;">{{ $pasien->jaminan_kesehatan }}</td>
-                                <td style="white-space: nowrap;">
-                                    <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
-                                        data-bs-target="#modalPasienDetail"
-                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}" data-nik="{{ $pasien->nik }}"
-                                        data-nama="{{ $pasien->nama_pasien }}"
-                                        data-tempat_lahir="{{ $pasien->tempat_lahir }}"
-                                        data-tanggal_lahir="{{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}"
-                                        data-jenis_kelamin="{{ $pasien->jenis_kelamin }}"
-                                        data-gol_darah="{{ $pasien->gol_darah }}" data-agama="{{ $pasien->agama }}"
-                                        data-pekerjaan="{{ $pasien->pekerjaan }}"
-                                        data-status_pernikahan="{{ $pasien->status_pernikahan }}"
-                                        data-alamat="{{ $pasien->alamat_jalan }}" data-rt="{{ $pasien->rt }}"
-                                        data-rw="{{ $pasien->rw }}" data-kelurahan="{{ $pasien->kelurahan }}"
-                                        data-kecamatan="{{ $pasien->kecamatan }}" data-kabupaten="{{ $pasien->kabupaten }}"
-                                        data-provinsi="{{ $pasien->provinsi }}"
-                                        data-jaminan="{{ $pasien->jaminan_kesehatan }}"
-                                        data-no_kepesertaan="{{ $pasien->nomor_kepesertaan }}"
-                                        data-kepala_keluarga="{{ $pasien->kepala_keluarga}}"
-                                        data-no_hp="{{ $pasien->no_hp}}">
-                                        Selengkapnya
-                                    </button>
-                                    <!-- Removed Riwayat Berobat button as per user request -->
-                                </td>
-                            </tr>
-                            @endforeach
+                            @if($pasiens->count() > 0)
+                                @foreach ($pasiens as $index => $pasien)
+                                <tr>
+                                    <td style="white-space: nowrap;">{{ $index + 1 }}.</td>
+                                    <td style="white-space: nowrap;">{{ $pasien->no_rekam_medis }}</td>
+                                    <td style="white-space: nowrap;">{{ $pasien->nama_pasien}}</td>
+                                    <td style="white-space: nowrap;">
+                                        {{ $pasien->tempat_lahir }},
+                                        {{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}
+                                    </td>
+                                    <td style="white-space: nowrap;">{{ $pasien->jenis_kelamin }}</td>
+                                    <td style="white-space: nowrap;">{{ $pasien->gol_darah }}</td>
+                                    <td style="white-space: nowrap;">{{ $pasien->jaminan_kesehatan }}</td>
+                                    <td style="white-space: nowrap;">
+                                        <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
+                                            data-bs-target="#modalPasienDetail"
+                                            data-no_rekam_medis="{{ $pasien->no_rekam_medis }}" data-nik="{{ $pasien->nik }}"
+                                            data-nama="{{ $pasien->nama_pasien }}"
+                                            data-tempat_lahir="{{ $pasien->tempat_lahir }}"
+                                            data-tanggal_lahir="{{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}"
+                                            data-jenis_kelamin="{{ $pasien->jenis_kelamin }}"
+                                            data-gol_darah="{{ $pasien->gol_darah }}" data-agama="{{ $pasien->agama }}"
+                                            data-pekerjaan="{{ $pasien->pekerjaan }}"
+                                            data-status_pernikahan="{{ $pasien->status_pernikahan }}"
+                                            data-alamat="{{ $pasien->alamat_jalan }}" data-rt="{{ $pasien->rt }}"
+                                            data-rw="{{ $pasien->rw }}" data-kelurahan="{{ $pasien->kelurahan }}"
+                                            data-kecamatan="{{ $pasien->kecamatan }}" data-kabupaten="{{ $pasien->kabupaten }}"
+                                            data-provinsi="{{ $pasien->provinsi }}"
+                                            data-jaminan="{{ $pasien->jaminan_kesehatan }}"
+                                            data-no_kepesertaan="{{ $pasien->nomor_kepesertaan }}"
+                                            data-kepala_keluarga="{{ $pasien->kepala_keluarga}}"
+                                            data-no_hp="{{ $pasien->no_hp}}">
+                                            Selengkapnya
+                                        </button>
+                                        <!-- Removed Riwayat Berobat button as per user request -->
+                                    </td>
+                                </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="8" class="text-center">Data pasien tidak ditemukan</td>
+                                </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>

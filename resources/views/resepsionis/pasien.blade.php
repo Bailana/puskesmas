@@ -185,18 +185,18 @@
                                 <td class="nowrap">
                                     <button type="button" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
                                         data-bs-target="#modalPasienDetail"
-                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}"
-                                        data-nik="{{ $pasien->nik }}" data-nama="{{ $pasien->nama_pasien }}"
+                                        data-id="{{ $pasien->id }}"
+                                        data-no_rekam_medis="{{ $pasien->no_rekam_medis }}" data-nik="{{ $pasien->nik }}"
+                                        data-nama="{{ $pasien->nama_pasien }}"
                                         data-tempat_lahir="{{ $pasien->tempat_lahir }}"
-                                        data-tanggal_lahir="{{ $pasien->tanggal_lahir ? $pasien->tanggal_lahir->format('d-m-Y') : 'Tanggal tidak tersedia' }}"
+                                        data-tanggal_lahir="{{ $pasien->tanggal_lahir ? \Carbon\Carbon::parse($pasien->tanggal_lahir)->format('d-m-Y') : 'Tanggal tidak tersedia' }}"
                                         data-jenis_kelamin="{{ $pasien->jenis_kelamin }}"
                                         data-gol_darah="{{ $pasien->gol_darah }}" data-agama="{{ $pasien->agama }}"
                                         data-pekerjaan="{{ $pasien->pekerjaan }}"
                                         data-status_pernikahan="{{ $pasien->status_pernikahan }}"
                                         data-alamat="{{ $pasien->alamat_jalan }}" data-rt="{{ $pasien->rt }}"
                                         data-rw="{{ $pasien->rw }}" data-kelurahan="{{ $pasien->kelurahan }}"
-                                        data-kecamatan="{{ $pasien->kecamatan }}"
-                                        data-kabupaten="{{ $pasien->kabupaten }}"
+                                        data-kecamatan="{{ $pasien->kecamatan }}" data-kabupaten="{{ $pasien->kabupaten }}"
                                         data-provinsi="{{ $pasien->provinsi }}"
                                         data-jaminan="{{ $pasien->jaminan_kesehatan }}"
                                         data-no_kepesertaan="{{ $pasien->nomor_kepesertaan }}"
@@ -214,9 +214,9 @@
                             </tr>
                             @endforeach
                             @if ($pasiens->isEmpty())
-                                <tr>
-                                    <td colspan="7" class="text-center">Data pasien tidak ditemukan</td>
-                                </tr>
+                            <tr>
+                                <td colspan="7" class="text-center">Data pasien tidak ditemukan</td>
+                            </tr>
                             @endif
                         </tbody>
                     </table>
@@ -244,46 +244,46 @@
 
                                 {{-- Pagination Elements --}}
                                 @php
-                                    $totalPages = $pasiens->lastPage();
-                                    $currentPage = $pasiens->currentPage();
-                                    $maxButtons = 3;
+                                $totalPages = $pasiens->lastPage();
+                                $currentPage = $pasiens->currentPage();
+                                $maxButtons = 3;
 
-                                    if ($totalPages <= $maxButtons) {
-                                        $start = 1;
-                                        $end = $totalPages;
+                                if ($totalPages <= $maxButtons) {
+                                    $start=1;
+                                    $end=$totalPages;
                                     } else {
-                                        if ($currentPage == 1) {
-                                            $start = 1;
-                                            $end = 3;
-                                        } elseif ($currentPage == $totalPages) {
-                                            $start = $totalPages - 2;
-                                            $end = $totalPages;
-                                        } else {
-                                            $start = $currentPage - 1;
-                                            $end = $currentPage + 1;
-                                        }
+                                    if ($currentPage==1) {
+                                    $start=1;
+                                    $end=3;
+                                    } elseif ($currentPage==$totalPages) {
+                                    $start=$totalPages - 2;
+                                    $end=$totalPages;
+                                    } else {
+                                    $start=$currentPage - 1;
+                                    $end=$currentPage + 1;
                                     }
-                                @endphp
+                                    }
+                                    @endphp
 
-                                @for ($page = $start; $page <= $end; $page++)
-                                    @if ($page == $currentPage)
-                                        <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+                                    @for ($page=$start; $page <=$end; $page++)
+                                    @if ($page==$currentPage)
+                                    <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
                                     @else
-                                        <li class="page-item"><a class="page-link" href="{{ $pasiens->url($page) }}">{{ $page }}</a></li>
+                                    <li class="page-item"><a class="page-link" href="{{ $pasiens->url($page) }}">{{ $page }}</a></li>
                                     @endif
-                                @endfor
+                                    @endfor
 
-                                {{-- Next Page Link --}}
-                                @if ($pasiens->hasMorePages())
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $pasiens->nextPageUrl() }}" rel="next"
-                                        aria-label="Next">&raquo;</a>
-                                </li>
-                                @else
-                                <li class="page-item disabled" aria-disabled="true" aria-label="Next">
-                                    <span class="page-link" aria-hidden="true">&raquo;</span>
-                                </li>
-                                @endif
+                                    {{-- Next Page Link --}}
+                                    @if ($pasiens->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $pasiens->nextPageUrl() }}" rel="next"
+                                            aria-label="Next">&raquo;</a>
+                                    </li>
+                                    @else
+                                    <li class="page-item disabled" aria-disabled="true" aria-label="Next">
+                                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                                    </li>
+                                    @endif
                             </ul>
                         </nav>
                     </div>
@@ -488,35 +488,36 @@
 
             <!-- Modal Body with Scroll -->
             <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
-                <form>
+                <form id="formPasienDetail">
+                    <input type="hidden" id="modalPasienId" name="id" value="">
                     <div class="row mb-3">
                         <div class="col-6">
                             <label for="modalNoRekamMedis" class="form-label">No. Rekam Medis</label>
-                            <input type="text" class="form-control form-control-sm" id="modalNoRekamMedis" readonly>
+                            <input type="text" class="form-control form-control-sm" id="modalNoRekamMedis" name="no_rekam_medis" readonly>
                         </div>
                         <div class="col-6">
                             <label for="modalNikPasien" class="form-label">NIK</label>
-                            <input type="text" class="form-control form-control-sm" id="modalNikPasien" readonly>
+                            <input type="text" class="form-control form-control-sm" id="modalNikPasien" name="nik" readonly>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
                             <label for="modalNamaPasien" class="form-label">Nama Pasien</label>
-                            <input type="text" class="form-control form-control-sm" id="modalNamaPasien" readonly>
+                            <input type="text" class="form-control form-control-sm" id="modalNamaPasien" name="nama_pasien" readonly>
                         </div>
                         <div class="col-6">
                             <label for="modalKepalaKeluarga" class="form-label">Nama Kepala Keluarga</label>
-                            <input type="text" class="form-control form-control-sm" id="modalKepalaKeluarga" readonly>
+                            <input type="text" class="form-control form-control-sm" id="modalKepalaKeluarga" name="kepala_keluarga" readonly>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
                             <label for="modalTempatLahir" class="form-label">Tempat Lahir</label>
-                            <input type="text" class="form-control form-control-sm" id="modalTempatLahir" readonly>
+                            <input type="text" class="form-control form-control-sm" id="modalTempatLahir" name="tempat_lahir" readonly>
                         </div>
                         <div class="col-6">
                             <label for="modalNoHp" class="form-label">Nomor Telepon</label>
-                            <input type="text" class="form-control form-control-sm" id="modalNoHp" readonly>
+                            <input type="text" class="form-control form-control-sm" id="modalNoHp" name="no_hp" readonly>
                         </div>
                     </div>
 
@@ -1330,7 +1331,7 @@
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
         const pasienTableBody = document.querySelector('#dokterPasien tbody');
 
@@ -1344,7 +1345,7 @@
             pasiens.data.forEach((pasien, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="nowrap">${index + 1 + (pasiens.current_page - 1) * pasiens.per_page}</td>
+                    <td class="nowrap">${index + 1 + (pasiens.current_page - 1) * pasiens.per_page}.</td>
                     <td class="nowrap">${pasien.no_rekam_medis}</td>
                     <td class="nowrap">${pasien.nama_pasien}</td>
                     <td class="nowrap">${pasien.tempat_lahir}, ${pasien.tanggal_lahir ? new Date(pasien.tanggal_lahir).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia'}</td>
@@ -1384,7 +1385,7 @@
         }
 
         let debounceTimeout;
-        searchInput.addEventListener('input', function () {
+        searchInput.addEventListener('input', function() {
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
                 const query = searchInput.value.trim();
@@ -1403,77 +1404,76 @@
             }, 300);
         });
     });
-
 </script>
-    <script>
-        // Function to reset modalTambahPasien form and clear validation errors
-        function resetTambahPasienModal() {
-            var form = document.getElementById('formTambahPasien');
-            form.reset();
-            // Remove validation error classes and messages
-            var inputs = form.querySelectorAll('input, select');
-            inputs.forEach(function (input) {
-                input.classList.remove('is-invalid');
-                var nextElem = input.nextElementSibling;
-                if (nextElem && nextElem.classList.contains('invalid-feedback')) {
-                    nextElem.remove();
+<script>
+    // Function to reset modalTambahPasien form and clear validation errors
+    function resetTambahPasienModal() {
+        var form = document.getElementById('formTambahPasien');
+        form.reset();
+        // Remove validation error classes and messages
+        var inputs = form.querySelectorAll('input, select');
+        inputs.forEach(function(input) {
+            input.classList.remove('is-invalid');
+            var nextElem = input.nextElementSibling;
+            if (nextElem && nextElem.classList.contains('invalid-feedback')) {
+                nextElem.remove();
+            }
+        });
+    }
+
+    // Attach event listener to reset modalTambahPasien on close
+    var modalTambahPasien = document.getElementById('modalTambahPasien');
+    modalTambahPasien.addEventListener('hidden.bs.modal', function() {
+        resetTambahPasienModal();
+    });
+
+    document.getElementById('btnTutupModal').addEventListener('click', function() {
+        var form = document.getElementById('formTambahPasien');
+        var inputs = form.querySelectorAll('input, select');
+        var isEmpty = true;
+
+        inputs.forEach(function(input) {
+            var val = input.value;
+            if (val && val.trim() !== '') {
+                isEmpty = false;
+            }
+        });
+
+        if (isEmpty) {
+            // Jika form kosong, langsung tutup modal tanpa konfirmasi
+            var modal = bootstrap.Modal.getInstance(document.getElementById('modalTambahPasien'));
+            modal.hide();
+        } else {
+            // Jika ada input, tampilkan konfirmasi
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah Anda yakin ingin membatalkan penambahan pasien?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, batal',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Kosongkan semua input form
+                    form.reset();
+                    // Tutup modal
+                    var modal = bootstrap.Modal.getInstance(document.getElementById(
+                        'modalTambahPasien'));
+                    modal.hide();
                 }
             });
         }
-
-        // Attach event listener to reset modalTambahPasien on close
-        var modalTambahPasien = document.getElementById('modalTambahPasien');
-        modalTambahPasien.addEventListener('hidden.bs.modal', function () {
-            resetTambahPasienModal();
-        });
-
-        document.getElementById('btnTutupModal').addEventListener('click', function () {
-            var form = document.getElementById('formTambahPasien');
-            var inputs = form.querySelectorAll('input, select');
-            var isEmpty = true;
-
-            inputs.forEach(function (input) {
-                var val = input.value;
-                if (val && val.trim() !== '') {
-                    isEmpty = false;
-                }
-            });
-
-            if (isEmpty) {
-                // Jika form kosong, langsung tutup modal tanpa konfirmasi
-                var modal = bootstrap.Modal.getInstance(document.getElementById('modalTambahPasien'));
-                modal.hide();
-            } else {
-                // Jika ada input, tampilkan konfirmasi
-                Swal.fire({
-                    title: 'Konfirmasi',
-                    text: 'Apakah Anda yakin ingin membatalkan penambahan pasien?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, batal',
-                    cancelButtonText: 'Tidak'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Kosongkan semua input form
-                        form.reset();
-                        // Tutup modal
-                        var modal = bootstrap.Modal.getInstance(document.getElementById(
-                            'modalTambahPasien'));
-                        modal.hide();
-                    }
-                });
-            }
-        });
-    </script>
+    });
+</script>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
 
-        $(document).on('click', '#btnSimpanTambah', function (event) {
+        $(document).on('click', '#btnSimpanTambah', function(event) {
             event.preventDefault();
             console.log('Tombol Simpan Tambah ditekan');
 
@@ -1483,7 +1483,7 @@
 
             // Client-side validation for required fields
             var isValid = true;
-            $('#formTambahPasien [required]').each(function () {
+            $('#formTambahPasien [required]').each(function() {
                 if (!$(this).val()) {
                     $(this).addClass('is-invalid');
                     // Always add invalid-feedback div after input
@@ -1524,7 +1524,7 @@
                 url: "{{ route('resepsionis.pasien.tambah') }}",
                 type: "POST",
                 data: data,
-                success: function (response) {
+                success: function(response) {
                     toastr.options = {
                         "hideMethod": "fadeOut",
                         "hideDuration": 1000,
@@ -1538,12 +1538,12 @@
                         location.reload();
                     }, 2000);
                 },
-                error: function (xhr) {
+                error: function(xhr) {
                     if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON
                         .errors) {
                         var errors = xhr.responseJSON.errors;
                         // Show errors inline
-                        $.each(errors, function (key, messages) {
+                        $.each(errors, function(key, messages) {
                             var inputField = $('#' + key + 'Tambah');
                             inputField.addClass('is-invalid');
                             inputField.next('.invalid-feedback').text(messages[
@@ -1560,6 +1560,348 @@
             });
         });
     });
+</script>
+<script>
+    $(document).ready(function() {
+        var originalData; // Menyimpan data awal
 
+        // Function to reset modal inputs to originalData
+        function resetModal() {
+            var modal = $('#modalPasienDetail');
+            modal.find('#modalNoRekamMedis').val(originalData.no_rekam_medis);
+            modal.find('#modalNikPasien').val(originalData.nik);
+            modal.find('#modalNamaPasien').val(originalData.nama);
+            modal.find('#modalTempatLahir').val(originalData.tempat_lahir);
+            modal.find('#modalTanggalLahir').val(originalData.tanggal_lahir);
+            modal.find('#modalJenisKelamin').val(originalData.jenis_kelamin).prop('disabled', true);
+            modal.find('#modalGolonganDarah').val(originalData.gol_darah).prop('disabled', true);
+            modal.find('#modalAgama').val(originalData.agama).prop('disabled', true);
+            modal.find('#modalPekerjaan').val(originalData.pekerjaan);
+            modal.find('#modalStatusPernikahan').val(originalData.status_pernikahan).prop('disabled', true);
+            modal.find('#modalAlamat').val(originalData.alamat);
+            modal.find('#modalRt').val(originalData.rt);
+            modal.find('#modalRw').val(originalData.rw);
+            modal.find('#modalKelurahan').val(originalData.kelurahan);
+            modal.find('#modalKecamatan').val(originalData.kecamatan);
+            modal.find('#modalKabupaten').val(originalData.kabupaten);
+            modal.find('#modalProvinsi').val(originalData.provinsi);
+            modal.find('#modalJaminan').val(originalData.jaminan).prop('disabled', true);
+            modal.find('#modalNoKepesertaan').val(originalData.no_kepesertaan);
+            modal.find('#modalKepalaKeluarga').val(originalData.kepala_keluarga);
+            modal.find('#modalNoHp').val(originalData.no_hp);
+
+            // Remove validation error classes and messages
+            modal.find('.is-invalid').removeClass('is-invalid');
+            modal.find('.invalid-feedback').remove();
+
+            // Reset readonly and disabled states to default (readonly and disabled)
+            modal.find('input').prop('readonly', true);
+            modal.find('select').prop('disabled', true);
+
+            // Hide save button, show edit button
+            $('#btnSimpan').hide();
+            $('#btnEdit').show();
+
+            // Reset close button mode
+            $('#btnTutup').data('mode', '');
+        }
+
+        // Ketika modal ditampilkan
+        $('#modalPasienDetail').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Tombol yang memicu modal
+
+            // Reset mode of close button to empty (non-edit)
+            $('#btnTutup').data('mode', '');
+
+            // Ambil data dari atribut data-*
+            var noRekamMedis = button.data('no_rekam_medis');
+            var nik = button.data('nik');
+            var nama = button.data('nama');
+            var tempatLahir = button.data('tempat_lahir');
+            var tanggalLahir = button.data('tanggal_lahir');
+            var jenisKelamin = button.data('jenis_kelamin');
+            var golDarah = button.data('gol_darah');
+            var agama = button.data('agama');
+            var pekerjaan = button.data('pekerjaan');
+            var statusPernikahan = button.data('status_pernikahan');
+            var alamat = button.data('alamat');
+            var rt = button.data('rt');
+            var rw = button.data('rw');
+            var kelurahan = button.data('kelurahan');
+            var kecamatan = button.data('kecamatan');
+            var kabupaten = button.data('kabupaten');
+            var provinsi = button.data('provinsi');
+            var jaminan = button.data('jaminan');
+            var noKepesertaan = button.data('no_kepesertaan');
+            var kepalaKeluarga = button.data('kepala_keluarga');
+            var noHp = button.data('no_hp');
+
+            // Set the hidden input modalPasienId with noRekamMedis
+            var modal = $(this);
+            modal.find('#modalPasienId').val(noRekamMedis);
+
+            // Menyimpan data awal
+            originalData = {
+                no_rekam_medis: noRekamMedis,
+                nik: nik,
+                nama: nama,
+                tempat_lahir: tempatLahir,
+                tanggal_lahir: tanggalLahir,
+                jenis_kelamin: jenisKelamin,
+                gol_darah: golDarah,
+                agama: agama,
+                pekerjaan: pekerjaan,
+                status_pernikahan: statusPernikahan,
+                alamat: alamat,
+                rt: rt,
+                rw: rw,
+                kelurahan: kelurahan,
+                kecamatan: kecamatan,
+                kabupaten: kabupaten,
+                provinsi: provinsi,
+                jaminan: jaminan,
+                no_kepesertaan: noKepesertaan,
+                kepala_keluarga: kepalaKeluarga,
+                no_hp: noHp
+            };
+
+            // Menampilkan data di dalam modal
+            modal.find('#modalNoRekamMedis').val(noRekamMedis);
+            modal.find('#modalNikPasien').val(nik);
+            modal.find('#modalNamaPasien').val(nama);
+            modal.find('#modalTempatLahir').val(tempatLahir);
+            modal.find('#modalTanggalLahir').val(tanggalLahir);
+            modal.find('#modalJenisKelamin').val(jenisKelamin).prop('disabled',
+                true); // Menonaktifkan dropdown Jenis Kelamin
+            modal.find('#modalGolonganDarah').val(golDarah).prop('disabled', true);
+            modal.find('#modalAgama').val(agama).prop('disabled', true);
+            modal.find('#modalPekerjaan').val(pekerjaan);
+            modal.find('#modalStatusPernikahan').val(statusPernikahan).prop('disabled',
+                true); // Menonaktifkan dropdown Status Pernikahan
+            modal.find('#modalAlamat').val(alamat);
+            modal.find('#modalRt').val(rt);
+            modal.find('#modalRw').val(rw);
+            modal.find('#modalKelurahan').val(kelurahan);
+            modal.find('#modalKecamatan').val(kecamatan);
+            modal.find('#modalKabupaten').val(kabupaten);
+            modal.find('#modalProvinsi').val(provinsi);
+            modal.find('#modalJaminan').val(jaminan).prop('disabled',
+                true); // Menonaktifkan dropdown Jaminan Kesehatan
+            modal.find('#modalNoKepesertaan').val(noKepesertaan);
+            modal.find('#modalKepalaKeluarga').val(kepalaKeluarga);
+            modal.find('#modalNoHp').val(noHp);
+        });
+
+        // Reset modal when it is hidden (closed) to clear edit mode and validation errors
+        $('#modalPasienDetail').on('hidden.bs.modal', function() {
+            resetModal();
+        });
+
+        // Fungsi Edit
+        $('#btnEdit').on('click', function() {
+            // Aktifkan input untuk diedit, kecuali No. Rekam Medis tetap readonly
+            $('#modalNikPasien, #modalNamaPasien, #modalTempatLahir, #modalTanggalLahir, #modalGolonganDarah, #modalAgama, #modalPekerjaan, #modalAlamat, #modalNoKepesertaan, #modalRt, #modalRw, #modalKelurahan, #modalKecamatan, #modalKabupaten, #modalProvinsi, #modalKepalaKeluarga, #modalNoHp')
+                .prop('readonly', false); // Mengaktifkan input text menjadi editable
+            $('#modalJenisKelamin, #modalJaminan, #modalStatusPernikahan, #modalGolonganDarah, #modalAgama')
+                .prop('disabled',
+                    false); // Mengaktifkan dropdown
+
+            // Batasi input NIK hanya angka dan max length 16
+            $('#modalNikPasien').attr('maxlength', 16).on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16);
+            });
+
+            // Batasi input Nomor Telepon hanya angka dan max length 14
+            $('#modalNoHp').attr('maxlength', 14).on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 14);
+            });
+
+            // Batasi input No. Kepesertaan hanya angka dan max length 16
+            $('#modalNoKepesertaan').attr('maxlength', 16).on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16);
+            });
+
+            $(this).hide(); // Sembunyikan tombol Edit
+            $('#btnSimpan').show(); // Tampilkan tombol Simpan
+            $('#btnTutup').data('mode', 'edit'); // Tandai tombol Tutup dalam mode edit
+        });
+
+        // Fungsi Simpan
+        $('#btnSimpan').on('click', function() {
+            // Clear previous errors
+            $('#modalPasienDetail .is-invalid').removeClass('is-invalid');
+            $('#modalPasienDetail .invalid-feedback').remove();
+
+            // Client-side validation for required fields
+            var isValid = true;
+            var requiredFields = [
+                '#modalNikPasien',
+                '#modalNamaPasien',
+                '#modalTempatLahir',
+                '#modalTanggalLahir',
+                '#modalJenisKelamin',
+                '#modalGolonganDarah',
+                '#modalAgama',
+                '#modalPekerjaan',
+                '#modalStatusPernikahan',
+                '#modalAlamat',
+                '#modalRt',
+                '#modalRw',
+                '#modalKelurahan',
+                '#modalKecamatan',
+                '#modalKabupaten',
+                '#modalProvinsi',
+                '#modalJaminan',
+                '#modalNoKepesertaan',
+                '#modalKepalaKeluarga',
+                '#modalNoHp'
+            ];
+
+            requiredFields.forEach(function(selector) {
+                var element = $(selector);
+                var value = element.val();
+                if (!value || value.trim() === '') {
+                    isValid = false;
+                    element.addClass('is-invalid');
+                    if (element.next('.invalid-feedback').length === 0) {
+                        element.after(
+                            '<div class="invalid-feedback">Field ini wajib diisi.</div>');
+                    }
+                }
+            });
+
+            if (!isValid) {
+                return; // Stop submission if validation fails
+            }
+
+            // Ambil tanggal lahir dari input
+            var tanggalLahir = $('#modalTanggalLahir').val();
+
+            // Ubah format tanggal dari DD-MM-YYYY ke YYYY-MM-DD
+            var parts = tanggalLahir.split('-');
+            var formattedTanggalLahir = parts[2] + '-' + parts[1] + '-' + parts[0];
+
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: "Apakah Anda yakin ingin mengubah data pasien ini?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Kirim data yang diubah ke server menggunakan AJAX
+                    $.ajax({
+                        url: `/pasienResepsionis/update/${$('#modalPasienId').val()}`,
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        data: {
+                            nik: $('#modalNikPasien').val(),
+                            nama_pasien: $('#modalNamaPasien').val(),
+                            tempat_lahir: $('#modalTempatLahir').val(),
+                            tanggal_lahir: formattedTanggalLahir,
+                            jenis_kelamin: $('#modalJenisKelamin').val(),
+                            gol_darah: $('#modalGolonganDarah').val(),
+                            agama: $('#modalAgama').val(),
+                            pekerjaan: $('#modalPekerjaan').val(),
+                            status_pernikahan: $('#modalStatusPernikahan').val(),
+                            alamat_jalan: $('#modalAlamat').val(),
+                            rt: $('#modalRt').val(),
+                            rw: $('#modalRw').val(),
+                            kelurahan: $('#modalKelurahan').val(),
+                            kecamatan: $('#modalKecamatan').val(),
+                            kabupaten: $('#modalKabupaten').val(),
+                            provinsi: $('#modalProvinsi').val(),
+                            jaminan_kesehatan: $('#modalJaminan').val(),
+                            nomor_kepesertaan: $('#modalNoKepesertaan').val(),
+                            kepala_keluarga: $('#modalKepalaKeluarga').val(),
+                            no_hp: $('#modalNoHp').val()
+                        },
+                        success: function(response) {
+                            // Tutup modal setelah berhasil simpan
+                            $('#modalPasienDetail').modal('hide');
+
+                            // Atur toastr agar menghilang dengan smooth
+                            toastr.options = {
+                                "hideMethod": "fadeOut",
+                                "hideDuration": 1000, // durasi fade out (1 detik)
+                                "timeOut": 2000 // waktu muncul toastr sebelum mulai menghilang
+                            };
+
+                            // Tampilkan toastr success
+                            toastr.success('Data pasien berhasil diperbarui!',
+                                'Sukses');
+
+                            // Tunggu hingga toastr selesai menghilang, baru reload halaman
+                            setTimeout(function() {
+                                    location.reload();
+                                },
+                                3000
+                            ); // 2000ms untuk timeout toastr + 1000ms untuk hideDuration
+                        },
+                        error: function(xhr) {
+                            if (xhr.status === 422 && xhr.responseJSON && xhr
+                                .responseJSON.errors) {
+                                var errors = xhr.responseJSON.errors;
+                                // Show errors inline
+                                $.each(errors, function(key, messages) {
+                                    var inputField = $('#modal' + key
+                                        .charAt(0).toUpperCase() + key
+                                        .slice(1));
+                                    inputField.addClass('is-invalid');
+                                    if (inputField.next('.invalid-feedback')
+                                        .length === 0) {
+                                        inputField.after(
+                                            '<div class="invalid-feedback">' +
+                                            messages[0] + '</div>');
+                                    }
+                                });
+                            } else {
+                                // Tampilkan toastr error dengan efek smooth juga
+                                toastr.options = {
+                                    "hideMethod": "fadeOut",
+                                    "hideDuration": 1000,
+                                    "timeOut": 2000
+                                };
+
+                                toastr.error(
+                                    'Terjadi kesalahan saat memperbarui data!',
+                                    'Error');
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        // Fungsi Tutup Modal
+        $('#btnTutup').on('click', function() {
+            var mode = $(this).data('mode'); // Cek mode dari tombol Tutup
+
+            if (mode === 'edit') {
+                // Jika dalam mode edit, tampilkan konfirmasi
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: 'Perubahan yang belum disimpan akan hilang. Apakah Anda yakin ingin membatalkan perubahan?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, batal',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Kembali ke kondisi awal
+                        resetModal(); // Reset modal ke kondisi awal
+                        $('#modalPasienDetail').modal('hide'); // Tutup modal
+                    }
+                });
+            } else {
+                // Jika tidak dalam mode edit, tutup modal tanpa konfirmasi
+                resetModal(); // Reset modal ke kondisi awal
+                $('#modalPasienDetail').modal('hide');
+            }
+        });
+    });
 </script>
 @endsection

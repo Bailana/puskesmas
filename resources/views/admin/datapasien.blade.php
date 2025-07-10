@@ -850,6 +850,10 @@
             var kepalaKeluarga = button.data('kepala_keluarga');
             var noHp = button.data('no_hp');
 
+            // Set the hidden input modalPasienId with noRekamMedis
+            var modal = $(this);
+            modal.find('#modalPasienId').val(noRekamMedis);
+
             // Menyimpan data awal
             originalData = {
                 no_rekam_medis: noRekamMedis,
@@ -876,7 +880,6 @@
             };
 
             // Menampilkan data di dalam modal
-            var modal = $(this);
             modal.find('#modalNoRekamMedis').val(noRekamMedis);
             modal.find('#modalNikPasien').val(nik);
             modal.find('#modalNamaPasien').val(nama);
@@ -1003,7 +1006,7 @@
                 if (result.isConfirmed) {
                     // Kirim data yang diubah ke server menggunakan AJAX
                     $.ajax({
-                        url: `/admin/datapasien/${$('#modalPasienId').val()}`,
+                        url: `/admin/update/${$('#modalPasienId').val()}`,
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'

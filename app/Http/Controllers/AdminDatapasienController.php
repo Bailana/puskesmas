@@ -51,6 +51,59 @@ class AdminDatapasienController extends Controller
         return view('admin.datapasien', compact('pasiens'));
     }
 
+    public function updatePasien(Request $request, $no_rekam_medis)
+    {
+        $validatedData = $request->validate([
+            'nik' => 'required|unique:pasiens,nik,' . $no_rekam_medis . ',no_rekam_medis',
+            'nama_pasien' => 'required|string|max:255',
+            'tempat_lahir' => 'required|string|max:255',
+            'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required|string|max:50',
+            'gol_darah' => 'nullable|string|max:10',
+            'agama' => 'nullable|string|max:50',
+            'pekerjaan' => 'nullable|string|max:100',
+            'status_pernikahan' => 'required|string|max:50',
+            'alamat_jalan' => 'required|string|max:255',
+            'rt' => 'required|string|max:10',
+            'rw' => 'required|string|max:10',
+            'kelurahan' => 'required|string|max:100',
+            'kecamatan' => 'required|string|max:100',
+            'kabupaten' => 'required|string|max:100',
+            'provinsi' => 'required|string|max:100',
+            'jaminan_kesehatan' => 'required|string|max:100',
+            'nomor_kepesertaan' => 'nullable|string|max:100',
+            'kepala_keluarga' => 'nullable|string|max:255',
+            'no_hp' => 'nullable|string|max:20',
+        ]);
+
+        $pasien = Pasien::where('no_rekam_medis', $no_rekam_medis)->firstOrFail();
+
+        $pasien->nik = $validatedData['nik'];
+        $pasien->nama_pasien = $validatedData['nama_pasien'];
+        $pasien->tempat_lahir = $validatedData['tempat_lahir'];
+        $pasien->tanggal_lahir = $validatedData['tanggal_lahir'];
+        $pasien->jenis_kelamin = $validatedData['jenis_kelamin'];
+        $pasien->gol_darah = $validatedData['gol_darah'] ?? null;
+        $pasien->agama = $validatedData['agama'] ?? null;
+        $pasien->pekerjaan = $validatedData['pekerjaan'] ?? null;
+        $pasien->status_pernikahan = $validatedData['status_pernikahan'];
+        $pasien->alamat_jalan = $validatedData['alamat_jalan'];
+        $pasien->rt = $validatedData['rt'];
+        $pasien->rw = $validatedData['rw'];
+        $pasien->kelurahan = $validatedData['kelurahan'];
+        $pasien->kecamatan = $validatedData['kecamatan'];
+        $pasien->kabupaten = $validatedData['kabupaten'];
+        $pasien->provinsi = $validatedData['provinsi'];
+        $pasien->jaminan_kesehatan = $validatedData['jaminan_kesehatan'];
+        $pasien->nomor_kepesertaan = $validatedData['nomor_kepesertaan'] ?? null;
+        $pasien->kepala_keluarga = $validatedData['kepala_keluarga'] ?? null;
+        $pasien->no_hp = $validatedData['no_hp'] ?? null;
+
+        $pasien->save();
+
+        return response()->json(['message' => 'Pasien berhasil diperbarui']);
+    }
+
     public function exportExcel(Request $request)
     {
         $query = Pasien::query();

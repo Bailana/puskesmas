@@ -105,8 +105,8 @@ class GigiDashboardController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('nama_pasien', 'like', '%' . $search . '%')
-                  ->orWhere('no_rekam_medis', 'like', '%' . $search . '%')
-                  ->orWhere('nik', 'like', '%' . $search . '%');
+                    ->orWhere('no_rekam_medis', 'like', '%' . $search . '%')
+                    ->orWhere('nik', 'like', '%' . $search . '%');
             });
         }
 
@@ -623,20 +623,20 @@ class GigiDashboardController extends Controller
                 'riwayat_jatuh' => $hasilAnalisa ? $hasilAnalisa->riwayat_jatuh : null,
                 'status_psikologi' => $hasilAnalisa ? (
                     $hasilAnalisa->status_psikologi
-                        ? (is_array(json_decode($hasilAnalisa->status_psikologi, true))
-                            ? implode(', ', json_decode($hasilAnalisa->status_psikologi, true))
-                            : (is_string($hasilAnalisa->status_psikologi) ? $hasilAnalisa->status_psikologi : '-')
-                        )
-                        : null
+                    ? (is_array(json_decode($hasilAnalisa->status_psikologi, true))
+                        ? implode(', ', json_decode($hasilAnalisa->status_psikologi, true))
+                        : (is_string($hasilAnalisa->status_psikologi) ? $hasilAnalisa->status_psikologi : '-')
+                    )
+                    : null
                 ) : null,
                 'penanggung_jawab_analisa' => ($hasilAnalisa && $hasilAnalisa->penanggung_jawab) ? (\App\Models\User::find($hasilAnalisa->penanggung_jawab)->name ?? '-') : null,
                 'hambatan_edukasi' => $hasilAnalisa ? (
                     $hasilAnalisa->hambatan_edukasi
-                        ? (is_array(json_decode($hasilAnalisa->hambatan_edukasi, true))
-                            ? implode(', ', json_decode($hasilAnalisa->hambatan_edukasi, true))
-                            : (is_string($hasilAnalisa->hambatan_edukasi) ? $hasilAnalisa->hambatan_edukasi : '-')
-                        )
-                        : null
+                    ? (is_array(json_decode($hasilAnalisa->hambatan_edukasi, true))
+                        ? implode(', ', json_decode($hasilAnalisa->hambatan_edukasi, true))
+                        : (is_string($hasilAnalisa->hambatan_edukasi) ? $hasilAnalisa->hambatan_edukasi : '-')
+                    )
+                    : null
                 ) : null,
                 'alergi' => $hasilAnalisa ? $hasilAnalisa->alergi : null,
                 'catatan' => $hasilAnalisa ? $hasilAnalisa->catatan : null,
@@ -673,19 +673,19 @@ class GigiDashboardController extends Controller
                 'riwayat_jatuh_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->riwayat_jatuh : null,
                 'status_psikologi_rawatinap' => $hasilAnalisaRawatinap ? (
                     $hasilAnalisaRawatinap->status_psikologi
-                        ? (is_array(json_decode($hasilAnalisaRawatinap->status_psikologi, true))
-                            ? implode(', ', json_decode($hasilAnalisaRawatinap->status_psikologi, true))
-                            : (is_string($hasilAnalisaRawatinap->status_psikologi) ? $hasilAnalisaRawatinap->status_psikologi : '-')
-                        )
-                        : null
+                    ? (is_array(json_decode($hasilAnalisaRawatinap->status_psikologi, true))
+                        ? implode(', ', json_decode($hasilAnalisaRawatinap->status_psikologi, true))
+                        : (is_string($hasilAnalisaRawatinap->status_psikologi) ? $hasilAnalisaRawatinap->status_psikologi : '-')
+                    )
+                    : null
                 ) : null,
                 'hambatan_edukasi_rawatinap' => $hasilAnalisaRawatinap ? (
                     $hasilAnalisaRawatinap->hambatan_edukasi
-                        ? (is_array(json_decode($hasilAnalisaRawatinap->hambatan_edukasi, true))
-                            ? implode(', ', json_decode($hasilAnalisaRawatinap->hambatan_edukasi, true))
-                            : (is_string($hasilAnalisaRawatinap->hambatan_edukasi) ? $hasilAnalisaRawatinap->hambatan_edukasi : '-')
-                        )
-                        : null
+                    ? (is_array(json_decode($hasilAnalisaRawatinap->hambatan_edukasi, true))
+                        ? implode(', ', json_decode($hasilAnalisaRawatinap->hambatan_edukasi, true))
+                        : (is_string($hasilAnalisaRawatinap->hambatan_edukasi) ? $hasilAnalisaRawatinap->hambatan_edukasi : '-')
+                    )
+                    : null
                 ) : null,
                 'alergi_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->alergi : null,
                 'catatan_rawatinap' => $hasilAnalisaRawatinap ? $hasilAnalisaRawatinap->catatan : null,
@@ -701,6 +701,42 @@ class GigiDashboardController extends Controller
                 'success' => false,
                 'message' => 'Terjadi error pada server: ' . $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
+            ], 500);
+        }
+    }
+
+    public function hasilAnalisaAjax($no_rekam_medis)
+    {
+        try {
+            $pasien = \App\Models\Pasien::where('no_rekam_medis', $no_rekam_medis)->first();
+            if (!$pasien) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pasien tidak ditemukan.'
+                ]);
+            }
+            $hasil = \App\Models\Hasilanalisa::with(['poli', 'penanggungJawab'])->where('pasien_id', $pasien->id)->latest()->first();
+            if ($hasil) {
+                $data = $hasil->toArray();
+                $data['nama_poli'] = $hasil->poli ? $hasil->poli->nama_poli : '-';
+                $data['nama_penanggung_jawab'] = $hasil->penanggungJawab ? $hasil->penanggungJawab->name : '-';
+                $data['status_psikologi'] = $hasil->status_psikologi ? (is_array(json_decode($hasil->status_psikologi, true)) ? implode(', ', json_decode($hasil->status_psikologi, true)) : (is_string($hasil->status_psikologi) ? $hasil->status_psikologi : '-')) : '-';
+                $data['hambatan_edukasi'] = $hasil->hambatan_edukasi ? (is_array(json_decode($hasil->hambatan_edukasi, true)) ? implode(', ', json_decode($hasil->hambatan_edukasi, true)) : (is_string($hasil->hambatan_edukasi) ? $hasil->hambatan_edukasi : '-')) : '-';
+                // Jangan ubah value asli, biarkan kosong/null dikirim ke JS agar bisa di-handle di JS
+                return response()->json([
+                    'success' => true,
+                    'hasil' => $data
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data hasil analisa tidak ditemukan.'
+                ]);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi error: ' . $e->getMessage(),
             ], 500);
         }
     }
