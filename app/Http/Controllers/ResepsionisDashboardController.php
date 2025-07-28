@@ -307,7 +307,8 @@ class ResepsionisDashboardController extends Controller
     public function antrian(Request $request)
     {
         $query = Antrian::with(['pasien', 'poli'])
-            ->where('status', '!=', 'selesai');
+            ->where('status', '!=', 'selesai')
+            ->orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
             $search = strtolower($request->search);
@@ -319,6 +320,27 @@ class ResepsionisDashboardController extends Controller
                 })
                 ->orWhereRaw('LOWER(no_rekam_medis) LIKE ?', ['%' . $search . '%'])
                 ->orWhereRaw('LOWER(status) LIKE ?', ['%' . $search . '%']);
+            });
+        }
+
+        if ($request->filled('poli_id')) {
+            $query->where('poli_id', $request->poli_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('tanggal_berobat')) {
+            $query->whereDate('tanggal_berobat', $request->tanggal_berobat);
+        } else {
+            // Default filter to show only today's antrian if no tanggal_berobat filter is applied
+            $query->whereDate('tanggal_berobat', now()->toDateString());
+        }
+
+        if ($request->filled('jaminan_kesehatan')) {
+            $query->whereHas('pasien', function ($q) use ($request) {
+                $q->where('jaminan_kesehatan', $request->jaminan_kesehatan);
             });
         }
 
@@ -368,6 +390,8 @@ class ResepsionisDashboardController extends Controller
         if ($request->filled('tanggal_lahir')) {
             $query->whereDate('tanggal_lahir', $request->tanggal_lahir);
         }
+
+        $query->orderBy('created_at', 'desc');
 
         $pasiens = $query->paginate(5)->withQueryString();
 

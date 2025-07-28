@@ -47,8 +47,8 @@
                                     <td style="white-space: nowrap;">{{ $antrian->poli ? $antrian->poli->nama_poli : 'Tidak ada' }}</td>
                                     <td style="white-space: nowrap;"><span class="badge bg-danger">{{ $antrian->status }}</span></td>
                                     <td style="white-space: nowrap;">
-                                        <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-bs-toggle="modal"
-                                            data-bs-target="#modalHasilPeriksa" data-pasien-id="{{ $antrian->pasien->id }}">Hasil Periksa</button>
+                                        <!-- <button type="button" class="btn btn-success btn-sm rounded btnHasilPeriksa" data-bs-toggle="modal"
+                                            data-bs-target="#modalHasilPeriksa" data-pasien-id="{{ $antrian->pasien->id }}">Hasil Periksa</button> -->
                                         <button type="button" class="btn btn-primary btn-sm rounded btnRacikObat"
                                             data-pasien-id="{{ $antrian->pasien->id }}">Racik Obat</button>
                                     </td>
@@ -153,7 +153,7 @@
 </div>
 
 <!-- Modal Hasil Periksa -->
-<div class="modal fade" id="modalHasilPeriksa" tabindex="-1" aria-labelledby="modalHasilPeriksaLabel"
+<!-- <div class="modal fade" id="modalHasilPeriksa" tabindex="-1" aria-labelledby="modalHasilPeriksaLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 100%;">
         <div class="modal-content" style="overflow-x: hidden;">
@@ -161,50 +161,50 @@
                 <h3 class="modal-title" id="modalHasilPeriksaLabel"><strong>Hasil Periksa</strong></h3>
             </div>
             <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 10px;">
-                <form id="formHasilPeriksa">
+                <form id="formHasilPeriksa"> -->
                     <!-- Anamnesis -->
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="anamnesis" class="form-label">Anamnesis</label>
                         <textarea class="form-control" id="anamnesis" rows="3" readonly></textarea>
-                    </div>
+                    </div> -->
 
                     <!-- Pemeriksaan Fisik -->
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="pemeriksaanFisik" class="form-label">Pemeriksaan Fisik</label>
                         <textarea class="form-control" id="pemeriksaanFisik" rows="3" readonly></textarea>
-                    </div>
+                    </div> -->
 
                     <!-- Rencana dan Terapi -->
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="rencanaTerapi" class="form-label">Rencana dan Terapi</label>
                         <textarea class="form-control" id="rencanaTerapi" rows="3" readonly></textarea>
-                    </div>
+                    </div> -->
 
                     <!-- Diagnosis -->
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="diagnosis" class="form-label">Diagnosis</label>
                         <textarea class="form-control" id="diagnosis" rows="3" readonly></textarea>
-                    </div>
+                    </div> -->
 
                     <!-- Edukasi -->
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="edukasi" class="form-label">Edukasi</label>
                         <textarea class="form-control" id="edukasi" rows="3" readonly></textarea>
-                    </div>
+                    </div> -->
 
                     <!-- Code ICD -->
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="kodeICD" class="form-label">Kode ICD</label>
                         <input type="text" class="form-control form-control-sm" id="kodeICD" readonly>
-                    </div>
+                    </div> -->
 
                     <!-- Kesan Status Gizi -->
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="kesanStatusGizi" class="form-label">Kesan Status Gizi</label>
                         <input type="text" class="form-control form-control-sm" id="kesanStatusGizi" readonly>
-                    </div>
+                    </div> -->
 
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="penanggungJawabVisible" class="form-label">Penanggung Jawab</label>
                         <input type="text" class="form-control" id="penanggungJawabVisible" readonly>
                     </div>
@@ -215,7 +215,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 @endsection
 
 @section('scripts')

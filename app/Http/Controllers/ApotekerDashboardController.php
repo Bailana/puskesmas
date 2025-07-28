@@ -357,6 +357,8 @@ class ApotekerDashboardController extends Controller
             });
         }
 
+        $query->orderBy('created_at', 'desc');
+
         $pasiens = $query->paginate(10)->withQueryString();
 
         if ($request->ajax()) {
@@ -437,9 +439,11 @@ class ApotekerDashboardController extends Controller
     public function antrian(Request $request)
     {
         $search = $request->input('search');
+        $today = \Carbon\Carbon::today()->toDateString();
 
         $query = \App\Models\Antrian::with(['pasien', 'poli'])
-            ->where('status', 'Farmasi');
+            ->where('status', 'Farmasi')
+            ->whereDate('tanggal_berobat', $today);
 
         if ($search) {
             $query->whereHas('pasien', function ($q) use ($search) {
@@ -447,6 +451,8 @@ class ApotekerDashboardController extends Controller
                   ->orWhere('no_rekam_medis', 'like', '%' . $search . '%');
             });
         }
+
+        $query->orderBy('created_at', 'desc');
 
         $antrians = $query->paginate(10)->withQueryString();
 

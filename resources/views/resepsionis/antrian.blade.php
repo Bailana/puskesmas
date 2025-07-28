@@ -8,15 +8,76 @@
             <div class="card flex-fill">
                 <div class="card-header d-flex justify-content-between">
                     <!-- Input Pencarian -->
+                <form method="GET" action="{{ route('resepsionis.antrian') }}" class="d-flex align-items-center gap-2 m-0 p-0">
                     <div class="input-group" style="width: 250px;">
-                        <input type="text" class="form-control" id="searchInput" placeholder="Pencarian..."
-                            aria-label="Search" autocomplete="off">
+                        <input type="text" name="search" class="form-control" id="searchInput" placeholder="Pencarian..."
+                            aria-label="Search" autocomplete="off" value="{{ request('search') }}">
                     </div>
-                    <!-- Tombol Buat Antrian -->
-                    <button type="button" class="btn btn-success btn-lg" style="padding: 5px 10px; font-size: 0.9rem;"
-                        data-bs-toggle="modal" data-bs-target="#modalTambahAntrian">
-                        <i class="fas fa-plus"></i> Buat Antrian
+                    <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                        data-bs-toggle="modal" data-bs-target="#filterModal">
+                        <i class="fas fa-filter"></i> Filter
                     </button>
+                </form>
+
+                <!-- Modal Filter -->
+                <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <form method="GET" action="{{ route('resepsionis.antrian') }}">
+                                <div class="modal-header d-flex justify-content-between align-items-center">
+                                    <h3 class="modal-title mb-0" id="filterModalLabel"><strong>Filter Data Antrian Pasien</strong></h3>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="poli_id" class="form-label">Poli Tujuan</label>
+                                            <select name="poli_id" id="poli_id" class="form-select">
+                                                <option value="">Semua</option>
+                                                @foreach ($polis as $poli)
+                                                    <option value="{{ $poli->id }}" {{ request('poli_id') == $poli->id ? 'selected' : '' }}>
+                                                        {{ $poli->nama_poli }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="status" class="form-label">Status</label>
+                                            <select name="status" id="status" class="form-select">
+                                                <option value="">Semua</option>
+                                                <option value="Perlu Analisa" {{ request('status') == 'Perlu Analisa' ? 'selected' : '' }}>Perlu Analisa</option>
+                                                <option value="Pemeriksaan" {{ request('status') == 'Pemeriksaan' ? 'selected' : '' }}>Pemeriksaan</option>
+                                                <option value="Farmasi" {{ request('status') == 'Farmasi' ? 'selected' : '' }}>Farmasi</option>
+                                                <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="tanggal_berobat" class="form-label">Tanggal Berobat</label>
+                                            <input type="date" name="tanggal_berobat" id="tanggal_berobat" class="form-control" value="{{ request('tanggal_berobat') }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="jaminan_kesehatan" class="form-label">Jaminan Kesehatan</label>
+                                            <select name="jaminan_kesehatan" id="jaminan_kesehatan" class="form-select">
+                                                <option value="">Semua</option>
+                                                <option value="Umum" {{ request('jaminan_kesehatan') == 'Umum' ? 'selected' : '' }}>Umum</option>
+                                                <option value="BPJS Kesehatan" {{ request('jaminan_kesehatan') == 'BPJS Kesehatan' ? 'selected' : '' }}>BPJS Kesehatan</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer d-flex justify-content-end mt-3" style="gap: 10px;">
+                                    <button type="submit" class="btn btn-primary">Terapkan Filter</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tombol Buat Antrian -->
+                <button type="button" class="btn btn-success btn-lg" style="padding: 5px 10px; font-size: 0.9rem;"
+                    data-bs-toggle="modal" data-bs-target="#modalTambahAntrian">
+                    <i class="fas fa-plus"></i> Buat Antrian
+                </button>
                 </div>
 
                 <div class="table-responsive">

@@ -135,6 +135,8 @@ class GigiDashboardController extends Controller
             $query->whereDate('tanggal_lahir', $request->tanggal_lahir);
         }
 
+        $query->orderBy('created_at', 'desc');
+
         $pasiens = $query->paginate(5)->withQueryString();
 
         if ($request->ajax()) {
@@ -146,10 +148,14 @@ class GigiDashboardController extends Controller
 
     public function antrian()
     {
+        $today = \Carbon\Carbon::today()->toDateString();
+
         $antrians = \App\Models\Antrian::where('status', 'Pemeriksaan')
             ->whereHas('poli', function ($query) {
                 $query->where('nama_poli', 'Gigi');
             })
+            ->whereDate('tanggal_berobat', $today)
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return view('gigi.antrian', compact('antrians'));

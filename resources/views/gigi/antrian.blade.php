@@ -38,7 +38,7 @@
                                 <td>{{ \Carbon\Carbon::parse($antrian->pasien->tanggal_lahir)->age }} tahun</td>
                                 <td>{{ $antrian->pasien->jaminan_kesehatan }}</td>
                                 <!-- Removed Poli Tujuan data cell as per user request -->
-                                <td><span class="badge bg-warning">{{ $antrian->status }}</span></td>
+                                <td><span class="badge bg-danger">{{ $antrian->status }}</span></td>
                                 <td>
                                     <button type="button" class="btn btn-success btn-sm rounded btn-hasilanalisa"
                                         data-rekam-medis="{{ $antrian->no_rekam_medis }}"

@@ -136,6 +136,8 @@ class DokterDashboardController extends Controller
             $query->whereDate('tanggal_lahir', $request->tanggal_lahir);
         }
 
+        $query->orderBy('created_at', 'desc');
+
         $pasiens = $query->paginate(5)->withQueryString();
 
         if ($request->ajax()) {
@@ -147,9 +149,13 @@ class DokterDashboardController extends Controller
 
     public function antrian(Request $request)
     {
+        $today = \Carbon\Carbon::today()->toDateString();
+
         $query = Antrian::where('poli_id', 1)
             ->where('status', 'Pemeriksaan')
-            ->with('pasien', 'poli');
+            ->whereDate('tanggal_berobat', $today)
+            ->with('pasien', 'poli')
+            ->orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
             $search = $request->search;

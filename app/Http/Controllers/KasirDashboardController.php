@@ -140,7 +140,7 @@ class KasirDashboardController extends Controller
             $pasiens->whereDate('tanggal_lahir', $tanggalLahir);
         }
 
-        $pasiens = $pasiens->paginate(5);
+        $pasiens = $pasiens->orderBy('created_at', 'desc')->paginate(5);
 
         if ($request->ajax()) {
             return response()->json($pasiens->items());
@@ -165,6 +165,10 @@ class KasirDashboardController extends Controller
                     $q2->where('nama_pasien', 'like', '%' . $query . '%')
                        ->orWhere('no_rekam_medis', 'like', '%' . $query . '%');
                 });
+            })
+            ->when(!$tanggalAwal && !$tanggalAkhir, function ($q) {
+                $q->whereMonth('created_at', now()->month)
+                  ->whereYear('created_at', now()->year);
             })
             ->when($tanggalAwal, function ($q) use ($tanggalAwal) {
                 $q->whereDate('created_at', '>=', $tanggalAwal);
@@ -286,7 +290,8 @@ class KasirDashboardController extends Controller
     public function antrian(Request $request)
     {
         $query = Antrian::with(['pasien', 'poli'])
-            ->where('status', 'Pembayaran');
+            ->where('status', 'Pembayaran')
+            ->whereDate('tanggal_berobat', now());
 
         if ($request->filled('search')) {
             $search = strtolower($request->search);
@@ -301,7 +306,7 @@ class KasirDashboardController extends Controller
             });
         }
 
-        $antrians = $query->paginate(1);
+        $antrians = $query->orderBy('tanggal_berobat', 'desc')->paginate(10);
 
         if ($request->ajax()) {
             return response()->json($antrians);

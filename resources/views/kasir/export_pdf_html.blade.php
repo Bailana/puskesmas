@@ -90,7 +90,7 @@
     <div class="kop-surat">
         <div class="left-logo">
             @php
-                $pathLeft = public_path('template/images/logo_puskesmas.png');
+                $pathLeft = public_path('template/images/LogoRohil.png');
                 $typeLeft = pathinfo($pathLeft, PATHINFO_EXTENSION);
                 $dataLeft = file_get_contents($pathLeft);
                 $base64Left = 'data:image/' . $typeLeft . ';base64,' . base64_encode($dataLeft);

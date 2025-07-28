@@ -204,12 +204,12 @@
                                         data-no_hp="{{ $pasien->no_hp}}">
                                         Selengkapnya
                                     </button>
-                                    <button type="button" class="btn btn-danger btn-sm rounded btn-riwayat"
+                                    <!-- <button type="button" class="btn btn-danger btn-sm rounded btn-riwayat"
                                         data-rekam-medis="{{ $pasien->no_rekam_medis }}"
                                         data-nama="{{ $pasien->nama_pasien }}"
                                         data-bs-toggle="modal" data-bs-target="#modalRiwayatBerobat">
                                         Riwayat Berobat
-                                    </button>
+                                    </button> -->
                                 </td>
                             </tr>
                             @endforeach
@@ -952,7 +952,7 @@
 </div>
 @endsection
 @section('scripts')
-<script>
+<!-- <script>
     // Handle Riwayat Berobat button click in antrian view (copy dari antrian.blade.php)
     document.addEventListener('DOMContentLoaded', function() {
         // Event delegation untuk .btn-riwayat
@@ -1328,7 +1328,7 @@
             document.getElementById('riwayatList').style.display = 'block';
         });
     });
-</script>
+</script> -->
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
